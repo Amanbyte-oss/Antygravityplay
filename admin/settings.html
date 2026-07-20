@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-<script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
 <head>
+  <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Admin settings for profile, security, appearance, notifications, and data management.">
@@ -115,8 +115,8 @@
                   <input type="text" id="admin-name-input" class="form-input-field" placeholder="Your name" autocomplete="off">
                 </div>
                 <div class="form-group">
-                  <label class="form-label" for="admin-email-display">Email</label>
-                  <input type="text" id="admin-email-display" class="form-input-field" value="admin@videoshare.com" readonly style="opacity:0.6;cursor:not-allowed;">
+                  <label class="form-label" for="admin-email-input">Email</label>
+                  <input type="email" id="admin-email-input" class="form-input-field" value="admin@videoshare.com" autocomplete="off">
                 </div>
                 <div class="form-group">
                   <label class="form-label" for="admin-bio-input">Bio</label>
@@ -248,12 +248,12 @@
                 </div>
                 <div class="settings-row">
                   <div class="settings-row-label">
-                    <span class="settings-row-title">Comment Alerts</span>
-                    <span class="settings-row-desc">Notifications when users comment on videos</span>
+                    <span class="settings-row-title">Like Alerts</span>
+                    <span class="settings-row-desc">Notifications when users like videos</span>
                   </div>
                   <div class="settings-row-control">
                     <label class="toggle-switch">
-                      <input type="checkbox" class="notif-toggle" data-key="commentAlerts">
+                      <input type="checkbox" class="notif-toggle" data-key="likeAlerts">
                       <span class="toggle-slider"></span>
                     </label>
                   </div>
@@ -270,18 +270,7 @@
                     </label>
                   </div>
                 </div>
-                <div class="settings-row">
-                  <div class="settings-row-label">
-                    <span class="settings-row-title">New User Alerts</span>
-                    <span class="settings-row-desc">Notify when new users register on the platform</span>
-                  </div>
-                  <div class="settings-row-control">
-                    <label class="toggle-switch">
-                      <input type="checkbox" class="notif-toggle" data-key="newUserAlerts">
-                      <span class="toggle-slider"></span>
-                    </label>
-                  </div>
-                </div>
+
               </div>
             </div>
 

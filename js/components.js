@@ -78,45 +78,48 @@
         </div>
       `;
 
-      // Inline styles for dropdown menus
-      const style = document.createElement('style');
-      style.innerHTML = `
-        .dropdown-container:hover .dropdown-menu { display: block; }
-        .dropdown-container::before {
-          content: '';
-          position: absolute;
-          bottom: -4px;
-          left: 0;
-          right: 0;
-          height: 8px;
-        }
-        .dropdown-menu {
-          display: none;
-          position: absolute;
-          top: calc(100% + 4px);
-          left: 0;
-          background-color: var(--bg-secondary);
-          border: 1px solid var(--border);
-          border-radius: var(--radius-md);
-          min-width: 180px;
-          list-style: none;
-          padding: var(--space-sm) 0;
-          box-shadow: var(--shadow-lg);
-          z-index: 200;
-        }
-        .dropdown-menu li a {
-          display: block;
-          padding: var(--space-sm) var(--space-lg);
-          font-size: var(--text-sm);
-          color: var(--text-secondary);
-          transition: background-color var(--transition-fast), color var(--transition-fast);
-        }
-        .dropdown-menu li a:hover {
-          background-color: var(--bg-elevated);
-          color: var(--text-primary);
-        }
-      `;
-      document.head.appendChild(style);
+      // Inline styles for dropdown menus (only append once)
+      if (!document.getElementById('navbar-dropdown-style')) {
+        const style = document.createElement('style');
+        style.id = 'navbar-dropdown-style';
+        style.innerHTML = `
+          .dropdown-container:hover .dropdown-menu { display: block; }
+          .dropdown-container::before {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            right: 0;
+            height: 8px;
+          }
+          .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            min-width: 180px;
+            list-style: none;
+            padding: var(--space-sm) 0;
+            box-shadow: var(--shadow-lg);
+            z-index: 200;
+          }
+          .dropdown-menu li a {
+            display: block;
+            padding: var(--space-sm) var(--space-lg);
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+            transition: background-color var(--transition-fast), color var(--transition-fast);
+          }
+          .dropdown-menu li a:hover {
+            background-color: var(--bg-elevated);
+            color: var(--text-primary);
+          }
+        `;
+        document.head.appendChild(style);
+      }
 
       // Adjust theme icons on load
       updateThemeIcons();
@@ -295,12 +298,13 @@
       const moreHtml = extraCount > 0 ? `<span style="font-size:11px; color:var(--text-muted); margin-left:2px;">+${extraCount}</span>` : '';
       const tagsSection = (tagPillsHtml || moreHtml) ? `<div class="video-tag-pills" style="margin-top:6px;">${tagPillsHtml}${moreHtml}</div>` : '';
 
+      const href = `${rootPrefix}watch.html?id=${encodeURIComponent(video.id)}`;
       return `
-        <article class="video-card" data-video-id="${video.id}" onclick="window.location.href='${rootPrefix}watch.html?id=${video.id}'">
+        <article class="video-card" data-video-id="${video.id}" data-href="${href}">
           <div class="thumbnail-container">
             <img class="lazy" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9'%3E%3Crect width='100%25' height='100%25' fill='%231f1f1f'/%3E%3C/svg%3E" data-src="${video.thumbnail}" alt="${video.title} Preview">
             <span class="duration-badge">${video.duration}</span>
-            <button class="play-hover-btn" aria-label="Play video" onclick="event.stopPropagation(); window.location.href='${rootPrefix}watch.html?id=${video.id}'">
+            <button class="play-hover-btn" data-href="${href}" aria-label="Play video">
               <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
                 <polygon points="8,5 19,12 8,19"></polygon>
               </svg>

@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-<script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
 <head>
+  <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Upload new videos, configure description, select tags, and set publish status.">
-  <title>Upload Video - Admin Console</title>
+  <meta name="description" content="Add a video from YouTube, Vimeo, Dailymotion, and more — validate, embed, and publish to the platform.">
+  <title>Add Video - Admin Console</title>
   <link rel="stylesheet" href="../css/main.css">
   <link rel="stylesheet" href="../css/admin/dashboard.css">
   <link rel="stylesheet" href="../css/admin/upload.css">
+  <link rel="stylesheet" href="../css/admin/tabs.css">
 </head>
 <body>
 
@@ -71,8 +72,8 @@
         <!-- Welcome Title row -->
         <div class="admin-title-row">
           <div class="admin-title-group">
-            <h1>Upload Video Asset</h1>
-            <p>Publish a new MP4 video resource to the platform database.</p>
+            <h1>Add Video</h1>
+            <p>Choose a source, paste the URL or embed code, and publish it on the platform.</p>
           </div>
           <div>
             <a href="./videos.html" class="btn btn-secondary">
@@ -83,93 +84,134 @@
 
         <!-- Form Layout -->
         <form id="upload-video-form">
+          <!-- Tab Navigation -->
+          <div class="tabs-nav">
+            <button type="button" class="tab-btn active" data-tab="source" id="tab-source-btn">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+              Source
+            </button>
+            <button type="button" class="tab-btn" data-tab="details" id="tab-details-btn">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+              Details
+            </button>
+          </div>
+
           <div class="upload-form-layout">
             
             <!-- Left Side Details -->
             <div class="upload-card">
-              <h2 class="form-title">Asset Configurations</h2>
+              <!-- Tab: Source -->
+              <div class="tab-panel active" id="tab-panel-source">
+                <h2 class="form-title">Video Source</h2>
 
-              <!-- Drag Drop Zone -->
-              <div class="dropzone" id="dropzone">
-                <div class="dropzone-icon">
-                  <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <polyline points="16 16 12 12 8 16"></polyline><line x1="12" y1="12" x2="12" y2="21"></line>
-                    <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path><polyline points="16 16 12 12 8 16"></polyline>
-                  </svg>
-                </div>
-                <div class="dropzone-text">Drag and drop your MP4 file here, or click to browse</div>
-                <div class="dropzone-subtext">Max size: 50MB (Simulated)</div>
-                <input type="file" id="video-file-input" accept="video/mp4" style="display:none;">
-              </div>
+                <!-- Platform Selector -->
+                <div class="platform-selector" id="platform-selector"></div>
 
-              <!-- Selected File Banner -->
-              <div class="selected-file-banner" id="file-banner">
-                <div class="selected-file-icon">
-                  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                    <polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line>
-                    <polyline points="10 9 9 9 8 9"></polyline>
-                  </svg>
-                </div>
-                <div class="selected-file-name" id="file-name-span">file.mp4</div>
-                <button type="button" class="selected-file-remove" id="file-remove-btn" aria-label="Remove video file">&times;</button>
-              </div>
-
-              <!-- General Fields Grid -->
-              <div class="form-grid">
-                
-                <div class="form-group">
-                  <label class="form-label" for="title-input">Video Title</label>
-                  <input type="text" id="title-input" class="form-input-field" placeholder="E.g., Masterclass on Vanilla JavaScript Web Dev" required autocomplete="off">
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label" for="description-input">Description</label>
-                  <textarea id="description-input" class="textarea-field" placeholder="Provide a detailed description of what viewers will learn..."></textarea>
-                </div>
-
-                <div class="form-row">
-                  <div class="form-group">
-                    <label class="form-label" for="duration-input">Duration (Min:Sec)</label>
-                    <input type="text" id="duration-input" class="form-input-field" placeholder="E.g., 12:45" pattern="^[0-9]+:[0-5][0-9]$" autocomplete="off">
+                <!-- Video URL Input (shown for URL-based platforms) -->
+                <div class="platform-input-section" id="platform-url-section">
+                  <label class="form-label" for="platform-url-input">Video URL</label>
+                  <div class="youtube-input-row">
+                    <input type="url" id="platform-url-input" class="youtube-input" placeholder="Paste URL here..." autocomplete="off" aria-describedby="platform-error" aria-label="Video URL">
+                    <button type="button" id="load-video-btn" class="btn btn-primary youtube-load-btn">Load Video</button>
                   </div>
+                  <div id="platform-error" class="youtube-error" role="alert"></div>
+                  <button type="button" id="clear-video-btn" class="youtube-clear-btn hidden">Remove Video</button>
+                </div>
+
+                <!-- Iframe Code Input (shown for Embed Code platform) -->
+                <div class="platform-input-section hidden" id="platform-iframe-section">
+                  <label class="form-label" for="iframe-code-input">Embed Code</label>
+                  <textarea id="iframe-code-input" class="textarea-field" placeholder='Paste &lt;iframe&gt; embed code here…' style="min-height:80px;"></textarea>
+                  <div style="margin-top:var(--space-sm);">
+                    <button type="button" id="load-iframe-btn" class="btn btn-primary">Load Embed</button>
+                  </div>
+                  <div id="iframe-error" class="youtube-error" role="alert"></div>
+                </div>
+
+                <!-- Video Embed Preview -->
+                <div id="embed-container" class="embed-container hidden">
+                  <div class="embed-loader" id="embed-loader">
+                    <div class="loader-spinner"></div>
+                    <span>Loading video...</span>
+                  </div>
+                  <div class="embed-player" id="embed-player"></div>
+                  <div class="embed-fallback hidden" id="embed-fallback">
+                    <p>This video cannot be loaded. It may be private, deleted, or unavailable.</p>
+                  </div>
+                </div>
+
+                <!-- Video Metadata -->
+                <div id="video-metadata" class="video-metadata hidden">
+                  <img id="meta-thumbnail" class="meta-thumbnail" alt="Video thumbnail">
+                  <div class="meta-info">
+                    <span class="meta-title" id="meta-title"></span>
+                    <span class="meta-channel" id="meta-channel"></span>
+                  </div>
+                </div>
+
+                <!-- Recent History -->
+                <div id="recent-history" class="recent-history hidden"></div>
+              </div>
+
+              <!-- Tab: Details -->
+              <div class="tab-panel" id="tab-panel-details">
+                <h2 class="form-title">Video Details</h2>
+
+                <div class="form-grid">
+
                   <div class="form-group">
-                    <label class="form-label">Status</label>
-                    <div class="toggle-row" style="padding-top: var(--space-sm);">
-                      <span class="toggle-label">Publish immediately</span>
-                      <label class="toggle-switch">
-                        <input type="checkbox" id="publish-toggle" checked>
-                        <span class="toggle-slider"></span>
-                      </label>
+                    <label class="form-label" for="title-input">Video Title</label>
+                    <input type="text" id="title-input" class="form-input-field" placeholder="Auto-filled from source when available" autocomplete="off">
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label" for="description-input">Description</label>
+                    <textarea id="description-input" class="textarea-field" placeholder="Provide a description for viewers..."></textarea>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label class="form-label" for="duration-input">Duration (Min:Sec)</label>
+                      <input type="text" id="duration-input" class="form-input-field" placeholder="E.g., 12:45" pattern="^[0-9]+:[0-5]?[0-9]:[0-5][0-9]$|^[0-9]+:[0-5][0-9]$" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Status</label>
+                      <div class="toggle-row" style="padding-top: var(--space-sm);">
+                        <span class="toggle-label">Publish immediately</span>
+                        <label class="toggle-switch">
+                          <input type="checkbox" id="publish-toggle" checked>
+                          <span class="toggle-slider"></span>
+                        </label>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <!-- Existing Tags Checkable Pills -->
-                <div class="form-group">
-                  <label class="form-label">Existing Tags</label>
-                  <div id="existing-tags-container" class="tags-checkable-grid">
-                    <!-- Populated via JS -->
+                  <!-- Existing Tags Checkable Pills -->
+                  <div class="form-group">
+                    <label class="form-label">Existing Tags</label>
+                    <div id="existing-tags-container" class="tags-checkable-grid">
+                      <!-- Populated via JS -->
+                    </div>
                   </div>
-                </div>
 
-                <!-- Selected Tags Display -->
-                <div class="form-group">
-                  <label class="form-label">Selected Tags (<span id="selected-tags-count">0</span>/10)</label>
-                  <div id="selected-tags-display" class="tag-chips-wrapper">
-                    <!-- Selected tag chips injected here -->
+                  <!-- Selected Tags Display -->
+                  <div class="form-group">
+                    <label class="form-label">Selected Tags (<span id="selected-tags-count">0</span>/10)</label>
+                    <div id="selected-tags-display" class="tag-chips-wrapper">
+                      <!-- Selected tag chips injected here -->
+                    </div>
                   </div>
-                </div>
 
-                <!-- Create Custom Tag -->
-                <div class="form-group">
-                  <label class="form-label">Create New Tag</label>
-                  <div style="display: flex; gap: var(--space-sm);">
-                    <input type="text" id="custom-tag-input" class="form-input-field" placeholder="Type tag name and press Enter or Add..." style="flex: 1;" autocomplete="off">
-                    <button type="button" id="add-custom-tag-btn" class="btn btn-secondary" style="padding: var(--space-sm) var(--space-lg);">Add</button>
+                  <!-- Create Custom Tag -->
+                  <div class="form-group">
+                    <label class="form-label">Create New Tag</label>
+                    <div style="display: flex; gap: var(--space-sm);">
+                      <input type="text" id="custom-tag-input" class="form-input-field" placeholder="Type tag name and press Enter or Add..." style="flex: 1;" autocomplete="off">
+                      <button type="button" id="add-custom-tag-btn" class="btn btn-secondary" style="padding: var(--space-sm) var(--space-lg);">Add</button>
+                    </div>
                   </div>
-                </div>
 
+                </div>
               </div>
 
             </div>
@@ -194,22 +236,9 @@
                 </div>
               </div>
 
-
-
-              <!-- Upload Progress bar -->
-              <div class="progress-container" id="progress-container">
-                <div class="progress-header">
-                  <span>Uploading files...</span>
-                  <span id="progress-percent">0%</span>
-                </div>
-                <div class="progress-track">
-                  <div class="progress-fill" id="progress-fill"></div>
-                </div>
-              </div>
-
               <div style="margin-top: var(--space-2xl);">
-                <button type="submit" id="submit-btn" class="btn btn-primary" style="width:100%;">
-                  Publish Asset
+                <button type="submit" id="submit-btn" class="btn btn-primary" style="width:100%;" disabled>
+                  Publish Video
                 </button>
               </div>
 

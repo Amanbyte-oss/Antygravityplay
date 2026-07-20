@@ -35,10 +35,18 @@ function initTabs() {
 function loadSettings() {
   const settings = JSON.parse(localStorage.getItem('admin-settings') || '{}');
 
-  if (settings.theme) {
-    document.querySelector(`input[name="theme"][value="${settings.theme}"]`).checked = true;
+  const currentTheme = localStorage.getItem('site-theme') || 'dark';
+  const themeToShow = settings.theme || currentTheme;
+  const themeRadio = document.querySelector(`input[name="theme"][value="${themeToShow}"]`);
+  if (themeRadio) {
+    themeRadio.checked = true;
     document.querySelectorAll('.theme-radio-card').forEach(c => c.classList.remove('selected'));
-    document.querySelector(`.theme-radio-card input[value="${settings.theme}"]`).closest('.theme-radio-card').classList.add('selected');
+    themeRadio.closest('.theme-radio-card').classList.add('selected');
+  }
+
+  if (settings.reducedMotion) {
+    document.documentElement.style.setProperty('--transition-base', '0s');
+    document.documentElement.style.setProperty('--transition-fast', '0s');
   }
 
   if (settings.accentColor) {
@@ -68,6 +76,7 @@ function loadSettings() {
 
   const profile = JSON.parse(localStorage.getItem('admin-profile') || '{}');
   if (profile.name) document.getElementById('admin-name-input').value = profile.name;
+  if (profile.email) document.getElementById('admin-email-input').value = profile.email;
   if (profile.bio) document.getElementById('admin-bio-input').value = profile.bio;
   if (profile.avatar) {
     document.getElementById('avatar-img').src = profile.avatar;
@@ -82,7 +91,13 @@ function bindSettingsEvents() {
       document.querySelectorAll('.theme-radio-card').forEach(c => c.classList.remove('selected'));
       radio.closest('.theme-radio-card').classList.add('selected');
       saveSetting('theme', radio.value);
-      if (radio.value !== 'system') {
+      if (radio.value === 'system') {
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = prefersDark ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('site-theme', theme);
+        window.dispatchEvent(new CustomEvent('themechanged', { detail: { theme } }));
+      } else {
         document.documentElement.setAttribute('data-theme', radio.value);
         localStorage.setItem('site-theme', radio.value);
         window.dispatchEvent(new CustomEvent('themechanged', { detail: { theme: radio.value } }));
@@ -121,16 +136,30 @@ function bindSettingsEvents() {
 
   document.getElementById('save-profile-btn').addEventListener('click', () => {
     const name = document.getElementById('admin-name-input').value.trim();
+    const email = document.getElementById('admin-email-input').value.trim();
     const bio = document.getElementById('admin-bio-input').value.trim();
     if (!name) {
       window.App.showToast('Admin name is required.', 'error');
       return;
     }
+    if (!email || !email.includes('@')) {
+      window.App.showToast('A valid email is required.', 'error');
+      return;
+    }
     const profile = JSON.parse(localStorage.getItem('admin-profile') || '{}');
     profile.name = name;
+    profile.email = email;
     profile.bio = bio;
-    localStorage.setItem('admin-profile', JSON.stringify(profile));
-    localStorage.setItem('admin-name', name);
+    try {
+      localStorage.setItem('admin-profile', JSON.stringify(profile));
+      localStorage.setItem('admin-name', name);
+      const users = window.MOCK_USERS;
+      users[0].email = email;
+      localStorage.setItem('mock-users', JSON.stringify(users));
+    } catch (e) {
+      window.App.showToast('Unable to save profile. Storage may be full.', 'error');
+      return;
+    }
     window.App.showToast('Profile saved successfully.');
   });
 
@@ -143,7 +172,12 @@ function bindSettingsEvents() {
         document.querySelector('.avatar-placeholder').style.display = 'none';
         const profile = JSON.parse(localStorage.getItem('admin-profile') || '{}');
         profile.avatar = e.target.result;
-        localStorage.setItem('admin-profile', JSON.stringify(profile));
+        try {
+          localStorage.setItem('admin-profile', JSON.stringify(profile));
+        } catch (e) {
+          window.App.showToast('Avatar too large to save.', 'error');
+          return;
+        }
         window.App.showToast('Avatar updated.');
       };
       reader.readAsDataURL(this.files[0]);
@@ -167,6 +201,14 @@ function bindSettingsEvents() {
       window.App.showToast('Passwords do not match.', 'error');
       return;
     }
+    const users = window.MOCK_USERS;
+    if (current !== users[0].password) {
+      window.App.showToast('Current password is incorrect.', 'error');
+      return;
+    }
+    users[0].password = newPw;
+    window.MOCK_USERS[0] = users[0];
+    try { localStorage.setItem('mock-users', JSON.stringify(users)); } catch(e) {}
     window.App.showToast('Password updated successfully.');
     document.getElementById('current-password').value = '';
     document.getElementById('new-password').value = '';
@@ -176,6 +218,19 @@ function bindSettingsEvents() {
 
   document.getElementById('new-password').addEventListener('input', function() {
     updatePasswordStrength(this.value);
+  });
+
+  // Sync settings radio cards when theme is changed via navbar toggle
+  window.addEventListener('themechanged', (e) => {
+    const theme = e.detail && e.detail.theme;
+    if (!theme) return;
+    const radio = document.querySelector(`input[name="theme"][value="${theme}"]`);
+    if (radio) {
+      radio.checked = true;
+      document.querySelectorAll('.theme-radio-card').forEach(c => c.classList.remove('selected'));
+      radio.closest('.theme-radio-card').classList.add('selected');
+      saveSetting('theme', theme);
+    }
   });
 }
 
@@ -217,7 +272,9 @@ function updateFontSizePreview(val) {
   const labels = ['Small', 'Medium', 'Large'];
   const idx = parseInt(val, 10);
   if (isNaN(idx) || idx < 0 || idx > 2) return;
-  document.documentElement.style.setProperty('--text-md', sizes[idx]);
+  ['--text-xs', '--text-sm', '--text-md', '--text-lg', '--text-xl', '--text-2xl'].forEach(prop => {
+    document.documentElement.style.setProperty(prop, sizes[idx]);
+  });
   document.getElementById('font-size-label').textContent = labels[idx];
 }
 
@@ -227,9 +284,13 @@ function applyAccentColor(color) {
 }
 
 function saveSetting(key, value) {
-  const settings = JSON.parse(localStorage.getItem('admin-settings') || '{}');
-  settings[key] = value;
-  localStorage.setItem('admin-settings', JSON.stringify(settings));
+  try {
+    const settings = JSON.parse(localStorage.getItem('admin-settings') || '{}');
+    settings[key] = value;
+    localStorage.setItem('admin-settings', JSON.stringify(settings));
+  } catch (e) {
+    window.App.showToast('Unable to save setting. Storage may be full.', 'error');
+  }
 }
 
 function bindDangerZone() {
@@ -259,8 +320,9 @@ function bindDangerZone() {
   document.getElementById('danger-proceed-btn').addEventListener('click', () => {
     localStorage.removeItem('db-videos');
     localStorage.removeItem('db-tags');
-    window.App.showToast('All data cleared successfully.');
+    window.App.showToast('All data cleared successfully. Refreshing...');
     document.getElementById('danger-modal-overlay').classList.remove('active');
+    setTimeout(() => location.reload(), 1000);
   });
 }
 
@@ -289,15 +351,18 @@ function bindImportExport() {
     reader.onload = function(e) {
       try {
         const data = JSON.parse(e.target.result);
-        if (data.videos) {
+        if (!data || typeof data !== 'object') throw new Error('Invalid data');
+        if (data.videos !== undefined) {
+          if (!Array.isArray(data.videos)) throw new Error('videos must be an array');
           localStorage.setItem('db-videos', JSON.stringify(data.videos));
         }
-        if (data.tags) {
+        if (data.tags !== undefined) {
+          if (!Array.isArray(data.tags)) throw new Error('tags must be an array');
           localStorage.setItem('db-tags', JSON.stringify(data.tags));
         }
         window.App.showToast('Data imported successfully. Refresh to see changes.');
       } catch (err) {
-        window.App.showToast('Invalid JSON file.', 'error');
+        window.App.showToast(err.message === 'Invalid data' || err.message.includes('must be') ? err.message : 'Invalid JSON file.', 'error');
       }
     };
     reader.readAsText(this.files[0]);

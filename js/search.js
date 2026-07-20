@@ -120,7 +120,7 @@ function performSearch() {
   if (date && date !== 'all') {
     results = results.filter(vid => {
       const pubDate = new Date(vid.publishDate);
-      const now = new Date("2026-07-20"); // Using metadata anchor time
+      const now = new Date();
       const diffTime = Math.abs(now - pubDate);
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
@@ -170,12 +170,13 @@ function renderSearchResults(videos, query) {
 
     const isLiked = window.App.isVideoLiked(vid.id);
 
+    const href = `./watch.html?id=${encodeURIComponent(vid.id)}`;
     return `
-      <article class="video-card" data-video-id="${vid.id}" onclick="window.location.href='./watch.html?id=${vid.id}'">
+      <article class="video-card" data-video-id="${vid.id}" data-href="${href}">
         <div class="thumbnail-container">
           <img class="lazy" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9'%3E%3Crect width='100%25' height='100%25' fill='%231f1f1f'/%3E%3C/svg%3E" data-src="${vid.thumbnail}" alt="${vid.title} Preview">
           <span class="duration-badge">${vid.duration}</span>
-          <button class="play-hover-btn" aria-label="Play video" onclick="event.stopPropagation(); window.location.href='./watch.html?id=${vid.id}'">
+          <button class="play-hover-btn" data-href="${href}" aria-label="Play video">
             <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
               <polygon points="8,5 19,12 8,19"></polygon>
             </svg>
@@ -192,9 +193,9 @@ function renderSearchResults(videos, query) {
     `;
   }).join('');
 
-  // Re-trigger scroll reveal transitions
+  // Re-trigger scroll reveal transitions and lazy loading
   window.Animations.initScrollReveal();
-  window.dispatchEvent(new Event('scroll'));
+  if (window.refreshLazyLoading) window.refreshLazyLoading();
 }
 
 // Regex escaper

@@ -41,6 +41,15 @@
     // Lazy load image implementation
     setupLazyLoading();
 
+    // Global click delegation for video card / data-href navigation
+    document.addEventListener('click', (e) => {
+      const card = e.target.closest('[data-href]');
+      if (card && !e.target.closest('a')) {
+        e.preventDefault();
+        window.location.href = card.dataset.href;
+      }
+    });
+
     // Mobile nav menu burger toggle (public side)
     const hamburger = document.querySelector('.hamburger');
     const navMenu = document.querySelector('.nav-menu');
@@ -83,10 +92,11 @@
     });
   }
 
-  // Lazy loading using IntersectionObserver
+  let lazyImageObserver = null;
+
   function setupLazyLoading() {
     if ('IntersectionObserver' in window) {
-      const lazyImageObserver = new IntersectionObserver((entries, observer) => {
+      lazyImageObserver = new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
             const lazyImage = entry.target;
@@ -97,16 +107,23 @@
           }
         });
       });
+    }
+    observeLazyImages();
+  }
 
-      const lazyImages = document.querySelectorAll('img.lazy');
-      lazyImages.forEach(img => lazyImageObserver.observe(img));
+  function observeLazyImages() {
+    const images = document.querySelectorAll('img.lazy');
+    if (lazyImageObserver) {
+      images.forEach(img => lazyImageObserver.observe(img));
     } else {
-      // Fallback
-      document.querySelectorAll('img.lazy').forEach(img => {
+      images.forEach(img => {
         if (img.dataset.src) img.src = img.dataset.src;
       });
     }
   }
+
+  // Expose so dynamic content can re-trigger lazy observation
+  window.refreshLazyLoading = observeLazyImages;
 
   // Global exports
   window.App = {
@@ -147,18 +164,19 @@
     getVideos() {
       let raw = localStorage.getItem('db-videos');
       if (!raw) {
-        localStorage.setItem('db-videos', JSON.stringify(window.MOCK_VIDEOS));
-        return window.MOCK_VIDEOS;
+        const mockCopy = JSON.parse(JSON.stringify(window.MOCK_VIDEOS));
+        localStorage.setItem('db-videos', JSON.stringify(mockCopy));
+        return mockCopy;
       }
       try {
         let parsed = JSON.parse(raw);
         if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-        // Empty or invalid – re-seed from mock data
-        localStorage.setItem('db-videos', JSON.stringify(window.MOCK_VIDEOS));
-        return window.MOCK_VIDEOS;
+        // Empty array – user deleted all videos; preserve empty state, DON'T reseed
+        return [];
       } catch (e) {
-        localStorage.setItem('db-videos', JSON.stringify(window.MOCK_VIDEOS));
-        return window.MOCK_VIDEOS;
+        const mockCopy = JSON.parse(JSON.stringify(window.MOCK_VIDEOS));
+        localStorage.setItem('db-videos', JSON.stringify(mockCopy));
+        return mockCopy;
       }
     },
 
@@ -200,6 +218,8 @@
       
       const icon = type === 'error' 
         ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>'
+        : type === 'warning'
+        ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>'
         : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>';
 
       toast.innerHTML = `

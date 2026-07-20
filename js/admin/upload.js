@@ -1,93 +1,615 @@
-// Upload video page logic
-let _hasDroppedFile = false;
+const TAG_COLORS = ['#0070f3','#7928ca','#ff0080','#ffa42b','#50e3c2','#539df5','#1db954','#f3727f','#e91e63','#ff5722','#9c27b0','#00bcd4','#ff9800','#4caf50','#f44336','#3f51b5'];
+const HISTORY_KEY = 'video-upload-history';
+const MAX_HISTORY = 10;
+
+let currentPlatform = 'youtube';
+let currentVideoId = null;
+let currentEmbedUrl = null;
+let currentVideoUrl = null;
+let currentThumbnailUrl = null;
+let currentMetadata = null;
+
+// ─── Platform Definitions ──────────────────────────────────────────────────
+
+const PLATFORMS = {
+  youtube: {
+    id:'youtube', name:'YouTube', icon:'▶', color:'#FF0000',
+    placeholder:'Paste YouTube URL… (youtube.com/watch?v=… or youtu.be/…)',
+    parseUrl(url) {
+      const patterns = [
+        /(?:youtube\.com\/watch\?v=|youtube\.com\/embed\/|youtube\.com\/shorts\/|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
+        /(?:^|[?&])v=([a-zA-Z0-9_-]{11})/
+      ];
+      for (const re of patterns) { const m = url.match(re); if (m && m[1].length===11) return m[1]; }
+      if (/^[a-zA-Z0-9_-]{11}$/.test(url) && !url.includes('.')) return url;
+      return null;
+    },
+    getEmbedUrl(id) { return `https://www.youtube.com/embed/${id}`; },
+    getVideoUrl(id) { return `https://www.youtube.com/watch?v=${id}`; },
+    getThumbnailUrl(id) { return `https://i.ytimg.com/vi/${id}/maxresdefault.jpg`; },
+    fetchMetadata(id, cb) {
+      const url = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${id}&format=json&callback=__ytCb`;
+      window.__ytCb = d => { delete window.__ytCb; cb(null,d); };
+      const s = document.createElement('script'); s.src = url;
+      s.onerror = () => { delete window.__ytCb; cb(new Error('oEmbed failed'),null); s.remove(); };
+      document.head.appendChild(s);
+    },
+    fetchDescription(id, cb) {
+      const url = `https://noembed.com/embed?url=https://www.youtube.com/watch?v=${id}&callback=__ndCb`;
+      window.__ndCb = d => { delete window.__ndCb; cb(null,(d&&d.description)||''); };
+      const s = document.createElement('script'); s.src = url;
+      s.onerror = () => { delete window.__ndCb; cb(new Error('noembed failed'),''); s.remove(); };
+      document.head.appendChild(s);
+    }
+  },
+
+  vimeo: {
+    id:'vimeo', name:'Vimeo', icon:'▽', color:'#1AB7EA',
+    placeholder:'Paste Vimeo URL… (vimeo.com/123456)',
+    parseUrl(url) {
+      const m = url.match(/(?:vimeo\.com|player\.vimeo\.com)\/(?:channels\/[^/]+\/|video\/|)(\d+)/);
+      return m ? m[1] : null;
+    },
+    getEmbedUrl(id) { return `https://player.vimeo.com/video/${id}`; },
+    getVideoUrl(id) { return `https://vimeo.com/${id}`; },
+    getThumbnailUrl() { return null; },
+    fetchMetadata(id, cb) {
+      const url = `https://vimeo.com/api/oembed.json?url=https://vimeo.com/${id}&callback=__vmCb`;
+      window.__vmCb = d => { delete window.__vmCb; cb(null,d); };
+      const s = document.createElement('script'); s.src = url;
+      s.onerror = () => { delete window.__vmCb; cb(new Error('oEmbed failed'),null); s.remove(); };
+      document.head.appendChild(s);
+    }
+  },
+
+  dailymotion: {
+    id:'dailymotion', name:'Dailymotion', icon:'◆', color:'#0066DC',
+    placeholder:'Paste Dailymotion URL… (dailymotion.com/video/…)',
+    parseUrl(url) {
+      const m = url.match(/(?:dailymotion\.com\/(?:embed\/)?video\/|dai\.ly\/)([a-zA-Z0-9]+)/);
+      return m ? m[1] : null;
+    },
+    getEmbedUrl(id) { return `https://www.dailymotion.com/embed/video/${id}`; },
+    getVideoUrl(id) { return `https://www.dailymotion.com/video/${id}`; },
+    getThumbnailUrl(id) { return `https://www.dailymotion.com/thumbnail/video/${id}`; },
+    fetchMetadata(id, cb) {
+      const url = `https://www.dailymotion.com/services/oembed?url=https://www.dailymotion.com/video/${id}&format=json&callback=__dmCb`;
+      window.__dmCb = d => { delete window.__dmCb; cb(null,d); };
+      const s = document.createElement('script'); s.src = url;
+      s.onerror = () => { delete window.__dmCb; cb(new Error('oEmbed failed'),null); s.remove(); };
+      document.head.appendChild(s);
+    }
+  },
+
+  streamable: {
+    id:'streamable', name:'Streamable', icon:'▶', color:'#0F90FA',
+    placeholder:'Paste Streamable URL… (streamable.com/…)',
+    parseUrl(url) {
+      const m = url.match(/streamable\.com\/(?:e\/)?([a-zA-Z0-9]+)/);
+      return m ? m[1] : null;
+    },
+    getEmbedUrl(id) { return `https://streamable.com/e/${id}`; },
+    getVideoUrl(id) { return `https://streamable.com/${id}`; },
+    getThumbnailUrl() { return null; },
+    fetchMetadata(id, cb) {
+      const url = `https://api.streamable.com/oembed.json?url=https://streamable.com/${id}&callback=__stCb`;
+      window.__stCb = d => { delete window.__stCb; cb(null,d); };
+      const s = document.createElement('script'); s.src = url;
+      s.onerror = () => { delete window.__stCb; cb(new Error('oEmbed failed'),null); s.remove(); };
+      document.head.appendChild(s);
+    }
+  },
+
+  cloudflare: {
+    id:'cloudflare', name:'Cloudflare Stream', icon:'◎', color:'#F38020',
+    placeholder:'Paste Cloudflare Stream URL…',
+    parseUrl(url) {
+      const m = url.match(/(?:watch\.cloudflarestream\.com|cloudflarestream\.com)\/(?:iframe\/|)([a-zA-Z0-9]+)/);
+      return m ? m[1] : null;
+    },
+    getEmbedUrl(id, orig) {
+      const c = orig && orig.match(/customer-([^.]+)\.cloudflarestream\.com/);
+      return c ? `https://customer-${c[1]}.cloudflarestream.com/${id}/iframe` : `https://watch.cloudflarestream.com/${id}`;
+    },
+    getVideoUrl(id, orig) {
+      const c = orig && orig.match(/customer-([^.]+)\.cloudflarestream\.com/);
+      return c ? `https://customer-${c[1]}.cloudflarestream.com/${id}` : `https://watch.cloudflarestream.com/${id}`;
+    },
+    getThumbnailUrl() { return null; }
+  },
+
+  peertube: {
+    id:'peertube', name:'PeerTube', icon:'◉', color:'#F1680D',
+    placeholder:'Paste PeerTube URL… ({instance}/w/{id})',
+    parseUrl(url) {
+      const m = url.match(/\/w\/([a-zA-Z0-9-]+)/);
+      if (m) return m[1];
+      const m2 = url.match(/\/videos\/(?:watch|embed)\/([a-zA-Z0-9-]+)/);
+      return m2 ? m2[1] : null;
+    },
+    getEmbedUrl(id, orig) {
+      const inst = orig && orig.match(/https?:\/\/([^\/]+)/);
+      return inst ? `https://${inst[1]}/videos/embed/${id}` : null;
+    },
+    getVideoUrl(id, orig) {
+      const inst = orig && orig.match(/https?:\/\/([^\/]+)/);
+      return inst ? `https://${inst[1]}/w/${id}` : null;
+    },
+    getThumbnailUrl() { return null; }
+  },
+
+  wistia: {
+    id:'wistia', name:'Wistia', icon:'◈', color:'#54BBFF',
+    placeholder:'Paste Wistia URL… ({name}.wistia.com/medias/{id})',
+    parseUrl(url) {
+      const m = url.match(/(?:medias|iframe)\/([a-zA-Z0-9]+)/);
+      if (m) return m[1];
+      const m2 = url.match(/wistia\.(?:com|net)\/embed\/iframe\/([a-zA-Z0-9]+)/);
+      return m2 ? m2[1] : null;
+    },
+    getEmbedUrl(id) { return `https://fast.wistia.net/embed/iframe/${id}`; },
+    getVideoUrl(id, orig) {
+      const d = orig && orig.match(/https?:\/\/([^\/]+)/);
+      return d ? `https://${d[1]}/medias/${id}` : `https://fast.wistia.net/medias/${id}`;
+    },
+    getThumbnailUrl() { return null; },
+    fetchMetadata(id, cb) {
+      const url = `https://fast.wistia.com/oembed?url=https://fast.wistia.net/medias/${id}&format=json&callback=__wsCb`;
+      window.__wsCb = d => { delete window.__wsCb; cb(null,d); };
+      const s = document.createElement('script'); s.src = url;
+      s.onerror = () => { delete window.__wsCb; cb(new Error('oEmbed failed'),null); s.remove(); };
+      document.head.appendChild(s);
+    }
+  },
+
+  abyss: {
+    id:'abyss', name:'Abyss.to', icon:'⬡', color:'#8B5CF6',
+    placeholder:'Paste Abyss.to URL… (abyss.to/video/…)',
+    parseUrl(url) {
+      const m = url.match(/abyss\.to\/(?:video\/|embed\/|)([a-zA-Z0-9-]+)/);
+      return m ? m[1] : null;
+    },
+    getEmbedUrl(id) { return `https://abyss.to/embed/${id}`; },
+    getVideoUrl(id) { return `https://abyss.to/video/${id}`; },
+    getThumbnailUrl() { return null; }
+  },
+
+  googledrive: {
+    id:'googledrive', name:'Google Drive', icon:'▣', color:'#4285F4',
+    placeholder:'Paste Google Drive video URL… (drive.google.com/file/d/{id}/view)',
+    parseUrl(url) {
+      const m = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+      return m ? m[1] : null;
+    },
+    getEmbedUrl(id) { return `https://drive.google.com/file/d/${id}/preview`; },
+    getVideoUrl(id) { return `https://drive.google.com/file/d/${id}/view`; },
+    getThumbnailUrl() { return null; }
+  },
+
+  screenpal: {
+    id:'screenpal', name:'ScreenPal', icon:'●', color:'#00B4D8',
+    placeholder:'Paste ScreenPal URL… (screenpal.com/watch/…)',
+    parseUrl(url) {
+      const m = url.match(/screenpal\.com\/(?:watch|embed)\/([a-zA-Z0-9]+)/);
+      return m ? m[1] : null;
+    },
+    getEmbedUrl(id) { return `https://screenpal.com/embed/${id}`; },
+    getVideoUrl(id) { return `https://screenpal.com/watch/${id}`; },
+    getThumbnailUrl() { return null; }
+  },
+
+  dropbox: {
+    id:'dropbox', name:'Dropbox', icon:'◆', color:'#0061FF',
+    placeholder:'Paste Dropbox share URL… (dropbox.com/s/… or dropbox.com/scl/fi/…)',
+    parseUrl(url) {
+      const m = url.match(/dropbox\.com\/(?:s\/|scl\/fi\/)([a-zA-Z0-9_-]+)/);
+      return m ? m[1] : null;
+    },
+    getEmbedUrl(id, orig) {
+      if (orig && orig.includes('/scl/fi/')) {
+        return orig.replace(/\?dl=0/,'?dl=0&embed=1').replace(/share$/,'preview');
+      }
+      return `https://www.dropbox.com/s/${id}/preview`;
+    },
+    getVideoUrl(id, orig) { return orig || `https://www.dropbox.com/s/${id}`; },
+    getThumbnailUrl() { return null; }
+  },
+
+  onedrive: {
+    id:'onedrive', name:'OneDrive', icon:'☁', color:'#0078D4',
+    placeholder:'Paste OneDrive share URL… (onedrive.live.com/…)',
+    parseUrl(url) {
+      if (/onedrive\.live\.com/.test(url)) return url;
+      return null;
+    },
+    getEmbedUrl(id) {
+      let cid='', resid='', authkey='';
+      const p = new URLSearchParams(id.split('?')[1]||'');
+      if (p.get('resid')) resid = p.get('resid');
+      if (p.get('authkey')) authkey = p.get('authkey');
+      const cidMatch = id.match(/cid=([a-f0-9]+)/i) || id.match(/[?&]id=([^&]+)/);
+      if (cidMatch) cid = cidMatch[1];
+      if (resid && authkey) return `https://onedrive.live.com/embed?cid=${encodeURIComponent(cid)}&resid=${encodeURIComponent(resid)}&authkey=${encodeURIComponent(authkey)}`;
+      if (id.includes('embed')) return id;
+      const base = id.split('?')[0];
+      return `${base}?embed=1`;
+    },
+    getVideoUrl(id) { return id; },
+    getThumbnailUrl() { return null; }
+  },
+
+  iframe: {
+    id:'iframe', name:'Embed Code', icon:'</>', color:'#888',
+    placeholder:'Paste <iframe> embed code…',
+    isIframe: true,
+    parseUrl(code) {
+      const m = code.match(/src=["']([^"']+)["']/);
+      if (m) {
+        const src = m[1].trim();
+        if (src && /^https?:\/\//.test(src)) return src;
+        return null;
+      }
+      const trimmed = code.trim();
+      if (/^https?:\/\//.test(trimmed)) return trimmed;
+      return null;
+    },
+    getEmbedUrl(src) { return src; },
+    getVideoUrl(src) { return src; },
+    getThumbnailUrl() { return null; }
+  }
+};
+
+// ─── Initialization ────────────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', () => {
-  // 1. Inject Admin Sidebar
   window.Components.injectAdminSidebar('upload');
 
-  // 2. Setup Tag System (Existing checkable pills + custom tag creator)
   const selectedTags = [];
-  const TAG_COLORS = ['#0070f3','#7928ca','#ff0080','#ffa42b','#50e3c2','#539df5','#1db954','#f3727f','#e91e63','#ff5722','#9c27b0','#00bcd4','#ff9800','#4caf50','#f44336','#3f51b5'];
-  
+  setupTabs();
+  renderPlatformSelector();
+  setupPlatformInput();
   setupExistingTags(selectedTags);
   setupCustomTagCreator(selectedTags);
-
-  // 3. Setup Drag and Drop Zone
-  setupDragAndDrop();
-
-  // 4. Setup Thumbnail Upload
   setupThumbnailUpload();
-
-  // 5. Setup Form Submission with Progress Bar
+  renderRecentHistory();
   setupFormSubmission(selectedTags);
 });
 
-// Drag and drop setup
-function setupDragAndDrop() {
-  const dropzone = document.getElementById('dropzone');
-  const videoInput = document.getElementById('video-file-input');
-  const fileBanner = document.getElementById('file-banner');
-  const fileNameSpan = document.getElementById('file-name-span');
-  const fileRemoveBtn = document.getElementById('file-remove-btn');
+// ─── Tabs ──────────────────────────────────────────────────────────────────
 
-  if (!dropzone || !videoInput) return;
-
-  // Open file dialog on dropzone click
-  dropzone.addEventListener('click', () => {
-    videoInput.click();
-  });
-
-  // Handle file select
-  videoInput.addEventListener('change', () => {
-    if (videoInput.files.length > 0) {
-      _hasDroppedFile = false;
-      handleFileSelected(videoInput.files[0].name);
-    }
-  });
-
-  // Drag listeners
-  ['dragenter', 'dragover'].forEach(eventName => {
-    dropzone.addEventListener(eventName, (e) => {
-      e.preventDefault();
-      dropzone.classList.add('dragover');
-    }, false);
-  });
-
-  ['dragleave', 'drop'].forEach(eventName => {
-    dropzone.addEventListener(eventName, (e) => {
-      e.preventDefault();
-      dropzone.classList.remove('dragover');
-    }, false);
-  });
-
-  dropzone.addEventListener('drop', (e) => {
-    const dt = e.dataTransfer;
-    const files = dt.files;
-    if (files.length > 0) {
-      _hasDroppedFile = true;
-      handleFileSelected(files[0].name);
-    }
-  });
-
-  function handleFileSelected(name) {
-    fileNameSpan.innerText = name;
-    fileBanner.classList.add('active');
-    dropzone.style.display = 'none';
-  }
-
-  // Remove selected file
-  if (fileRemoveBtn) {
-    fileRemoveBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      videoInput.value = '';
-      _hasDroppedFile = false;
-      fileBanner.classList.remove('active');
-      dropzone.style.display = 'flex';
+function setupTabs() {
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      const panel = document.getElementById('tab-panel-' + btn.dataset.tab);
+      if (panel) panel.classList.add('active');
     });
+  });
+}
+
+// ─── Platform Selector ─────────────────────────────────────────────────────
+
+function renderPlatformSelector() {
+  const container = document.getElementById('platform-selector');
+  if (!container) return;
+
+  container.innerHTML = Object.values(PLATFORMS).map(p => `
+    <button type="button" class="platform-btn${p.id === currentPlatform ? ' active' : ''}" data-platform="${p.id}" style="--platform-color:${p.color}">
+      <span class="platform-icon">${p.icon}</span>
+      <span class="platform-name">${p.name}</span>
+    </button>
+  `).join('');
+
+  container.addEventListener('click', e => {
+    const btn = e.target.closest('.platform-btn');
+    if (!btn) return;
+    const pid = btn.dataset.platform;
+    if (pid === currentPlatform) return;
+    switchPlatform(pid);
+  });
+}
+
+function switchPlatform(pid) {
+  currentPlatform = pid;
+  clearVideo();
+
+  document.querySelectorAll('.platform-btn').forEach(b => b.classList.toggle('active', b.dataset.platform === pid));
+
+  const plat = PLATFORMS[pid];
+  const urlSection = document.getElementById('platform-url-section');
+  const iframeSection = document.getElementById('platform-iframe-section');
+  const input = document.getElementById('platform-url-input');
+
+  if (plat.isIframe) {
+    urlSection.style.display = 'none';
+    iframeSection.classList.remove('hidden');
+  } else {
+    urlSection.style.display = '';
+    iframeSection.classList.add('hidden');
+    input.placeholder = plat.placeholder;
   }
 }
 
-// Thumbnail visual uploader preview
+// ─── Platform Input ────────────────────────────────────────────────────────
+
+function setupPlatformInput() {
+  const input = document.getElementById('platform-url-input');
+  const loadBtn = document.getElementById('load-video-btn');
+  const clearBtn = document.getElementById('clear-video-btn');
+  const iframeInput = document.getElementById('iframe-code-input');
+  const loadIframeBtn = document.getElementById('load-iframe-btn');
+
+  loadBtn.addEventListener('click', () => loadVideo(currentPlatform, input.value));
+
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); loadVideo(currentPlatform, input.value); }
+  });
+
+  input.addEventListener('paste', () => {
+    clearTimeout(window._pasteDebounce);
+    window._pasteDebounce = setTimeout(() => loadVideo(currentPlatform, input.value), 800);
+  });
+
+  loadIframeBtn.addEventListener('click', () => loadVideo('iframe', iframeInput.value));
+
+  iframeInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && e.ctrlKey) { e.preventDefault(); loadVideo('iframe', iframeInput.value); }
+  });
+
+  clearBtn.addEventListener('click', clearVideo);
+
+  // Initial placeholder
+  input.placeholder = PLATFORMS[currentPlatform].placeholder;
+}
+
+// ─── Load Video ────────────────────────────────────────────────────────────
+
+function loadVideo(platformId, rawInput) {
+  const plat = PLATFORMS[platformId];
+  if (!plat) return;
+
+  const errorEl = document.getElementById('platform-error');
+  const input = document.getElementById('platform-url-input');
+  const clearBtn = document.getElementById('clear-video-btn');
+  const submitBtn = document.getElementById('submit-btn');
+
+  errorEl.textContent = '';
+  input.classList.remove('has-error');
+
+  if (!rawInput || !rawInput.trim()) {
+    errorEl.textContent = 'Please enter a URL or embed code.';
+    input.classList.add('has-error');
+    return;
+  }
+
+  const parsed = plat.parseUrl(rawInput.trim());
+  if (!parsed) {
+    errorEl.textContent = `Could not extract a valid video ID from that ${plat.isIframe ? 'code' : 'URL'}.`;
+    input.classList.add('has-error');
+    return;
+  }
+
+  const embedUrl = plat.getEmbedUrl(parsed, rawInput.trim());
+  if (!embedUrl) {
+    errorEl.textContent = 'Could not generate an embed URL for that input.';
+    input.classList.add('has-error');
+    return;
+  }
+
+  // Duplicate prevention
+  if (currentPlatform === platformId && currentVideoId === parsed && currentEmbedUrl === embedUrl) return;
+
+  currentPlatform = platformId;
+  currentVideoId = parsed;
+  currentEmbedUrl = embedUrl;
+  currentVideoUrl = plat.getVideoUrl(parsed, rawInput.trim()) || embedUrl;
+  currentThumbnailUrl = plat.getThumbnailUrl ? plat.getThumbnailUrl(parsed) : null;
+  currentMetadata = null;
+
+  renderEmbed(embedUrl);
+  clearBtn.classList.remove('hidden');
+  submitBtn.disabled = false;
+
+  // Auto-fill title fallback
+  const titleInput = document.getElementById('title-input');
+  if (platformId === 'iframe') {
+    titleInput.value = `Embedded Content (${parsed.substring(0,60)})`;
+  } else {
+    titleInput.value = `${plat.name} Video (${parsed})`;
+  }
+
+  // Metadata display
+  const metaEl = document.getElementById('video-metadata');
+  const metaTitle = document.getElementById('meta-title');
+  const metaChannel = document.getElementById('meta-channel');
+  const metaThumb = document.getElementById('meta-thumbnail');
+  metaEl.classList.add('hidden');
+
+  // Auto-fill description
+  const descriptionInput = document.getElementById('description-input');
+
+  if (plat.fetchMetadata) {
+    plat.fetchMetadata(parsed, (err, data) => {
+      if (err || !data) return;
+      currentMetadata = data;
+      titleInput.value = data.title || titleInput.value;
+      metaTitle.textContent = data.title || '';
+      metaChannel.textContent = data.author_name || data.channel_name || '';
+      if (data.thumbnail_url) {
+        metaThumb.src = data.thumbnail_url;
+        metaThumb.alt = data.title || 'Video thumbnail';
+        autoSetThumbnail(data.thumbnail_url);
+      }
+      metaEl.classList.remove('hidden');
+    });
+  }
+
+  if (plat.fetchDescription && !descriptionInput.value) {
+    plat.fetchDescription(parsed, (err, desc) => {
+      if (desc) descriptionInput.value = desc;
+    });
+  }
+
+  // Auto-set thumbnail from platform template
+  if (currentThumbnailUrl && !metaThumb.src) {
+    autoSetThumbnail(currentThumbnailUrl);
+  }
+
+  // Save to history
+  saveToHistory(platformId, parsed, embedUrl);
+}
+
+// ─── Embed Render ──────────────────────────────────────────────────────────
+
+function renderEmbed(embedUrl) {
+  const container = document.getElementById('embed-container');
+  const player = document.getElementById('embed-player');
+  const loader = document.getElementById('embed-loader');
+  const fallback = document.getElementById('embed-fallback');
+
+  container.classList.remove('hidden');
+  fallback.classList.add('hidden');
+  loader.classList.remove('hidden');
+  player.innerHTML = '';
+
+  if (window.location.protocol === 'file:') {
+    loader.classList.add('hidden');
+    fallback.classList.remove('hidden');
+    fallback.innerHTML = `
+      <p style="margin-bottom:8px;">⚠️ Embedded preview unavailable on local files.</p>
+      <a href="${embedUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block; padding:8px 20px; background:var(--accent); color:#fff; border-radius:var(--radius-full); text-decoration:none; font-weight:600; font-size:var(--text-sm);">
+        Open video directly ↗
+      </a>
+    `;
+    return;
+  }
+
+  const iframe = document.createElement('iframe');
+  iframe.src = embedUrl;
+  iframe.title = 'Video player';
+  iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+  iframe.allowFullscreen = true;
+  iframe.style.border = '0';
+
+  let loaded = false;
+  iframe.addEventListener('load', () => {
+    loaded = true;
+    loader.classList.add('hidden');
+  });
+
+  setTimeout(() => {
+    if (!loaded) {
+      loader.classList.add('hidden');
+      fallback.classList.remove('hidden');
+    }
+  }, 10000);
+
+  player.appendChild(iframe);
+}
+
+function clearVideo() {
+  currentVideoId = null;
+  currentEmbedUrl = null;
+  currentVideoUrl = null;
+  currentThumbnailUrl = null;
+  currentMetadata = null;
+
+  const container = document.getElementById('embed-container');
+  const player = document.getElementById('embed-player');
+  const loader = document.getElementById('embed-loader');
+  const fallback = document.getElementById('embed-fallback');
+  const metadata = document.getElementById('video-metadata');
+  const clearBtn = document.getElementById('clear-video-btn');
+  const submitBtn = document.getElementById('submit-btn');
+  const errorEl = document.getElementById('platform-error');
+  const input = document.getElementById('platform-url-input');
+  const iframeInput = document.getElementById('iframe-code-input');
+
+  if (container) container.classList.add('hidden');
+  if (player) player.innerHTML = '';
+  if (loader) loader.classList.add('hidden');
+  if (fallback) fallback.classList.add('hidden');
+  if (metadata) metadata.classList.add('hidden');
+  if (clearBtn) clearBtn.classList.add('hidden');
+  if (submitBtn) submitBtn.disabled = true;
+  if (errorEl) errorEl.textContent = '';
+  if (input) { input.classList.remove('has-error'); input.value = ''; }
+  if (iframeInput) iframeInput.value = '';
+}
+
+// ─── Recent History ────────────────────────────────────────────────────────
+
+function getHistory() {
+  try { return JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; } catch (_) { return []; }
+}
+
+function saveToHistory(platformId, parsed, embedUrl) {
+  let history = getHistory();
+  const plat = PLATFORMS[platformId];
+  const title = currentMetadata && currentMetadata.title ? currentMetadata.title : (plat ? `${plat.name} (${parsed})` : parsed);
+  const thumb = currentMetadata && currentMetadata.thumbnail_url ? currentMetadata.thumbnail_url : (plat && plat.getThumbnailUrl ? plat.getThumbnailUrl(parsed) : null);
+
+  history = history.filter(h => !(h.platform === platformId && h.id === parsed));
+  history.unshift({
+    platform: platformId,
+    id: parsed,
+    title: title.substring(0, 80),
+    thumbnail: thumb || ''
+  });
+  if (history.length > MAX_HISTORY) history = history.slice(0, MAX_HISTORY);
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  renderRecentHistory();
+}
+
+function renderRecentHistory() {
+  const container = document.getElementById('recent-history');
+  const history = getHistory();
+  if (history.length === 0) {
+    container.classList.add('hidden');
+    return;
+  }
+  container.classList.remove('hidden');
+  container.innerHTML = `<span class="recent-history-label">Recently Loaded</span>` +
+    history.map(h => `
+      <span class="recent-history-chip" data-platform="${h.platform}" data-id="${h.id}">
+        ${h.thumbnail ? `<img src="${h.thumbnail}" alt="" loading="lazy" onerror="this.style.display='none'">` : `<span class="chip-platform-icon">${(PLATFORMS[h.platform]||{}).icon||'▸'}</span>`}
+        <span>${h.title}</span>
+      </span>
+    `).join('');
+
+  container.querySelectorAll('.recent-history-chip').forEach(el => {
+    el.addEventListener('click', () => {
+      const pid = el.dataset.platform;
+      const id = el.dataset.id;
+      const plat = PLATFORMS[pid];
+      if (!plat) return;
+
+      switchPlatform(pid);
+      if (plat.isIframe) {
+        document.getElementById('iframe-code-input').value = plat.getEmbedUrl ? plat.getEmbedUrl(id) : id;
+        loadVideo(pid, document.getElementById('iframe-code-input').value);
+      } else {
+        const input = document.getElementById('platform-url-input');
+        input.value = plat.getVideoUrl ? plat.getVideoUrl(id) : id;
+        loadVideo(pid, input.value);
+      }
+    });
+  });
+}
+
+// ─── Thumbnail ─────────────────────────────────────────────────────────────
+
+function autoSetThumbnail(url) {
+  const preview = document.getElementById('thumbnail-preview');
+  const placeholder = document.getElementById('thumbnail-placeholder');
+  if (!preview || !placeholder) return;
+  preview.src = url;
+  preview.style.display = 'block';
+  placeholder.style.display = 'none';
+}
+
 function setupThumbnailUpload() {
   const thumbInput = document.getElementById('thumbnail-file-input');
   const thumbBox = document.getElementById('thumbnail-box');
@@ -95,34 +617,29 @@ function setupThumbnailUpload() {
   const thumbPlaceholder = document.getElementById('thumbnail-placeholder');
 
   if (!thumbBox || !thumbInput) return;
-
-  thumbBox.addEventListener('click', () => {
-    thumbInput.click();
-  });
+  thumbBox.addEventListener('click', () => { thumbInput.click(); });
 
   thumbInput.addEventListener('change', () => {
     if (thumbInput.files.length > 0) {
       const file = thumbInput.files[0];
       const reader = new FileReader();
-
       reader.onload = function(e) {
         thumbPreview.src = e.target.result;
         thumbPreview.style.display = 'block';
         thumbPlaceholder.style.display = 'none';
       };
-
       reader.readAsDataURL(file);
     }
   });
 }
 
-// Compute real video count per tag
+// ─── Tag System ────────────────────────────────────────────────────────────
+
 function getTagVideoCount(tagId) {
   const videos = window.App.getVideos();
   return videos.reduce((c, v) => c + ((v.tags || []).includes(tagId) ? 1 : 0), 0);
 }
 
-// Render existing tags HTML (no listeners attached)
 function renderExistingTags(selectedTags) {
   const container = document.getElementById('existing-tags-container');
   if (!container) return;
@@ -139,21 +656,15 @@ function renderExistingTags(selectedTags) {
   }).join('');
 }
 
-// Setup existing tags as checkable pills
 function setupExistingTags(selectedTags) {
   const container = document.getElementById('existing-tags-container');
   if (!container) return;
-
   renderExistingTags(selectedTags);
-
-  // Delegate click on container (listener added once)
   container.addEventListener('click', (e) => {
     const btn = e.target.closest('.tag-checkable-pill');
     if (!btn) return;
-
     const tagId = btn.dataset.tagId;
     const idx = selectedTags.indexOf(tagId);
-
     if (idx !== -1) {
       selectedTags.splice(idx, 1);
     } else {
@@ -163,13 +674,11 @@ function setupExistingTags(selectedTags) {
       }
       selectedTags.push(tagId);
     }
-
     renderExistingTags(selectedTags);
     renderSelectedChips(selectedTags);
   });
 }
 
-// Setup custom tag creator
 function setupCustomTagCreator(selectedTags) {
   const input = document.getElementById('custom-tag-input');
   const addBtn = document.getElementById('add-custom-tag-btn');
@@ -178,18 +687,13 @@ function setupCustomTagCreator(selectedTags) {
   const addCustomTag = () => {
     const name = input.value.trim();
     if (!name) return;
-
     if (selectedTags.length >= 10) {
       window.App.showToast('Maximum 10 tags per video.', 'error');
       return;
     }
-
-    // Check for duplicates (case-insensitive)
     const allTags = window.App.getTags();
     const existingTag = allTags.find(t => t.name.toLowerCase() === name.toLowerCase());
-    
     if (existingTag) {
-      // Use existing tag
       if (selectedTags.includes(existingTag.id)) {
         window.App.showToast('Tag already selected.', 'error');
         input.value = '';
@@ -197,49 +701,33 @@ function setupCustomTagCreator(selectedTags) {
       }
       selectedTags.push(existingTag.id);
     } else {
-      // Create new tag
       const newId = 'tag-' + Date.now();
       const color = TAG_COLORS[Math.floor(Math.random() * TAG_COLORS.length)];
-      const newTag = { id: newId, name: name, color: color, usageCount: 0 };
-      
-      allTags.push(newTag);
+      allTags.push({ id: newId, name, color, usageCount: 0 });
       window.App.saveTags(allTags);
       selectedTags.push(newId);
-      
-      // Re-render existing tags (no listener re-attach)
       renderExistingTags(selectedTags);
     }
-
     input.value = '';
     renderSelectedChips(selectedTags);
     window.App.showToast(`Tag "${name}" added.`);
   };
 
   input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      addCustomTag();
-    }
+    if (e.key === 'Enter') { e.preventDefault(); addCustomTag(); }
   });
-
-  if (addBtn) {
-    addBtn.addEventListener('click', addCustomTag);
-  }
+  if (addBtn) addBtn.addEventListener('click', addCustomTag);
 }
 
-// Render selected tag chips
 function renderSelectedChips(selectedTags) {
   const display = document.getElementById('selected-tags-display');
   const countEl = document.getElementById('selected-tags-count');
   if (!display) return;
-  
   if (countEl) countEl.innerText = selectedTags.length;
-
   if (selectedTags.length === 0) {
     display.innerHTML = '<span style="color:var(--text-muted); font-size:var(--text-sm);">No tags selected</span>';
     return;
   }
-
   const allTags = window.App.getTags();
   display.innerHTML = selectedTags.map(tagId => {
     const tag = allTags.find(t => t.id === tagId);
@@ -252,8 +740,6 @@ function renderSelectedChips(selectedTags) {
       </span>
     `;
   }).join('');
-
-  // Bind remove buttons
   display.querySelectorAll('.tag-chip-remove').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -268,32 +754,31 @@ function renderSelectedChips(selectedTags) {
   });
 }
 
-// Form Validation and Simulated Progress Bar Upload
+// ─── Form Submission ───────────────────────────────────────────────────────
+
 function setupFormSubmission(selectedTags) {
   const form = document.getElementById('upload-video-form');
-  const progressContainer = document.getElementById('progress-container');
-  const progressFill = document.getElementById('progress-fill');
-  const progressPercent = document.getElementById('progress-percent');
   const submitBtn = document.getElementById('submit-btn');
-
   if (!form) return;
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
 
-    // Fields
-    const title = document.getElementById('title-input').value.trim();
-    const description = document.getElementById('description-input').value.trim();
-    const duration = document.getElementById('duration-input').value.trim() || "5:00";
-    const publishToggle = document.getElementById('publish-toggle').checked;
-    const thumbnailImg = document.getElementById('thumbnail-preview');
-    
-    // Checks
-    const videoInput = document.getElementById('video-file-input');
-    if (!_hasDroppedFile && videoInput.files.length === 0) {
-      window.App.showToast('Please select or drag a video file first.', 'error');
+    if (!currentVideoId || !currentEmbedUrl) {
+      window.App.showToast('Please load a video first.', 'error');
       return;
     }
+
+    if (!/^https?:\/\//.test(currentEmbedUrl)) {
+      window.App.showToast('Invalid embed URL. Please reload the video.', 'error');
+      return;
+    }
+
+    const title = document.getElementById('title-input').value.trim();
+    const description = document.getElementById('description-input').value.trim();
+    const duration = document.getElementById('duration-input').value.trim() || '5:00';
+    const publishToggle = document.getElementById('publish-toggle').checked;
+    const thumbnailImg = document.getElementById('thumbnail-preview');
 
     if (!title) {
       window.App.showToast('Video title is required.', 'error');
@@ -305,57 +790,42 @@ function setupFormSubmission(selectedTags) {
       return;
     }
 
-    // Default placeholder thumbnail if none uploaded
-    const thumbnailSrc = thumbnailImg.style.display === 'block' 
-      ? thumbnailImg.src 
-      : 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=500&auto=format&fit=crop';
+    const plat = PLATFORMS[currentPlatform];
+    const placeholderThumb = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 9%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%231f1f1f%22/%3E%3Ctext x=%228%22 y=%225%22 text-anchor=%22middle%22 fill=%22%23666%22 font-size=%221%22%3ENo Thumbnail%3C/text%3E%3C/svg%3E';
+    const thumbnailSrc = thumbnailImg.style.display === 'block'
+      ? thumbnailImg.src
+      : (currentThumbnailUrl || (plat && plat.getThumbnailUrl ? plat.getThumbnailUrl(currentVideoId) : null) || placeholderThumb);
 
-    // Disable form submissions
     submitBtn.disabled = true;
-    progressContainer.classList.add('active');
 
-    // Run simulated upload
-    let progress = 0;
-    progressFill.style.width = '0%';
-    progressPercent.innerText = '0%';
+    const dbVideos = window.App.getVideos();
+    const nextId = 'vid-' + Date.now();
 
-    const interval = setInterval(() => {
-      progress += Math.floor(Math.random() * 15) + 5;
-      if (progress >= 100) {
-        progress = 100;
-        clearInterval(interval);
+    const newVideoObj = {
+      id: nextId,
+      title,
+      description,
+      videoUrl: currentVideoUrl || currentEmbedUrl,
+      embedUrl: currentEmbedUrl,
+      thumbnail: thumbnailSrc,
+      platform: currentPlatform,
+      platformLabel: plat ? plat.name : currentPlatform,
+      views: 0,
+      likes: 0,
+      tags: [...selectedTags],
+      duration,
+      publishDate: new Date().toISOString().split('T')[0],
+      status: publishToggle ? 'published' : 'draft',
+      creator: 'Administrator'
+    };
 
-        // Perform DB Insert
-        const dbVideos = window.App.getVideos();
-        const nextId = 'vid-' + (dbVideos.length + 1).toString().padStart(2, '0');
-        
-        const newVideoObj = {
-          id: nextId,
-          title: title,
-          description: description,
-          videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4', // Fallback URL
-          thumbnail: thumbnailSrc,
-          views: 0,
-          likes: 0,
-          tags: [...selectedTags],
-          duration: duration,
-          publishDate: new Date().toISOString().split('T')[0],
-          status: publishToggle ? 'published' : 'draft',
-          creator: 'Administrator'
-        };
+    dbVideos.push(newVideoObj);
+    window.App.saveVideos(dbVideos);
 
-        dbVideos.push(newVideoObj);
-        window.App.saveVideos(dbVideos);
+    window.App.showToast('Video published successfully!', 'success');
 
-        window.App.showToast('Video uploaded successfully!', 'success');
-
-        // Redirect to videos management
-        setTimeout(() => {
-          window.location.href = './videos.html';
-        }, 1000);
-      }
-      progressFill.style.width = `${progress}%`;
-      progressPercent.innerText = `${progress}%`;
-    }, 150);
+    setTimeout(() => {
+      window.location.href = './videos.html';
+    }, 1000);
   });
 }

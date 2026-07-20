@@ -35,12 +35,18 @@ document.addEventListener('DOMContentLoaded', () => {
     ).join('');
   }
 
-  // 5. Render Browse by Tag grid
+  // 5. Render Browse by Tag grid (same pill style as popular tags with scroll-reveal)
   const browseTagGrid = document.getElementById('browse-tag-grid');
   if (browseTagGrid) {
     const tags = window.App.getTags();
-    browseTagGrid.innerHTML = tags.map(tag => 
-      window.Components.renderTagCard(tag)
+    const tagCounts = {};
+    allVideos.forEach(v => (v.tags || []).forEach(tId => { tagCounts[tId] = (tagCounts[tId] || 0) + 1; }));
+    browseTagGrid.innerHTML = tags.map((tag, i) => 
+      `<a href="./tag.html?tag=${encodeURIComponent(tag.name)}" class="tag-pill tag-pill-lg reveal-on-scroll" style="border-left: 4px solid ${tag.color}; background-color: ${tag.color}15; transition-delay: ${i * 0.05}s;">
+        <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:${tag.color}; margin-right:6px;"></span>
+        ${tag.name}
+        <span style="font-size:var(--text-xs); opacity:0.7; margin-left:6px;">(${tagCounts[tag.id] || 0})</span>
+      </a>`
     ).join('');
   }
 
@@ -62,10 +68,9 @@ document.addEventListener('DOMContentLoaded', () => {
     ).join('');
   }
 
-  // 7. Re-trigger Animations and Lazy Loads
+  // 8. Re-trigger Animations and Lazy Loads
   window.Animations.initScrollReveal();
-  // Manually trigger a scroll check for lazy loading
-  window.dispatchEvent(new Event('scroll'));
+  if (window.refreshLazyLoading) window.refreshLazyLoading();
 });
 
 // Setup Hero banner contents and click listener

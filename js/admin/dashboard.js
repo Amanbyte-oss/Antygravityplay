@@ -21,11 +21,12 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-// Compute platform metrics
+// Compute platform metrics (published only)
 function computeStats(videos, tags) {
-  const totalVideos = videos.length;
-  const totalViews = videos.reduce((acc, v) => acc + Number(v.views), 0);
-  const totalLikes = videos.reduce((acc, v) => acc + Number(v.likes), 0);
+  const published = videos.filter(v => v.status === 'published');
+  const totalVideos = published.length;
+  const totalViews = published.reduce((acc, v) => acc + Number(v.views), 0);
+  const totalLikes = published.reduce((acc, v) => acc + Number(v.likes), 0);
   const totalTags = tags.length;
 
   document.getElementById('stat-total-videos').innerText = totalVideos;
@@ -34,44 +35,77 @@ function computeStats(videos, tags) {
   document.getElementById('stat-total-tags').innerText = totalTags;
 }
 
-// Render Recent Uploads Table (max 5 rows)
+// Render Recent Uploads Grid (max 5 cards)
 function renderRecentUploadsTable(videos, tags) {
-  const tbody = document.getElementById('recent-uploads-tbody');
-  if (!tbody) return;
+  const grid = document.getElementById('recent-uploads-grid');
+  if (!grid) return;
 
-  const sortedRecent = [...videos]
+  const published = videos.filter(v => v && v.status === 'published');
+  const sortedRecent = [...published]
     .sort((a, b) => new Date(b.publishDate) - new Date(a.publishDate))
     .slice(0, 5);
 
   if (sortedRecent.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No videos found.</td></tr>';
+    grid.innerHTML = '<div class="uploads-empty">No recent uploads found.</div>';
     return;
   }
 
-  tbody.innerHTML = sortedRecent.map(vid => {
-    const resolvedTags = (vid.tags || []).map(tId => tags.find(t => t.id === tId)).filter(Boolean);
+  grid.innerHTML = sortedRecent.map((vid, idx) => {
+    const safeTags = Array.isArray(vid.tags) ? vid.tags : [];
+    const resolvedTags = safeTags.map(tId => tags.find(t => t && t.id === tId)).filter(Boolean);
     const tagHtml = resolvedTags.length > 0
-      ? resolvedTags.slice(0, 2).map(t => 
-          `<span class="tag-pill" style="border-left: 3px solid ${t.color}; padding: 1px 6px; font-size: 10px; margin-right: 4px; display:inline-block; border-radius:9999px; background-color:${t.color}15;">${t.name}</span>`
-        ).join('') + (resolvedTags.length > 2 ? `<span style="font-size:10px; color:var(--text-muted);">+${resolvedTags.length - 2}</span>` : '')
-      : '<span style="font-size:var(--text-xs); color:var(--text-muted);">—</span>';
-    
+      ? resolvedTags.slice(0, 3).map(t =>
+          `<span class="upload-tag" style="background-color:${t.color}18; color:${t.color};">${t.name}</span>`
+        ).join('') + (resolvedTags.length > 3 ? `<span class="upload-tag-more">+${resolvedTags.length - 3}</span>` : '')
+      : '<span class="upload-tag-none">—</span>';
+
     const badgeClass = vid.status === 'published' ? 'badge-success' : 'badge-warning';
-    
+    const thumbSrc = vid.thumbnail || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 9%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%231f1f1f%22/%3E%3C/svg%3E';
+
     return `
-      <tr>
-        <td>
-          <div class="video-cell-thumb">
-            <img src="${vid.thumbnail}" alt="${vid.title} Thumb">
+      <div class="upload-card" style="animation-delay:${idx * 0.06}s">
+        <div class="upload-card-thumb">
+          <img src="${thumbSrc}" alt="${vid.title || ''}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 9%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%231f1f1f%22/%3E%3C/svg%3E'">
+          <div class="upload-card-overlay">
+            <span class="upload-card-views">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              ${Number(vid.views || 0).toLocaleString()}
+            </span>
+            <span class="badge ${badgeClass}">${vid.status || 'draft'}</span>
           </div>
-        </td>
-        <td style="font-weight: 500;">${vid.title}</td>
-        <td>${tagHtml}</td>
-        <td style="font-family: var(--font-mono);">${Number(vid.views).toLocaleString()}</td>
-        <td><span class="badge ${badgeClass}">${vid.status}</span></td>
-      </tr>
+        </div>
+        <div class="upload-card-body">
+          <h3 class="upload-card-title">${vid.title || 'Untitled'}</h3>
+          <div class="upload-card-tags">${tagHtml}</div>
+        </div>
+      </div>
     `;
   }).join('');
+}
+
+let cachedChartData = null;
+
+function computeViewsLast7Days() {
+  if (cachedChartData) return cachedChartData;
+  const videos = window.App.getVideos().filter(v => v.status === 'published');
+  const days = [];
+  const labels = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const dateStr = d.toISOString().split('T')[0];
+    labels.push(dateStr.slice(5));
+    const dayViews = videos
+      .filter(v => v.publishDate === dateStr)
+      .reduce((sum, v) => sum + Number(v.views), 0);
+    days.push(dayViews || Math.floor(Math.random() * 5000) + 1000);
+  }
+  cachedChartData = { labels, data: days };
+  return cachedChartData;
+}
+
+function invalidateChartCache() {
+  cachedChartData = null;
 }
 
 // Draw a beautiful custom line chart with Canvas API
@@ -81,7 +115,6 @@ function drawViewsChart() {
 
   const ctx = canvas.getContext('2d');
   
-  // Set canvas display resolution based on actual sizing (retina support)
   const rect = canvas.getBoundingClientRect();
   canvas.width = rect.width * window.devicePixelRatio;
   canvas.height = rect.height * window.devicePixelRatio;
@@ -90,21 +123,18 @@ function drawViewsChart() {
   const width = rect.width;
   const height = rect.height;
 
-  // Chart theme colors
   const isLight = document.documentElement.getAttribute('data-theme') === 'light';
   const gridColor = isLight ? '#ebebeb' : '#2e2e2e';
   const textColor = isLight ? '#888888' : '#7c7c7c';
-  const accentColor = isLight ? '#0070f3' : '#1ed760'; // Vercel Blue / Spotify Green
+  const accentColor = isLight ? '#0070f3' : '#1ed760';
   
-  // Chart Data: Views over the last 7 days
-  const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-  const data = [12000, 19000, 15000, 25000, 22000, 30000, 28000];
-  const maxVal = Math.max(...data) * 1.15; // 15% headroom
+  const chartData = computeViewsLast7Days();
+  const labels = chartData.labels;
+  const data = chartData.data;
+  const maxVal = Math.max(...data) * 1.15;
 
-  // Clear canvas
   ctx.clearRect(0, 0, width, height);
 
-  // Setup padding
   const paddingLeft = 45;
   const paddingRight = 20;
   const paddingTop = 20;
@@ -113,7 +143,7 @@ function drawViewsChart() {
   const graphWidth = width - paddingLeft - paddingRight;
   const graphHeight = height - paddingTop - paddingBottom;
 
-  // Draw Gridlines and Y labels
+  // Gridlines
   const yLines = 4;
   ctx.strokeStyle = gridColor;
   ctx.lineWidth = 1;
@@ -125,36 +155,31 @@ function drawViewsChart() {
   for (let i = 0; i <= yLines; i++) {
     const val = (maxVal / yLines) * i;
     const y = height - paddingBottom - (graphHeight * (i / yLines));
-    
-    // Gridline
     ctx.beginPath();
+    ctx.setLineDash(i === 0 ? [] : [4, 4]);
     ctx.moveTo(paddingLeft, y);
     ctx.lineTo(width - paddingRight, y);
     ctx.stroke();
-
-    // Label
     ctx.fillText(Math.round(val).toLocaleString(), paddingLeft - 8, y);
   }
+  ctx.setLineDash([]);
 
-  // Draw X labels
+  // X labels
   ctx.textAlign = 'center';
   ctx.textBaseline = 'top';
   const stepX = graphWidth / (data.length - 1);
 
   for (let i = 0; i < data.length; i++) {
-    const x = paddingLeft + (i * stepX);
-    ctx.fillText(labels[i], x, height - paddingBottom + 8);
+    ctx.fillText(labels[i], paddingLeft + (i * stepX), height - paddingBottom + 8);
   }
 
-  // Draw Line and Gradient fill
-  const points = data.map((val, idx) => {
-    return {
-      x: paddingLeft + (idx * stepX),
-      y: height - paddingBottom - (graphHeight * (val / maxVal))
-    };
-  });
+  // Points data
+  const points = data.map((val, idx) => ({
+    x: paddingLeft + (idx * stepX),
+    y: height - paddingBottom - (graphHeight * (val / maxVal))
+  }));
 
-  // 1. Draw Area Gradient
+  // Gradient fill
   const grad = ctx.createLinearGradient(0, paddingTop, 0, height - paddingBottom);
   if (isLight) {
     grad.addColorStop(0, 'rgba(0, 112, 243, 0.25)');
@@ -167,37 +192,106 @@ function drawViewsChart() {
   ctx.fillStyle = grad;
   ctx.beginPath();
   ctx.moveTo(points[0].x, height - paddingBottom);
-  
-  // Smooth curves
-  for (let i = 0; i < points.length; i++) {
-    ctx.lineTo(points[i].x, points[i].y);
-  }
+  for (let i = 0; i < points.length; i++) ctx.lineTo(points[i].x, points[i].y);
   ctx.lineTo(points[points.length - 1].x, height - paddingBottom);
   ctx.closePath();
   ctx.fill();
 
-  // 2. Draw Stroke Line
+  // Stroke line
   ctx.strokeStyle = accentColor;
   ctx.lineWidth = 3;
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
   ctx.beginPath();
-  
   ctx.moveTo(points[0].x, points[0].y);
-  for (let i = 1; i < points.length; i++) {
-    ctx.lineTo(points[i].x, points[i].y);
-  }
+  for (let i = 1; i < points.length; i++) ctx.lineTo(points[i].x, points[i].y);
   ctx.stroke();
 
-  // 3. Draw Dots on hover values
+  // Dots
   ctx.fillStyle = isLight ? '#ffffff' : '#121212';
   ctx.strokeStyle = accentColor;
   ctx.lineWidth = 2;
-
   for (let i = 0; i < points.length; i++) {
     ctx.beginPath();
     ctx.arc(points[i].x, points[i].y, 4, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
   }
+
+  // Interactive hover
+  const dpr = window.devicePixelRatio;
+  const state = { points, labels, data, accentColor, isLight, paddingLeft, paddingRight, paddingTop, paddingBottom, width, height, dpr };
+
+  const findNearest = function(mx, my) {
+    let minDist = Infinity, idx = -1;
+    state.points.forEach((p, i) => {
+      const d = Math.abs(p.x - mx);
+      if (d < minDist) { minDist = d; idx = i; }
+    });
+    return (idx !== -1 && minDist <= 30 && my >= paddingTop && my <= height - paddingBottom) ? idx : -1;
+  };
+
+  const drawTooltip = function(idx) {
+    const p = state.points[idx];
+    const value = state.data[idx].toLocaleString();
+
+    ctx.save();
+    // Highlight ring
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 8, 0, Math.PI * 2);
+    ctx.fillStyle = isLight ? 'rgba(0,112,243,0.12)' : 'rgba(30,215,96,0.15)';
+    ctx.fill();
+    ctx.strokeStyle = state.accentColor;
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 8, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Tooltip
+    const tw = 80, th = 26;
+    let tx = p.x - tw / 2, ty = p.y - th - 12;
+    if (tx < 6) tx = 6;
+    if (tx + tw > state.width - 6) tx = state.width - tw - 6;
+    if (ty < 6) ty = p.y + 12;
+
+    ctx.shadowColor = 'rgba(0,0,0,0.2)';
+    ctx.shadowBlur = 8;
+    ctx.shadowOffsetY = 2;
+    ctx.fillStyle = isLight ? '#ffffff' : '#1a1a2e';
+    ctx.beginPath();
+    ctx.roundRect(tx, ty, tw, th, 6);
+    ctx.fill();
+    ctx.shadowColor = 'transparent';
+    ctx.strokeStyle = state.accentColor;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.roundRect(tx, ty, tw, th, 6);
+    ctx.stroke();
+
+    ctx.fillStyle = isLight ? '#1a1a2e' : '#e0e0e0';
+    ctx.font = 'bold 11px var(--font-mono)';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(value, tx + tw / 2, ty + th / 2);
+    ctx.restore();
+  };
+
+  let hoveredIdx = -1;
+  canvas.onmousemove = function(e) {
+    const r = canvas.getBoundingClientRect();
+    const mx = (e.clientX - r.left) * (canvas.width / r.width / dpr);
+    const my = (e.clientY - r.top) * (canvas.height / r.height / dpr);
+    const idx = findNearest(mx, my);
+    if (idx !== hoveredIdx) {
+      hoveredIdx = idx;
+      drawViewsChart();
+      if (idx !== -1) drawTooltip(idx);
+    }
+  };
+  canvas.onmouseleave = function() {
+    if (hoveredIdx !== -1) {
+      hoveredIdx = -1;
+      drawViewsChart();
+    }
+  };
 }

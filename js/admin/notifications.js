@@ -8,15 +8,21 @@ document.addEventListener('DOMContentLoaded', () => {
     itemsPerPage: 10
   };
 
-  fetch('../data/notifications.json')
-    .then(r => r.json())
-    .catch(() => {
-      return getDefaultNotifications();
-    })
-    .then(data => {
-      state.notifications = data || getDefaultNotifications();
-      initNotifications(state);
-    });
+  if (window.location.protocol === 'file:') {
+    state.notifications = getDefaultNotifications();
+    initNotifications(state);
+  } else {
+    fetch('../data/notifications.json')
+      .then(r => r.json())
+      .catch(() => getDefaultNotifications())
+      .then(data => {
+        if (!Array.isArray(data)) {
+          data = getDefaultNotifications();
+        }
+        state.notifications = data;
+        initNotifications(state);
+      });
+  }
 
   document.getElementById('mark-all-read-btn').addEventListener('click', () => {
     state.notifications.forEach(n => n.read = true);

@@ -1,21 +1,21 @@
 // Global mock datasets for offline-compatible local file loading (CORS bypass)
 window.MOCK_TAGS = [
-  {"id": "programming", "name": "Programming", "color": "#0070f3", "usageCount": 3},
-  {"id": "review", "name": "Review", "color": "#7928ca", "usageCount": 4},
-  {"id": "live", "name": "Live", "color": "#ff0080", "usageCount": 3},
-  {"id": "highlight", "name": "Highlight", "color": "#ffa42b", "usageCount": 3},
-  {"id": "tutorial", "name": "Tutorial", "color": "#50e3c2", "usageCount": 6},
-  {"id": "vlogging", "name": "Vlogging", "color": "#539df5", "usageCount": 2},
-  {"id": "gameplay", "name": "Gameplay", "color": "#1db954", "usageCount": 2},
-  {"id": "indie", "name": "Indie", "color": "#f3727f", "usageCount": 2},
-  {"id": "pop", "name": "Pop", "color": "#e91e63", "usageCount": 2},
-  {"id": "rock", "name": "Rock", "color": "#ff5722", "usageCount": 2},
-  {"id": "design", "name": "Design", "color": "#9c27b0", "usageCount": 2},
-  {"id": "setup", "name": "Setup", "color": "#00bcd4", "usageCount": 2},
-  {"id": "food", "name": "Food", "color": "#ff9800", "usageCount": 2},
-  {"id": "workout", "name": "Workout", "color": "#4caf50", "usageCount": 2},
-  {"id": "speedrun", "name": "Speedrun", "color": "#f44336", "usageCount": 1},
-  {"id": "unboxing", "name": "Unboxing", "color": "#3f51b5", "usageCount": 2}
+  {"id": "programming", "name": "Programming", "color": "#0070f3", "usageCount": 3, "createdDate": "2026-06-01"},
+  {"id": "review", "name": "Review", "color": "#7928ca", "usageCount": 4, "createdDate": "2026-06-02"},
+  {"id": "live", "name": "Live", "color": "#ff0080", "usageCount": 3, "createdDate": "2026-06-03"},
+  {"id": "highlight", "name": "Highlight", "color": "#ffa42b", "usageCount": 3, "createdDate": "2026-06-04"},
+  {"id": "tutorial", "name": "Tutorial", "color": "#50e3c2", "usageCount": 6, "createdDate": "2026-06-05"},
+  {"id": "vlogging", "name": "Vlogging", "color": "#539df5", "usageCount": 2, "createdDate": "2026-06-06"},
+  {"id": "gameplay", "name": "Gameplay", "color": "#1db954", "usageCount": 2, "createdDate": "2026-06-07"},
+  {"id": "indie", "name": "Indie", "color": "#f3727f", "usageCount": 2, "createdDate": "2026-06-08"},
+  {"id": "pop", "name": "Pop", "color": "#e91e63", "usageCount": 2, "createdDate": "2026-06-09"},
+  {"id": "rock", "name": "Rock", "color": "#ff5722", "usageCount": 2, "createdDate": "2026-06-10"},
+  {"id": "design", "name": "Design", "color": "#9c27b0", "usageCount": 2, "createdDate": "2026-06-11"},
+  {"id": "setup", "name": "Setup", "color": "#00bcd4", "usageCount": 2, "createdDate": "2026-06-12"},
+  {"id": "food", "name": "Food", "color": "#ff9800", "usageCount": 2, "createdDate": "2026-06-13"},
+  {"id": "workout", "name": "Workout", "color": "#4caf50", "usageCount": 2, "createdDate": "2026-06-14"},
+  {"id": "speedrun", "name": "Speedrun", "color": "#f44336", "usageCount": 1, "createdDate": "2026-06-15"},
+  {"id": "unboxing", "name": "Unboxing", "color": "#3f51b5", "usageCount": 2, "createdDate": "2026-06-16"}
 ];
 
 window.MOCK_USERS = [

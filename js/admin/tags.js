@@ -6,21 +6,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const state = {
     tags: window.App.getTags(),
     currentPage: 1,
-    itemsPerPage: 10,
+    itemsPerPage: 12,
     searchQuery: '',
     selectedIds: [],
     sortBy: 'name',
     sortOrder: 'asc'
   };
 
-  renderTagsTable(state);
+  renderTags(state);
 
   document.getElementById('add-tag-input').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
       const name = e.target.value.trim();
       if (!name) return;
-      const exists = state.tags.some(t => t.name.toLowerCase() === name.toLowerCase());
-      if (exists) {
+      if (state.tags.some(t => t.name.toLowerCase() === name.toLowerCase())) {
         window.App.showToast('Tag already exists.', 'warning');
         return;
       }
@@ -30,21 +29,29 @@ document.addEventListener('DOMContentLoaded', () => {
       window.App.saveTags(state.tags);
       e.target.value = '';
       window.App.showToast('Tag added successfully.');
-      renderTagsTable(state);
+      renderTags(state);
     }
   });
 
-  document.getElementById('table-search-input').addEventListener('input', () => {
-    state.searchQuery = document.getElementById('table-search-input').value.trim().toLowerCase();
+  const searchInput = document.getElementById('table-search-input');
+  searchInput.addEventListener('input', () => {
+    state.searchQuery = searchInput.value.trim().toLowerCase();
     state.currentPage = 1;
-    renderTagsTable(state);
+    renderTags(state);
+  });
+
+  document.getElementById('sort-select').addEventListener('change', function() {
+    const [field, order] = this.value.split('-');
+    state.sortBy = field;
+    state.sortOrder = order;
+    state.currentPage = 1;
+    renderTags(state);
   });
 
   document.getElementById('merge-btn').addEventListener('click', () => mergeTags(state));
 
   document.getElementById('header-checkbox').addEventListener('change', function() {
-    const visibleRows = document.querySelectorAll('.tag-row-checkbox');
-    visibleRows.forEach(cb => {
+    document.querySelectorAll('.tag-card-checkbox').forEach(cb => {
       cb.checked = this.checked;
       const id = cb.dataset.id;
       if (this.checked) {
@@ -61,15 +68,64 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('confirm-delete-overlay').addEventListener('click', (e) => {
     if (e.target === e.currentTarget) closeModal('confirm-delete-overlay');
   });
-
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeModal('confirm-delete-overlay');
   });
 });
 
-function renderTagsTable(state) {
-  const tbody = document.getElementById('tags-tbody');
+function renderTagChips(state) {
+  const container = document.getElementById('tags-chips-container');
+  if (!container) return;
+  if (!state.tags.length) {
+    container.innerHTML = '<span class="chips-empty">No tags created yet.</span>';
+    return;
+  }
+
+  const isFiltered = state.searchQuery.length > 0;
+
+  container.innerHTML = state.tags.map(t => {
+    const active = isFiltered && t.name.toLowerCase() === state.searchQuery;
+    return `
+      <span class="tag-chip-preview ${active ? 'active-filter' : ''}" data-name="${t.name.toLowerCase()}" title="${active ? 'Click to clear filter' : 'Click to filter by this tag'}">
+        <span class="tag-chip-color" style="background-color:${t.color || '#888'};"></span>
+        ${t.name}
+      </span>
+    `;
+  }).join('');
+
+  container.querySelectorAll('.tag-chip-preview').forEach(el => {
+    el.addEventListener('click', () => {
+      const name = el.dataset.name;
+      const input = document.getElementById('table-search-input');
+      if (input.value.trim().toLowerCase() === name) {
+        input.value = '';
+        state.searchQuery = '';
+      } else {
+        input.value = name;
+        state.searchQuery = name;
+      }
+      state.currentPage = 1;
+      renderTags(state);
+    });
+  });
+}
+
+function getMaxUsage(tags) {
+  const videos = window.App.getVideos();
+  let max = 0;
+  tags.forEach(t => {
+    const count = videos.filter(v => v.tags && v.tags.includes(t.id)).length;
+    if (count > max) max = count;
+  });
+  return max || 1;
+}
+
+function renderTags(state) {
+  renderTagChips(state);
+
+  const grid = document.getElementById('tags-grid');
   const countSpan = document.getElementById('table-count-span');
+  if (!grid) return;
 
   let filtered = [...state.tags];
   if (state.searchQuery) {
@@ -77,6 +133,7 @@ function renderTagsTable(state) {
   }
 
   const videos = window.App.getVideos();
+  const maxUsage = getMaxUsage(state.tags);
 
   filtered.sort((a, b) => {
     if (state.sortBy === 'usage') {
@@ -86,10 +143,7 @@ function renderTagsTable(state) {
     }
     const valA = a[state.sortBy] || '';
     const valB = b[state.sortBy] || '';
-    if (typeof valA === 'string') {
-      return state.sortOrder === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
-    }
-    return state.sortOrder === 'asc' ? valA - valB : valB - valA;
+    return state.sortOrder === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
   });
 
   const totalItems = filtered.length;
@@ -102,71 +156,76 @@ function renderTagsTable(state) {
   const pageItems = filtered.slice(startIdx, startIdx + state.itemsPerPage);
 
   if (pageItems.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:var(--space-2xl);">No tags found.</td></tr>';
+    grid.innerHTML = '<div class="tags-empty"><div class="empty-icon">🏷️</div>No tags found matching your search.</div>';
     renderPagination(state, totalItems, totalPages);
+    updateMergeBar(state);
     return;
   }
 
-  tbody.innerHTML = pageItems.map(tag => {
+  grid.innerHTML = pageItems.map((tag, idx) => {
     const usageCount = videos.filter(v => v.tags && v.tags.includes(tag.id)).length;
+    const usagePercent = Math.round((usageCount / maxUsage) * 100);
     const isChecked = state.selectedIds.includes(tag.id) ? 'checked' : '';
+    const color = tag.color || '#888';
+
     return `
-      <tr data-id="${tag.id}">
-        <td class="checkbox-cell">
-          <input type="checkbox" class="admin-checkbox tag-row-checkbox" data-id="${tag.id}" ${isChecked}>
-        </td>
-        <td>
-          <span class="tag-name-display" data-id="${tag.id}">${tag.name}</span>
-        </td>
-        <td style="font-family:var(--font-mono);">${usageCount}</td>
-        <td>${tag.createdDate || '-'}</td>
-        <td>
-          <div style="display:flex;gap:var(--space-xs);">
-            <button class="action-icon-btn edit-tag-btn" data-id="${tag.id}" aria-label="Edit tag">
-              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-              </svg>
-            </button>
-            <button class="action-icon-btn delete-btn delete-tag-btn" data-id="${tag.id}" aria-label="Delete tag">
-              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <polyline points="3 6 5 6 21 6"></polyline>
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-              </svg>
-            </button>
+      <div class="tag-card" data-id="${tag.id}" style="animation-delay:${idx * 0.05}s; --tag-color:${color};">
+        <div class="tag-card-accent" style="background:linear-gradient(90deg, ${color}, ${color}44);"></div>
+        <div class="tag-card-check">
+          <input type="checkbox" class="tag-card-checkbox" data-id="${tag.id}" ${isChecked}>
+        </div>
+        <div class="tag-card-body">
+          <div class="tag-card-name-row">
+            <span class="tag-card-dot" style="background-color:${color};"></span>
+            <span class="tag-card-name" data-id="${tag.id}">${tag.name}</span>
           </div>
-        </td>
-      </tr>
+          <div class="tag-card-usage">
+            <span class="tag-card-usage-text">${usageCount} video${usageCount !== 1 ? 's' : ''}</span>
+            <div class="tag-card-usage-bar">
+              <div class="tag-card-usage-fill" style="width:${usagePercent}%; background-color:${color};"></div>
+            </div>
+          </div>
+          <div class="tag-card-date">${tag.createdDate || '—'}</div>
+        </div>
+        <div class="tag-card-actions">
+          <button class="tag-card-action edit-tag-name-btn" data-id="${tag.id}" aria-label="Rename tag">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="tag-card-action delete-tag-btn" data-id="${tag.id}" aria-label="Delete tag">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          </button>
+        </div>
+      </div>
     `;
   }).join('');
 
-  bindTagActions(state, filtered);
+  bindTagCardActions(state);
+  syncTagHeaderCheckbox(state);
   renderPagination(state, totalItems, totalPages);
   updateMergeBar(state);
 }
 
-function bindTagActions(state, filtered) {
-  document.querySelectorAll('.edit-tag-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const tag = state.tags.find(t => t.id === btn.dataset.id);
+function bindTagCardActions(state) {
+  // Inline edit name (click on name)
+  document.querySelectorAll('.tag-card-name').forEach(el => {
+    el.addEventListener('click', () => {
+      if (el.querySelector('input')) return;
+      const id = el.dataset.id;
+      const tag = state.tags.find(t => t.id === id);
       if (!tag) return;
-      const display = document.querySelector(`.tag-name-display[data-id="${tag.id}"]`);
-      if (!display || display.querySelector('input')) return;
 
       const input = document.createElement('input');
-      input.className = 'inline-edit-input';
+      input.className = 'tag-inline-input';
       input.value = tag.name;
-      input.style.width = '140px';
-      display.innerHTML = '';
-      display.appendChild(input);
+      el.innerHTML = '';
+      el.appendChild(input);
       input.focus();
       input.select();
 
       const save = () => {
         const val = input.value.trim();
         if (val && val !== tag.name) {
-          const exists = state.tags.some(t => t.name.toLowerCase() === val.toLowerCase() && t.id !== tag.id);
-          if (exists) {
+          if (state.tags.some(t => t.name.toLowerCase() === val.toLowerCase() && t.id !== tag.id)) {
             window.App.showToast('Tag name already exists.', 'warning');
           } else {
             tag.name = val;
@@ -174,17 +233,27 @@ function bindTagActions(state, filtered) {
             window.App.showToast('Tag updated.');
           }
         }
-        renderTagsTable(state);
+        renderTags(state);
       };
 
       input.addEventListener('blur', save);
       input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') save();
-        if (e.key === 'Escape') renderTagsTable(state);
+        if (e.key === 'Enter') { e.preventDefault(); save(); }
+        if (e.key === 'Escape') renderTags(state);
       });
     });
   });
 
+  // Edit button also triggers inline edit on the name
+  document.querySelectorAll('.edit-tag-name-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.id;
+      const nameEl = document.querySelector(`.tag-card-name[data-id="${id}"]`);
+      if (nameEl) nameEl.click();
+    });
+  });
+
+  // Delete
   document.querySelectorAll('.delete-tag-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const tag = state.tags.find(t => t.id === btn.dataset.id);
@@ -203,13 +272,14 @@ function bindTagActions(state, filtered) {
         state.selectedIds = state.selectedIds.filter(id => id !== tag.id);
         window.App.showToast('Tag deleted.');
         closeModal('confirm-delete-overlay');
-        renderTagsTable(state);
+        renderTags(state);
       });
       openModal('confirm-delete-overlay');
     });
   });
 
-  document.querySelectorAll('.tag-row-checkbox').forEach(cb => {
+  // Checkbox
+  document.querySelectorAll('.tag-card-checkbox').forEach(cb => {
     cb.addEventListener('change', () => {
       const id = cb.dataset.id;
       if (cb.checked) {
@@ -218,24 +288,20 @@ function bindTagActions(state, filtered) {
         state.selectedIds = state.selectedIds.filter(v => v !== id);
       }
       updateMergeBar(state);
+      syncTagHeaderCheckbox(state);
     });
   });
+}
 
-  document.querySelectorAll('.sortable-header').forEach(header => {
-    header.addEventListener('click', () => {
-      const field = header.dataset.sort;
-      if (state.sortBy === field) {
-        state.sortOrder = state.sortOrder === 'asc' ? 'desc' : 'asc';
-      } else {
-        state.sortBy = field;
-        state.sortOrder = 'asc';
-      }
-      document.querySelectorAll('.sortable-header').forEach(h => h.classList.remove('asc', 'desc'));
-      header.classList.add(state.sortOrder);
-      state.currentPage = 1;
-      renderTagsTable(state);
-    });
-  });
+function syncTagHeaderCheckbox(state, pageItems) {
+  const headerCheckbox = document.getElementById('header-checkbox');
+  if (!headerCheckbox) return;
+  if (!pageItems) {
+    pageItems = document.querySelectorAll('.tag-card-checkbox');
+  }
+  if (!pageItems.length) { headerCheckbox.checked = false; return; }
+  const allChecked = Array.from(pageItems).every(cb => cb.checked);
+  headerCheckbox.checked = allChecked;
 }
 
 function renderPagination(state, totalItems, totalPages) {
@@ -262,22 +328,13 @@ function renderPagination(state, totalItems, totalPages) {
   `;
 
   if (state.currentPage > 1) {
-    document.getElementById('prev-page').addEventListener('click', () => {
-      state.currentPage--;
-      renderTagsTable(state);
-    });
+    document.getElementById('prev-page').addEventListener('click', () => { state.currentPage--; renderTags(state); });
   }
   if (state.currentPage < totalPages) {
-    document.getElementById('next-page').addEventListener('click', () => {
-      state.currentPage++;
-      renderTagsTable(state);
-    });
+    document.getElementById('next-page').addEventListener('click', () => { state.currentPage++; renderTags(state); });
   }
   container.querySelectorAll('[data-page]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      state.currentPage = Number(btn.dataset.page);
-      renderTagsTable(state);
-    });
+    btn.addEventListener('click', () => { state.currentPage = Number(btn.dataset.page); renderTags(state); });
   });
 }
 
@@ -315,14 +372,9 @@ function mergeTags(state) {
       let changed = false;
       idsToMerge.forEach(id => {
         const idx = v.tags.indexOf(id);
-        if (idx !== -1) {
-          v.tags[idx] = targetId;
-          changed = true;
-        }
+        if (idx !== -1) { v.tags[idx] = targetId; changed = true; }
       });
-      if (changed) {
-        v.tags = [...new Set(v.tags)];
-      }
+      if (changed) v.tags = [...new Set(v.tags)];
     }
   });
 
@@ -330,13 +382,8 @@ function mergeTags(state) {
   window.App.saveTags(state.tags);
   state.selectedIds = [];
   window.App.showToast(`Merged ${mergeNames.join(', ')} into ${targetTag.name}.`);
-  renderTagsTable(state);
+  renderTags(state);
 }
 
-function openModal(id) {
-  document.getElementById(id).classList.add('active');
-}
-
-function closeModal(id) {
-  document.getElementById(id).classList.remove('active');
-}
+function openModal(id) { document.getElementById(id).classList.add('active'); }
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }

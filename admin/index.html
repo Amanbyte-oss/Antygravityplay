@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-<script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
 <head>
+  <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Overview of platform performance, views analytics, and recent uploads.">
@@ -175,27 +175,14 @@
 
         </div>
 
-        <!-- Recent Uploads Table -->
-        <section class="table-card" aria-labelledby="table-heading">
-          <div class="table-header">
-            <h2 id="table-heading" class="table-title">Recent Uploads</h2>
+        <!-- Recent Uploads Grid -->
+        <section class="uploads-section" aria-labelledby="uploads-heading">
+          <div class="uploads-section-header">
+            <h2 id="uploads-heading" class="uploads-section-title">Recent Uploads</h2>
             <a href="./videos.html" class="row-link">Manage All &rarr;</a>
           </div>
-          <div class="table-wrapper">
-            <table class="admin-table">
-              <thead>
-                <tr>
-                  <th>Thumbnail</th>
-                  <th>Title</th>
-                  <th>Tags</th>
-                  <th>Views</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody id="recent-uploads-tbody">
-                <!-- Dynamically populated via JS -->
-              </tbody>
-            </table>
+          <div class="uploads-grid" id="recent-uploads-grid">
+            <!-- Dynamically populated via JS -->
           </div>
         </section>
 

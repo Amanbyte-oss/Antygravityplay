@@ -41,9 +41,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // 6. Render related tags
   renderRelatedTags(tag, allVideos);
 
-  // 7. Trigger scroll reveal
+  // 7. Trigger scroll reveal and lazy loading
   window.Animations.initScrollReveal();
-  window.dispatchEvent(new Event('scroll'));
+  if (window.refreshLazyLoading) window.refreshLazyLoading();
 });
 
 // Setup tag header details with hero banner

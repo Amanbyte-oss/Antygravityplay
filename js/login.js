@@ -28,8 +28,14 @@ document.addEventListener('DOMContentLoaded', () => {
       emailInput.style.borderColor = '';
       passwordInput.style.borderColor = '';
 
-      // Validate credentials
-      const users = window.MOCK_USERS;
+      // Validate credentials (check localStorage first for updated credentials)
+      let users;
+      try {
+        users = JSON.parse(localStorage.getItem('mock-users'));
+      } catch (_) {}
+      if (!Array.isArray(users) || users.length === 0) {
+        users = window.MOCK_USERS;
+      }
       const user = users.find(u => u.email === email && u.password === password);
 
       if (user) {
@@ -45,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 1200);
       } else {
         // Invalid credentials
-        errorMsg.innerText = 'Invalid email or password. Hint: admin@videoshare.com / admin123';
+        errorMsg.innerText = 'Invalid email or password. Please try again.';
         errorMsg.style.display = 'block';
         emailInput.style.borderColor = 'var(--error)';
         passwordInput.style.borderColor = 'var(--error)';

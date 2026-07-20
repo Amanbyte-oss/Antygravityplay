@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-<script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
 <head>
+  <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="View, search, filter, inline edit, and bulk delete video database assets.">
@@ -93,50 +93,43 @@
               </span>
               <input type="text" id="table-search-input" placeholder="Search by title or creator..." aria-label="Search items">
             </div>
+            <select id="sort-select" class="sort-select" aria-label="Sort videos">
+              <option value="publishDate-desc">Newest First</option>
+              <option value="publishDate-asc">Oldest First</option>
+              <option value="title-asc">Title A-Z</option>
+              <option value="title-desc">Title Z-A</option>
+              <option value="views-desc">Most Viewed</option>
+              <option value="views-asc">Least Viewed</option>
+              <option value="likes-desc">Most Liked</option>
+              <option value="likes-asc">Least Liked</option>
+            </select>
           </div>
 
-          <!-- Bulk actions toolbar (hidden by default) -->
-          <div class="management-right" id="bulk-actions-bar" style="display:none;">
-            <span id="bulk-selected-count">0 selected</span>
-            <button id="delete-selected-btn" class="btn btn-secondary delete-btn-sm">
-              Delete Selected
-            </button>
+          <div class="management-right">
+            <label class="select-all-label">
+              <input type="checkbox" id="header-checkbox" class="admin-checkbox" aria-label="Select all visible videos">
+              <span>Select All</span>
+            </label>
+            <span style="font-size: var(--text-xs); color: var(--text-muted);" id="table-count-span">0 total videos</span>
+            <!-- Bulk actions toolbar (hidden by default) -->
+            <div id="bulk-actions-bar" style="display:none;">
+              <span id="bulk-selected-count">0 selected</span>
+              <button id="delete-selected-btn" class="btn btn-secondary delete-btn-sm">
+                Delete Selected
+              </button>
+            </div>
           </div>
 
         </div>
 
-        <!-- Data Table Container -->
-        <section class="table-card" aria-label="Videos catalog listing">
-          <div class="table-header">
-            <h2 class="table-title">Catalog Inventory</h2>
-            <span style="font-size: var(--text-xs); color: var(--text-muted);" id="table-count-span">0 total videos</span>
-          </div>
-          
-          <div class="table-wrapper">
-            <table class="admin-table">
-              <thead>
-                <tr>
-                  <th class="checkbox-cell">
-                    <input type="checkbox" id="header-checkbox" class="admin-checkbox" aria-label="Select all visible videos">
-                  </th>
-                  <th>Thumbnail</th>
-                  <th class="sortable-header" data-sort="title">Title</th>
-                  <th>Tags</th>
-                  <th class="sortable-header" data-sort="views">Views</th>
-                  <th class="sortable-header" data-sort="likes">Likes</th>
-                  <th class="sortable-header" data-sort="status">Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="videos-tbody">
-                <!-- Dynamically populated via JS -->
-              </tbody>
-            </table>
+        <!-- Video Cards Grid -->
+        <section class="videos-section" aria-label="Videos catalog listing">
+          <div class="videos-grid" id="videos-grid">
+            <!-- Dynamically populated via JS -->
           </div>
 
           <!-- Pagination Footer -->
           <footer id="pagination-wrapper"></footer>
-
         </section>
 
       </main>

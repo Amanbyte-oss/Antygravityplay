@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-<script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
 <head>
+  <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Create, edit, merge, and delete video tags for content classification.">
@@ -106,29 +106,27 @@
               </span>
               <input type="text" id="table-search-input" placeholder="Search tags..." aria-label="Search tags">
             </div>
+            <select id="sort-select" class="sort-select" aria-label="Sort tags">
+              <option value="name-asc">Name A-Z</option>
+              <option value="name-desc">Name Z-A</option>
+              <option value="usage-desc">Most Used</option>
+              <option value="usage-asc">Least Used</option>
+              <option value="createdDate-desc">Newest First</option>
+              <option value="createdDate-asc">Oldest First</option>
+            </select>
+          </div>
+          <div class="management-right">
+            <label class="select-all-label">
+              <input type="checkbox" id="header-checkbox" class="admin-checkbox" aria-label="Select all">
+              <span>Select All</span>
+            </label>
+            <span style="font-size:var(--text-xs);color:var(--text-muted);" id="table-count-span">0 tags</span>
           </div>
         </div>
 
-        <section class="table-card" aria-label="Tags listing">
-          <div class="table-header">
-            <h2 class="table-title">All Tags</h2>
-            <span style="font-size:var(--text-xs);color:var(--text-muted);" id="table-count-span">0 tags</span>
-          </div>
-          <div class="table-wrapper">
-            <table class="admin-table">
-              <thead>
-                <tr>
-                  <th class="checkbox-cell">
-                    <input type="checkbox" id="header-checkbox" class="admin-checkbox" aria-label="Select all">
-                  </th>
-                  <th class="sortable-header" data-sort="name">Tag Name</th>
-                  <th class="sortable-header" data-sort="usage">Usage Count</th>
-                  <th class="sortable-header" data-sort="createdDate">Created Date</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="tags-tbody"></tbody>
-            </table>
+        <section class="tags-section" aria-label="Tags listing">
+          <div class="tags-grid" id="tags-grid">
+            <!-- Dynamically populated via JS -->
           </div>
           <footer id="pagination-wrapper"></footer>
         </section>
