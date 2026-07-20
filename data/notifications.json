@@ -1,0 +1,17 @@
+[
+  { "id": "n001", "type": "upload_success", "title": "Video Upload Successful", "message": "Your video 'Building a Modern Design System from Scratch' has been published successfully.", "timestamp": "2026-07-20T19:00:00Z", "read": false },
+  { "id": "n002", "type": "upload_success", "title": "Video Upload Successful", "message": "Your video 'Iceland Road Trip Vlog - 7 Days on the Ring Road' has been published.", "timestamp": "2026-07-20T16:30:00Z", "read": false },
+  { "id": "n003", "type": "warning", "title": "Storage Warning", "message": "Your storage is at 85% capacity. Consider archiving old videos to free up space.", "timestamp": "2026-07-20T12:00:00Z", "read": false },
+  { "id": "n004", "type": "info", "title": "New Feature Available", "message": "You can now bulk edit video metadata. Check the Videos page for the new options.", "timestamp": "2026-07-19T10:00:00Z", "read": false },
+  { "id": "n005", "type": "upload_success", "title": "Video Upload Successful", "message": "Your video 'Crispy Skin Salmon - Pro Chef Technique' has been published.", "timestamp": "2026-07-19T08:45:00Z", "read": false },
+  { "id": "n006", "type": "error", "title": "Upload Failed", "message": "Video upload 'Unboxing Review v2' failed due to invalid file format. Supported formats: MP4, WebM.", "timestamp": "2026-07-19T06:20:00Z", "read": true },
+  { "id": "n007", "type": "video_deleted", "title": "Video Removed", "message": "The video 'Old Tutorial 2019' has been deleted as requested.", "timestamp": "2026-07-18T22:15:00Z", "read": true },
+  { "id": "n008", "type": "info", "title": "System Update Complete", "message": "Platform has been updated to v2.4.1. New features include enhanced analytics and improved search.", "timestamp": "2026-07-18T14:00:00Z", "read": true },
+  { "id": "n009", "type": "upload_success", "title": "Video Upload Successful", "message": "Your video 'Gym Motivation - Breaking Plateaus' has been published.", "timestamp": "2026-07-18T11:30:00Z", "read": true },
+  { "id": "n010", "type": "warning", "title": "Unusual Traffic Detected", "message": "Your video 'Quantum Computers Explained' is receiving 3x normal traffic. Check analytics for details.", "timestamp": "2026-07-17T20:00:00Z", "read": true },
+  { "id": "n011", "type": "video_deleted", "title": "Video Removed", "message": "The draft video 'Test Upload v3' has been automatically cleaned up after 30 days.", "timestamp": "2026-07-17T09:00:00Z", "read": true },
+  { "id": "n012", "type": "error", "title": "Processing Error", "message": "Thumbnail generation failed for video 'New Product Launch'. Default thumbnail applied.", "timestamp": "2026-07-16T15:45:00Z", "read": true },
+  { "id": "n013", "type": "info", "title": "Analytics Report Ready", "message": "Your weekly analytics report for July 13-19 is now available on the Analytics page.", "timestamp": "2026-07-20T08:00:00Z", "read": false },
+  { "id": "n014", "type": "warning", "title": "Tag Cleanup Recommended", "message": "Some tags have low usage. Consider merging or deleting unused tags to keep things organized.", "timestamp": "2026-07-15T10:30:00Z", "read": true },
+  { "id": "n015", "type": "upload_success", "title": "Video Upload Successful", "message": "Your video 'Acoustic Blues Improvisation in E' has been published.", "timestamp": "2026-07-15T07:20:00Z", "read": true }
+]

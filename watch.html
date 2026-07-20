@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
+<script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -32,6 +33,12 @@
   <header id="navbar-container" class="navbar-wrapper"></header>
 
   <main class="container">
+    <div style="margin-bottom: var(--space-lg);">
+      <a href="./index.html" style="display:inline-flex; align-items:center; gap:4px; font-size:var(--text-xs); color:var(--text-muted);">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        Back to Home
+      </a>
+    </div>
     <div class="watch-grid">
       
       <!-- Left Column: Video Player & Details -->

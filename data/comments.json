@@ -1,0 +1,22 @@
+[
+  { "id": "c001", "videoId": "vid-01", "userName": "TechEnthusiast", "text": "Amazing breakdown of design systems! The token approach is exactly what I needed.", "date": "2026-07-02T10:30:00Z", "likes": 24 },
+  { "id": "c002", "videoId": "vid-01", "userName": "DesignOpsFan", "text": "This should be required watching for every frontend team. Bookmarked!", "date": "2026-07-02T14:15:00Z", "likes": 18 },
+  { "id": "c003", "videoId": "vid-02", "userName": "LoFiLover", "text": "Perfect study music. Been looping this all day.", "date": "2026-07-05T08:45:00Z", "likes": 42 },
+  { "id": "c004", "videoId": "vid-03", "userName": "Speedrunner99", "text": "That skip at 8:32 was insane! Never seen anyone pull that off.", "date": "2026-07-11T16:20:00Z", "likes": 35 },
+  { "id": "c005", "videoId": "vid-03", "userName": "HollowKnightFan", "text": "World record pace until the last area. So close!", "date": "2026-07-11T19:00:00Z", "likes": 12 },
+  { "id": "c006", "videoId": "vid-04", "userName": "WebDevNewbie", "text": "Fair comparison without the fanboy bias. Appreciate the honesty.", "date": "2026-07-13T11:10:00Z", "likes": 29 },
+  { "id": "c007", "videoId": "vid-05", "userName": "TravelBug2026", "text": "I visited Tokyo last year and wish I had this guide. Those hidden bars look amazing.", "date": "2026-07-15T09:30:00Z", "likes": 31 },
+  { "id": "c008", "videoId": "vid-06", "userName": "PizzaPurist", "text": "The dough recipe changed my life. Finally getting that crispy bottom at home.", "date": "2026-07-16T18:45:00Z", "likes": 27 },
+  { "id": "c009", "videoId": "vid-07", "userName": "FitLifeJourney", "text": "Been doing this every morning for a week. Already feeling stronger!", "date": "2026-07-17T06:20:00Z", "likes": 45 },
+  { "id": "c010", "videoId": "vid-08", "userName": "CoffeeAddict", "text": "The espresso machine bit had me rolling on the floor. Too real 😂", "date": "2026-07-18T20:15:00Z", "likes": 67 },
+  { "id": "c011", "videoId": "vid-09", "userName": "PhysicsStudent", "text": "Finally someone who can explain quantum computing without making my brain hurt.", "date": "2026-07-19T13:40:00Z", "likes": 52 },
+  { "id": "c012", "videoId": "vid-10", "userName": "WorkspaceWizard", "text": "That cable management is gorgeous. What monitor arm is that?", "date": "2026-07-20T07:55:00Z", "likes": 14 },
+  { "id": "c013", "videoId": "vid-11", "userName": "SpireAddict", "text": "Poison build is my favourite too. Have you tried with Snecko Skull?", "date": "2026-07-20T10:30:00Z", "likes": 8 },
+  { "id": "c014", "videoId": "vid-12", "userName": "FilmMaker101", "text": "The color grading breakdown was incredibly useful. Subscribed!", "date": "2026-07-20T11:20:00Z", "likes": 19 },
+  { "id": "c015", "videoId": "vid-13", "userName": "GuitarLearner", "text": "Been stuck on fingerstyle for months. This tutorial finally made it click.", "date": "2026-07-20T14:00:00Z", "likes": 33 },
+  { "id": "c016", "videoId": "vid-14", "userName": "KeyboardFanatic", "text": "That thock sound at 3:15 is orgasmic. What switches are those?", "date": "2026-07-20T15:30:00Z", "likes": 21 },
+  { "id": "c017", "videoId": "vid-15", "userName": "Wanderlust2026", "text": "Iceland has been on my bucket list forever. This video pushed me to book the trip!", "date": "2026-07-20T16:45:00Z", "likes": 38 },
+  { "id": "c018", "videoId": "vid-16", "userName": "HomeChef", "text": "The skin crisping technique is a game changer. No more soggy salmon!", "date": "2026-07-20T17:10:00Z", "likes": 16 },
+  { "id": "c019", "videoId": "vid-17", "userName": "GymRat2026", "text": "Needed this motivation today. Plateaus are real but this helps.", "date": "2026-07-20T18:00:00Z", "likes": 25 },
+  { "id": "c020", "videoId": "vid-18", "userName": "LowLevelCoder", "text": "Raw C is a lost art. Love seeing someone build from scratch.", "date": "2026-07-20T19:30:00Z", "likes": 41 }
+]

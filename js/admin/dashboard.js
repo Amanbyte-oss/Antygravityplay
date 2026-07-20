@@ -5,12 +5,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 2. Fetch video data & compute statistics
   const videos = window.App.getVideos();
-  const categories = window.App.getCategories();
+  const tags = window.App.getTags();
   
-  computeStats(videos, categories);
+  computeStats(videos, tags);
 
   // 3. Render recent uploads (5 rows max)
-  renderRecentUploadsTable(videos, categories);
+  renderRecentUploadsTable(videos, tags);
 
   // 4. Draw Canvas Analytics Line Chart (7 days views trend)
   drawViewsChart();
@@ -22,20 +22,20 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Compute platform metrics
-function computeStats(videos, categories) {
+function computeStats(videos, tags) {
   const totalVideos = videos.length;
   const totalViews = videos.reduce((acc, v) => acc + Number(v.views), 0);
   const totalLikes = videos.reduce((acc, v) => acc + Number(v.likes), 0);
-  const totalCategories = categories.length;
+  const totalTags = tags.length;
 
   document.getElementById('stat-total-videos').innerText = totalVideos;
   document.getElementById('stat-total-views').innerText = totalViews.toLocaleString();
   document.getElementById('stat-total-likes').innerText = totalLikes.toLocaleString();
-  document.getElementById('stat-total-categories').innerText = totalCategories;
+  document.getElementById('stat-total-tags').innerText = totalTags;
 }
 
 // Render Recent Uploads Table (max 5 rows)
-function renderRecentUploadsTable(videos, categories) {
+function renderRecentUploadsTable(videos, tags) {
   const tbody = document.getElementById('recent-uploads-tbody');
   if (!tbody) return;
 
@@ -49,7 +49,13 @@ function renderRecentUploadsTable(videos, categories) {
   }
 
   tbody.innerHTML = sortedRecent.map(vid => {
-    const cat = categories.find(c => c.id === vid.category)?.name || vid.category;
+    const resolvedTags = (vid.tags || []).map(tId => tags.find(t => t.id === tId)).filter(Boolean);
+    const tagHtml = resolvedTags.length > 0
+      ? resolvedTags.slice(0, 2).map(t => 
+          `<span class="tag-pill" style="border-left: 3px solid ${t.color}; padding: 1px 6px; font-size: 10px; margin-right: 4px; display:inline-block; border-radius:9999px; background-color:${t.color}15;">${t.name}</span>`
+        ).join('') + (resolvedTags.length > 2 ? `<span style="font-size:10px; color:var(--text-muted);">+${resolvedTags.length - 2}</span>` : '')
+      : '<span style="font-size:var(--text-xs); color:var(--text-muted);">—</span>';
+    
     const badgeClass = vid.status === 'published' ? 'badge-success' : 'badge-warning';
     
     return `
@@ -60,7 +66,7 @@ function renderRecentUploadsTable(videos, categories) {
           </div>
         </td>
         <td style="font-weight: 500;">${vid.title}</td>
-        <td>${cat}</td>
+        <td>${tagHtml}</td>
         <td style="font-family: var(--font-mono);">${Number(vid.views).toLocaleString()}</td>
         <td><span class="badge ${badgeClass}">${vid.status}</span></td>
       </tr>

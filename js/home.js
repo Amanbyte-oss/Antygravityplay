@@ -19,16 +19,32 @@ document.addEventListener('DOMContentLoaded', () => {
   const heroVideo = allVideos.reduce((max, v) => v.views > max.views ? v : max, allVideos[0]);
   setupHeroBanner(heroVideo);
 
-  // 4. Render Categories row
-  const categoriesContainer = document.getElementById('categories-container');
-  if (categoriesContainer) {
-    const categories = window.App.getCategories();
-    categoriesContainer.innerHTML = categories.map(cat => 
-      window.Components.renderCategoryCard(cat)
+  // 4. Render Popular Tags (sorted by real video count desc)
+  const popularTagsContainer = document.getElementById('popular-tags-container');
+  if (popularTagsContainer) {
+    const tags = window.App.getTags();
+    const tagCounts = {};
+    allVideos.forEach(v => (v.tags || []).forEach(tId => { tagCounts[tId] = (tagCounts[tId] || 0) + 1; }));
+    const sortedTags = [...tags].sort((a, b) => (tagCounts[b.id] || 0) - (tagCounts[a.id] || 0));
+    popularTagsContainer.innerHTML = sortedTags.map(tag => 
+      `<a href="./tag.html?tag=${encodeURIComponent(tag.name)}" class="tag-pill tag-pill-lg" style="border-left: 4px solid ${tag.color}; background-color: ${tag.color}15;">
+        <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:${tag.color}; margin-right:6px;"></span>
+        ${tag.name}
+        <span style="font-size:var(--text-xs); opacity:0.7; margin-left:6px;">(${tagCounts[tag.id] || 0})</span>
+      </a>`
     ).join('');
   }
 
-  // 5. Render "Trending Now" (views desc)
+  // 5. Render Browse by Tag grid
+  const browseTagGrid = document.getElementById('browse-tag-grid');
+  if (browseTagGrid) {
+    const tags = window.App.getTags();
+    browseTagGrid.innerHTML = tags.map(tag => 
+      window.Components.renderTagCard(tag)
+    ).join('');
+  }
+
+  // 6. Render "Trending Now" (views desc)
   const trendingContainer = document.getElementById('trending-container');
   if (trendingContainer) {
     const trendingVideos = [...allVideos].sort((a, b) => b.views - a.views).slice(0, 8);
@@ -37,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ).join('');
   }
 
-  // 6. Render "New Releases" (date desc)
+  // 7. Render "New Releases" (date desc)
   const newReleasesContainer = document.getElementById('new-releases-container');
   if (newReleasesContainer) {
     const newVideos = [...allVideos].sort((a, b) => new Date(b.publishDate) - new Date(a.publishDate)).slice(0, 8);
@@ -46,24 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ).join('');
   }
 
-  // 7. Render Category Rows (Tech & Music rows specifically)
-  const techRowContainer = document.getElementById('tech-row-container');
-  if (techRowContainer) {
-    const techVideos = allVideos.filter(v => v.category === 'tech').slice(0, 8);
-    techRowContainer.innerHTML = techVideos.map(vid => 
-      window.Components.renderVideoCard(vid)
-    ).join('');
-  }
-
-  const musicRowContainer = document.getElementById('music-row-container');
-  if (musicRowContainer) {
-    const musicVideos = allVideos.filter(v => v.category === 'music').slice(0, 8);
-    musicRowContainer.innerHTML = musicVideos.map(vid => 
-      window.Components.renderVideoCard(vid)
-    ).join('');
-  }
-
-  // 8. Re-trigger Animations and Lazy Loads
+  // 7. Re-trigger Animations and Lazy Loads
   window.Animations.initScrollReveal();
   // Manually trigger a scroll check for lazy loading
   window.dispatchEvent(new Event('scroll'));
@@ -74,12 +73,16 @@ function setupHeroBanner(video) {
   const heroSection = document.getElementById('hero-section');
   if (!heroSection) return;
 
-  const categoryName = window.MOCK_CATEGORIES.find(c => c.id === video.category)?.name || 'Featured';
+  const tagNames = video.tags.map(tagId => {
+    const t = window.App.getTags().find(tg => tg.id === tagId);
+    return t ? t.name : '';
+  }).filter(Boolean);
+  const badgeText = tagNames.length > 0 ? tagNames[0] : 'Featured';
 
   heroSection.innerHTML = `
     <div class="hero-banner">
       <div class="hero-content">
-        <span class="hero-tag">${categoryName}</span>
+        <span class="hero-tag">${badgeText}</span>
         <h1 class="hero-title">${video.title}</h1>
         <p class="hero-desc">${video.description}</p>
         <div class="hero-btns">

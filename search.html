@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
+<script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Search videos by titles, tags, category, duration, and date on Antigravity Play.">
+  <meta name="description" content="Search videos by titles, tags, duration, and date on Antigravity Play.">
   <title>Search Videos - Antigravity Play</title>
   <link rel="stylesheet" href="./css/main.css">
   <link rel="stylesheet" href="./css/search.css">
@@ -35,6 +36,10 @@
     
     <!-- Search Title header -->
     <div class="search-header-box">
+      <a href="./index.html" style="display:inline-flex; align-items:center; gap:4px; font-size:var(--text-xs); color:var(--text-muted); margin-bottom:var(--space-md);">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        Back to Home
+      </a>
       <h1 class="search-page-title">Search Sandbox</h1>
       <p class="search-page-desc">Query titles, creators, and apply multiselect parameter filters in real-time.</p>
     </div>
@@ -47,22 +52,6 @@
         <div class="filter-group">
           <label class="filter-label" for="search-input">Keywords</label>
           <input type="text" id="search-input" class="filter-select" placeholder="Type to search..." style="background-color: var(--bg-primary); padding: 0 var(--space-md);">
-        </div>
-
-        <!-- Category dropdown -->
-        <div class="filter-group">
-          <label class="filter-label" for="filter-category">Category</label>
-          <select id="filter-category" class="filter-select">
-            <option value="all">All Categories</option>
-            <option value="tech">Tech & Gadgets</option>
-            <option value="music">Music & Audio</option>
-            <option value="gaming">Gaming & Esport</option>
-            <option value="comedy">Comedy & Entertainment</option>
-            <option value="education">Education & Science</option>
-            <option value="travel">Travel & Vlogs</option>
-            <option value="cooking">Cooking & Food</option>
-            <option value="fitness">Fitness & Sports</option>
-          </select>
         </div>
 
         <!-- Duration dropdown -->

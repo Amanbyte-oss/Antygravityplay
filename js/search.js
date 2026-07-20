@@ -16,7 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
   renderFilterChips();
 
   // 4. Setup Event Listeners
-  const categorySelect = document.getElementById('filter-category');
   const durationSelect = document.getElementById('filter-duration');
   const dateSelect = document.getElementById('filter-date');
   const clearBtn = document.getElementById('clear-filters-btn');
@@ -30,14 +29,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  [categorySelect, durationSelect, dateSelect].forEach(select => {
+  [durationSelect, dateSelect].forEach(select => {
     if (select) select.addEventListener('change', performSearch);
   });
 
   if (clearBtn) {
     clearBtn.addEventListener('click', () => {
       if (searchInput) searchInput.value = '';
-      if (categorySelect) categorySelect.value = 'all';
       if (durationSelect) durationSelect.value = 'all';
       if (dateSelect) dateSelect.value = 'all';
       
@@ -80,7 +78,6 @@ function performSearch() {
   const searchInput = document.getElementById('search-input');
   const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
 
-  const category = document.getElementById('filter-category').value;
   const duration = document.getElementById('filter-duration').value;
   const date = document.getElementById('filter-date').value;
 
@@ -100,19 +97,14 @@ function performSearch() {
     );
   }
 
-  // 2. Category Filter
-  if (category && category !== 'all') {
-    results = results.filter(vid => vid.category === category);
-  }
-
-  // 3. Tags Filter (Video must match ALL active tags)
+  // 2. Tags Filter (Video must match ALL active tags)
   if (activeTags.length > 0) {
     results = results.filter(vid => 
       activeTags.every(tagId => vid.tags.includes(tagId))
     );
   }
 
-  // 4. Duration Filter
+  // 3. Duration Filter
   if (duration && duration !== 'all') {
     results = results.filter(vid => {
       // Parse duration to seconds
@@ -124,7 +116,7 @@ function performSearch() {
     });
   }
 
-  // 5. Upload Date Filter
+  // 4. Upload Date Filter
   if (date && date !== 'all') {
     results = results.filter(vid => {
       const pubDate = new Date(vid.publishDate);
@@ -179,7 +171,7 @@ function renderSearchResults(videos, query) {
     const isLiked = window.App.isVideoLiked(vid.id);
 
     return `
-      <article class="video-card reveal-on-scroll" data-video-id="${vid.id}" onclick="window.location.href='./watch.html?id=${vid.id}'">
+      <article class="video-card" data-video-id="${vid.id}" onclick="window.location.href='./watch.html?id=${vid.id}'">
         <div class="thumbnail-container">
           <img class="lazy" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9'%3E%3Crect width='100%25' height='100%25' fill='%231f1f1f'/%3E%3C/svg%3E" data-src="${vid.thumbnail}" alt="${vid.title} Preview">
           <span class="duration-badge">${vid.duration}</span>

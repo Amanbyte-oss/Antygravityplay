@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
+<script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Upload new videos, configure description copy, select category folder tags, and define drafts statuses.">
+  <meta name="description" content="Upload new videos, configure description, select tags, and set publish status.">
   <title>Upload Video - Admin Console</title>
   <link rel="stylesheet" href="../css/main.css">
   <link rel="stylesheet" href="../css/admin/dashboard.css">
@@ -43,7 +44,7 @@
       <!-- Top Mobile Header bar -->
       <header class="admin-header">
         <div class="admin-header-left">
-          <button class="admin-menu-btn theme-toggle" aria-label="Open sidebar menu" style="display:none; border:none; background:none; cursor:pointer;">
+          <button class="admin-menu-btn" aria-label="Open sidebar menu" style="display:none; border:none; background:none; cursor:pointer;">
             <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line>
             </svg>
@@ -51,7 +52,7 @@
           <span style="font-weight: 600; font-size: var(--text-sm);">Console</span>
         </div>
         <div class="admin-header-right">
-          <a href="../index.html" class="btn btn-secondary" style="border-radius: var(--radius-sm); padding: var(--space-xs) var(--space-md); font-size: var(--text-xs);">
+          <a href="../index.html" class="btn btn-secondary">
             View Live Site
           </a>
           <button class="theme-toggle" aria-label="Toggle theme">
@@ -74,7 +75,7 @@
             <p>Publish a new MP4 video resource to the platform database.</p>
           </div>
           <div>
-            <a href="./videos.html" class="btn btn-secondary" style="border-radius: var(--radius-sm); padding: var(--space-sm) var(--space-lg);">
+            <a href="./videos.html" class="btn btn-secondary">
               Cancel
             </a>
           </div>
@@ -129,27 +130,43 @@
 
                 <div class="form-row">
                   <div class="form-group">
-                    <label class="form-label" for="category-select">Category</label>
-                    <select id="category-select" class="select-field" required>
-                      <!-- Populates via JS -->
-                    </select>
-                  </div>
-                  <div class="form-group">
                     <label class="form-label" for="duration-input">Duration (Min:Sec)</label>
                     <input type="text" id="duration-input" class="form-input-field" placeholder="E.g., 12:45" pattern="^[0-9]+:[0-5][0-9]$" autocomplete="off">
                   </div>
+                  <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <div class="toggle-row" style="padding-top: var(--space-sm);">
+                      <span class="toggle-label">Publish immediately</span>
+                      <label class="toggle-switch">
+                        <input type="checkbox" id="publish-toggle" checked>
+                        <span class="toggle-slider"></span>
+                      </label>
+                    </div>
+                  </div>
                 </div>
 
-                <!-- Tag select -->
-                <div class="form-group tag-select-container">
-                  <label class="form-label">Multi-Select Tags</label>
-                  <div class="tag-selector-dropdown">
-                    <div id="tags-chips-wrapper" class="tag-chips-wrapper">
-                      <!-- Chosen tags chips will render here -->
-                    </div>
-                    <div id="tags-options-list" class="tag-options-list">
-                      <!-- Dropdown options populated via JS -->
-                    </div>
+                <!-- Existing Tags Checkable Pills -->
+                <div class="form-group">
+                  <label class="form-label">Existing Tags</label>
+                  <div id="existing-tags-container" class="tags-checkable-grid">
+                    <!-- Populated via JS -->
+                  </div>
+                </div>
+
+                <!-- Selected Tags Display -->
+                <div class="form-group">
+                  <label class="form-label">Selected Tags (<span id="selected-tags-count">0</span>/10)</label>
+                  <div id="selected-tags-display" class="tag-chips-wrapper">
+                    <!-- Selected tag chips injected here -->
+                  </div>
+                </div>
+
+                <!-- Create Custom Tag -->
+                <div class="form-group">
+                  <label class="form-label">Create New Tag</label>
+                  <div style="display: flex; gap: var(--space-sm);">
+                    <input type="text" id="custom-tag-input" class="form-input-field" placeholder="Type tag name and press Enter or Add..." style="flex: 1;" autocomplete="off">
+                    <button type="button" id="add-custom-tag-btn" class="btn btn-secondary" style="padding: var(--space-sm) var(--space-lg);">Add</button>
                   </div>
                 </div>
 
@@ -177,14 +194,7 @@
                 </div>
               </div>
 
-              <!-- Switch button -->
-              <div class="form-group toggle-row" style="margin-top: var(--space-xl);">
-                <span class="toggle-label">Publish immediately</span>
-                <label class="toggle-switch">
-                  <input type="checkbox" id="publish-toggle" checked>
-                  <span class="toggle-slider"></span>
-                </label>
-              </div>
+
 
               <!-- Upload Progress bar -->
               <div class="progress-container" id="progress-container">
@@ -198,7 +208,7 @@
               </div>
 
               <div style="margin-top: var(--space-2xl);">
-                <button type="submit" id="submit-btn" class="btn btn-primary" style="width:100%; border-radius: var(--radius-sm); padding: var(--space-sm) var(--space-xl);">
+                <button type="submit" id="submit-btn" class="btn btn-primary" style="width:100%;">
                   Publish Asset
                 </button>
               </div>

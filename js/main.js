@@ -70,19 +70,16 @@
     }
   });
 
-  // Theme toggle utility
+  // Theme toggle utility (uses event delegation for dynamically injected navbar)
   function setupThemeToggle() {
-    const toggleBtns = document.querySelectorAll('.theme-toggle');
-    toggleBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const current = document.documentElement.getAttribute('data-theme') || 'dark';
-        const nextTheme = current === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', nextTheme);
-        localStorage.setItem('site-theme', nextTheme);
-        
-        // Custom event for charts or components to adapt to theme changes
-        window.dispatchEvent(new CustomEvent('themechanged', { detail: { theme: nextTheme } }));
-      });
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('.theme-toggle');
+      if (!btn) return;
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      const nextTheme = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('site-theme', nextTheme);
+      window.dispatchEvent(new CustomEvent('themechanged', { detail: { theme: nextTheme } }));
     });
   }
 
@@ -148,12 +145,21 @@
 
     // Get reactive video database (combines memory modifications on top of MockData)
     getVideos() {
-      let videos = localStorage.getItem('db-videos');
-      if (!videos) {
+      let raw = localStorage.getItem('db-videos');
+      if (!raw) {
         localStorage.setItem('db-videos', JSON.stringify(window.MOCK_VIDEOS));
         return window.MOCK_VIDEOS;
       }
-      return JSON.parse(videos);
+      try {
+        let parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        // Empty or invalid – re-seed from mock data
+        localStorage.setItem('db-videos', JSON.stringify(window.MOCK_VIDEOS));
+        return window.MOCK_VIDEOS;
+      } catch (e) {
+        localStorage.setItem('db-videos', JSON.stringify(window.MOCK_VIDEOS));
+        return window.MOCK_VIDEOS;
+      }
     },
 
     // Save video database
@@ -161,14 +167,27 @@
       localStorage.setItem('db-videos', JSON.stringify(videosList));
     },
 
-    // Get categories
-    getCategories() {
-      return window.MOCK_CATEGORIES;
+    // Get tags (merges MOCK_TAGS with localStorage custom tags)
+    getTags() {
+      let raw = localStorage.getItem('db-tags');
+      if (!raw) {
+        localStorage.setItem('db-tags', JSON.stringify(window.MOCK_TAGS));
+        return window.MOCK_TAGS;
+      }
+      try {
+        let parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        localStorage.setItem('db-tags', JSON.stringify(window.MOCK_TAGS));
+        return window.MOCK_TAGS;
+      } catch (e) {
+        localStorage.setItem('db-tags', JSON.stringify(window.MOCK_TAGS));
+        return window.MOCK_TAGS;
+      }
     },
 
-    // Get tags
-    getTags() {
-      return window.MOCK_TAGS;
+    // Save tags
+    saveTags(tagsList) {
+      localStorage.setItem('db-tags', JSON.stringify(tagsList));
     },
 
     // Toast notification manager
@@ -208,32 +227,38 @@
       const overlay = document.getElementById('confirm-modal-overlay');
       if (!overlay) return;
 
+      // Clone all interactive elements to wipe previous listeners
+      const footer = overlay.querySelector('.modal-footer');
+      const header = overlay.querySelector('.modal-header');
+      if (footer) {
+        const newFooter = footer.cloneNode(true);
+        footer.parentNode.replaceChild(newFooter, footer);
+      }
+      if (header) {
+        const newHeader = header.cloneNode(true);
+        header.parentNode.replaceChild(newHeader, header);
+      }
+
       const titleEl = overlay.querySelector('.modal-title');
       const bodyEl = overlay.querySelector('.modal-body');
       const confirmBtn = overlay.querySelector('.confirm-modal-btn');
       const cancelBtn = overlay.querySelector('.cancel-modal-btn');
+      const closeBtn = overlay.querySelector('.modal-close');
 
       titleEl.innerText = title;
       bodyEl.innerText = body;
 
       const cleanUp = () => {
         overlay.classList.remove('active');
-        // Remove event listeners to avoid duplicates
-        const newConfirmBtn = confirmBtn.cloneNode(true);
-        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
       };
 
-      // Set up click actions
-      const setupConfirm = overlay.querySelector('.confirm-modal-btn');
-      setupConfirm.addEventListener('click', () => {
+      confirmBtn.addEventListener('click', () => {
         onConfirm();
         cleanUp();
       });
 
-      const closeElements = [cancelBtn, overlay.querySelector('.modal-close')];
-      closeElements.forEach(el => {
-        if (el) el.addEventListener('click', cleanUp);
-      });
+      if (cancelBtn) cancelBtn.addEventListener('click', cleanUp);
+      if (closeBtn) closeBtn.addEventListener('click', cleanUp);
 
       overlay.classList.add('active');
     }

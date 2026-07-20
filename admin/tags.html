@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Create, edit, merge, and delete video tags for content classification.">
+  <title>Tags - Admin Console</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/admin/dashboard.css">
+  <link rel="stylesheet" href="../css/admin/videos.css">
+  <link rel="stylesheet" href="../css/admin/tags.css">
+</head>
+<body>
+
+  <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+
+  <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Confirm Action</h3>
+        <button class="modal-close" aria-label="Close dialog">&times;</button>
+      </div>
+      <div class="modal-body">Are you sure?</div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary cancel-modal-btn">Cancel</button>
+        <button class="btn btn-primary confirm-modal-btn">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="confirm-delete-overlay" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Delete Tag</h3>
+        <button class="modal-close" aria-label="Close dialog">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete this tag?</p>
+        <p style="margin-top:var(--space-sm);font-weight:500;color:var(--warning);" id="delete-warning-text"></p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancel-delete-btn">Cancel</button>
+        <button class="btn btn-primary" id="confirm-delete-btn" style="background-color:var(--error);color:#fff;">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-layout">
+    <div class="sidebar-overlay"></div>
+    <aside id="sidebar-container"></aside>
+
+    <div class="admin-main">
+      <header class="admin-header">
+        <div class="admin-header-left">
+          <button class="admin-menu-btn" aria-label="Open sidebar menu" style="display:none;border:none;background:none;cursor:pointer;">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <span style="font-weight:600;font-size:var(--text-sm);">Console</span>
+        </div>
+        <div class="admin-header-right">
+          <a href="../index.html" class="btn btn-secondary">View Live Site</a>
+          <button class="theme-toggle" aria-label="Toggle theme">
+            <svg class="theme-icon-sun" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:none;"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line></svg>
+            <svg class="theme-icon-moon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+          </button>
+        </div>
+      </header>
+
+      <main class="admin-body">
+        <div class="admin-title-row">
+          <div class="admin-title-group">
+            <h1>Tags</h1>
+            <p>Manage video classification tags. Create, merge, or delete tags.</p>
+          </div>
+        </div>
+
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <ol class="breadcrumbs-list">
+            <li><a href="./index.html">Dashboard</a></li>
+            <li><svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg></li>
+            <li><span>Tags</span></li>
+          </ol>
+        </nav>
+
+        <div class="inline-add-tag">
+          <input type="text" id="add-tag-input" placeholder="Type tag name and press Enter to create..." autocomplete="off">
+          <span style="font-size:var(--text-xs);color:var(--text-muted);">Press Enter to add</span>
+        </div>
+
+        <div id="tags-chips-container" class="tags-chips-preview"></div>
+
+        <div class="merge-bar hidden" id="merge-bar">
+          <span style="font-size:var(--text-sm);">Merge <strong id="merge-count">0</strong> selected tags into:</span>
+          <select id="merge-target-select"></select>
+          <button class="btn btn-primary" id="merge-btn" style="padding:var(--space-xs) var(--space-md);font-size:var(--text-xs);">Merge Selected</button>
+        </div>
+
+        <div class="management-bar">
+          <div class="management-left">
+            <div class="table-search-container">
+              <span class="table-search-icon">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              </span>
+              <input type="text" id="table-search-input" placeholder="Search tags..." aria-label="Search tags">
+            </div>
+          </div>
+        </div>
+
+        <section class="table-card" aria-label="Tags listing">
+          <div class="table-header">
+            <h2 class="table-title">All Tags</h2>
+            <span style="font-size:var(--text-xs);color:var(--text-muted);" id="table-count-span">0 tags</span>
+          </div>
+          <div class="table-wrapper">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th class="checkbox-cell">
+                    <input type="checkbox" id="header-checkbox" class="admin-checkbox" aria-label="Select all">
+                  </th>
+                  <th class="sortable-header" data-sort="name">Tag Name</th>
+                  <th class="sortable-header" data-sort="usage">Usage Count</th>
+                  <th class="sortable-header" data-sort="createdDate">Created Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="tags-tbody"></tbody>
+            </table>
+          </div>
+          <footer id="pagination-wrapper"></footer>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <style>
+    @media (max-width: 896px) { .admin-menu-btn { display: flex !important; } }
+  </style>
+
+  <script src="../js/mockData.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/components.js"></script>
+  <script src="../js/animations.js"></script>
+  <script src="../js/admin/tags.js"></script>
+</body>
+</html>

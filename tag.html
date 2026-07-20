@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
+<script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -33,14 +34,18 @@
 
   <main class="container" id="tag-page-container" style="min-height: 80vh;">
     
-    <!-- Tag Page Title header (populates via tag.js) -->
-    <header class="tag-header-container" aria-label="Tag Details">
-      <div class="tag-title-row">
-        <span class="tag-icon-badge">#</span>
-        <h1 class="tag-page-title" id="tag-page-title">Tag Loading...</h1>
+    <!-- Tag Hero Banner -->
+    <section class="tag-hero" id="tag-hero" style="border-radius: var(--radius-lg); overflow: hidden; margin: var(--space-2xl) 0; min-height: 180px; display: flex; align-items: center; border: 1px solid var(--border); box-shadow: var(--shadow-md);">
+      <div class="tag-hero-content" style="padding: var(--space-3xl); width: 100%;">
+        <div class="tag-title-row" style="display: flex; align-items: center; gap: var(--space-md);">
+          <span id="tag-hero-icon" class="tag-icon-badge" style="width: 48px; height: 48px; border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; font-size: var(--text-2xl); font-weight: 700; color: #fff;">#</span>
+          <div>
+            <h1 class="tag-page-title" id="tag-page-title" style="font-size: var(--text-3xl); font-weight: 700;">Tag Loading...</h1>
+            <p class="tag-page-desc" id="tag-page-desc" style="font-size: var(--text-sm); color: var(--text-secondary); margin-top: var(--space-xs);">Searching tag database...</p>
+          </div>
+        </div>
       </div>
-      <p class="tag-page-desc" id="tag-page-desc">Searching tag database...</p>
-    </header>
+    </section>
 
     <!-- Tag Video grid results -->
     <section aria-labelledby="grid-heading">
@@ -50,6 +55,21 @@
       </div>
       <div id="tag-video-grid" class="tag-results-grid">
         <!-- Videos injected here -->
+      </div>
+    </section>
+
+    <!-- Related Tags Section -->
+    <section class="related-tags-section" style="margin-top: var(--space-4xl); margin-bottom: var(--space-4xl); padding-top: var(--space-3xl); border-top: 1px solid var(--border);">
+      <div style="display:flex; align-items: center; gap: var(--space-md); margin-bottom: var(--space-xl);">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted); flex-shrink:0;">
+          <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+          <line x1="7" y1="7" x2="7.01" y2="7"></line>
+        </svg>
+        <h3 style="font-size: var(--text-lg); font-weight: 600; color: var(--text-primary);">Related Tags</h3>
+      </div>
+      <p style="font-size: var(--text-sm); color: var(--text-muted); margin-bottom: var(--space-lg);" id="related-tags-desc">Tags commonly used together with this one</p>
+      <div id="related-tags-container" class="related-tags-grid">
+        <!-- Related tags injected via JS -->
       </div>
     </section>
 

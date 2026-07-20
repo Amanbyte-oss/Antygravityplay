@@ -1,0 +1,124 @@
+.inline-add-tag {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+}
+
+.inline-add-tag input {
+  flex: 1;
+  max-width: 320px;
+  height: 42px;
+  padding: 0 var(--space-md);
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  transition: border-color var(--transition-fast);
+}
+
+.inline-add-tag input:focus {
+  border-color: var(--text-secondary);
+}
+
+.inline-add-tag input.error {
+  border-color: var(--error);
+}
+
+.tags-chips-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xl);
+  min-height: 36px;
+}
+
+.tag-chip-preview {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border);
+  padding: 4px 10px 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  animation: slideUp var(--transition-base) forwards;
+}
+
+.tag-chip-preview .tag-chip-remove {
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.tag-chip-preview .tag-chip-remove:hover {
+  color: var(--error);
+}
+
+.merge-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-xl);
+  font-size: var(--text-sm);
+  flex-wrap: wrap;
+}
+
+.merge-bar.hidden {
+  display: none;
+}
+
+.tag-name-display {
+  font-weight: 500;
+}
+
+.edit-tag-btn, .delete-tag-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-lg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  background: none;
+  cursor: pointer;
+  transition: color var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.edit-tag-btn:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background-color: rgba(0, 112, 243, 0.05);
+}
+
+.delete-tag-btn:hover {
+  color: var(--error);
+  border-color: var(--error);
+  background-color: rgba(238, 0, 0, 0.05);
+}
+
+.tag-row-checkbox {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.merge-bar select {
+  height: 36px;
+  padding: 0 var(--space-md);
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+}

@@ -113,7 +113,7 @@ function setupVideoDetails(video) {
     
     const renderLikeState = () => {
       const isLiked = window.App.isVideoLiked(video.id);
-      likeCountEl.innerText = isLiked ? (initialLikes + 1).toLocaleString() : initialLikes.toLocaleString();
+      likeCountEl.innerText = initialLikes.toLocaleString();
       if (isLiked) {
         likeBtn.classList.add('liked');
       } else {
@@ -134,7 +134,6 @@ function setupVideoDetails(video) {
       if (index !== -1) {
         dbVideos[index].likes = isNowLiked ? dbVideos[index].likes + 1 : dbVideos[index].likes - 1;
         initialLikes = dbVideos[index].likes;
-        if (isNowLiked) initialLikes -= 1; // offset calculation
         window.App.saveVideos(dbVideos);
       }
 
@@ -159,13 +158,14 @@ function setupRelatedSidebar(currentVideo, allVideos) {
   const sidebarContainer = document.getElementById('related-videos-container');
   if (!sidebarContainer) return;
 
-  // Filter and show videos within same category, excluding active video
+  // Filter related by tag overlap, excluding active video
   const relatedVideos = allVideos
     .filter(v => v.id !== currentVideo.id && v.status === 'published')
     .sort((a, b) => {
-      // Prioritize same category
-      if (a.category === currentVideo.category && b.category !== currentVideo.category) return -1;
-      if (b.category === currentVideo.category && a.category !== currentVideo.category) return 1;
+      // Count overlapping tags with current video
+      const aOverlap = a.tags.filter(t => currentVideo.tags.includes(t)).length;
+      const bOverlap = b.tags.filter(t => currentVideo.tags.includes(t)).length;
+      if (aOverlap !== bOverlap) return bOverlap - aOverlap;
       return b.views - a.views;
     })
     .slice(0, 6);

@@ -10,17 +10,11 @@
       const container = document.getElementById('navbar-container');
       if (!container) return;
 
-      const categories = window.App.getCategories();
       const tags = window.App.getTags();
 
-      // Generate Categories Dropdown items
-      const catDropdownItems = categories.map(cat => 
-        `<li><a href="${rootPrefix}category.html?id=${cat.id}">${cat.name}</a></li>`
-      ).join('');
-
       // Generate Tags Dropdown items
-      const tagDropdownItems = tags.slice(0, 10).map(tag => 
-        `<li><a href="${rootPrefix}tag.html?id=${tag.id}">#${tag.name}</a></li>`
+      const tagDropdownItems = tags.map(tag => 
+        `<li><a href="${rootPrefix}tag.html?tag=${encodeURIComponent(tag.name)}"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:${tag.color}; margin-right:6px;"></span>${tag.name}</a></li>`
       ).join('');
 
       const isLoggedIn = localStorage.getItem('admin-session') !== null;
@@ -39,13 +33,7 @@
               <span>Antigravity Play</span>
             </a>
             <nav class="nav-menu" aria-label="Main Navigation">
-              <a href="${rootPrefix}index.html" class="nav-link ${activePage === 'home' ? 'active' : ''}">Browse</a>
-              <div class="nav-link dropdown-container" style="position:relative; cursor:pointer;">
-                Categories ▾
-                <ul class="dropdown-menu">
-                  ${catDropdownItems}
-                </ul>
-              </div>
+              <a href="${rootPrefix}search.html" class="nav-link ${activePage === 'search' ? 'active' : ''}">Browse</a>
               <div class="nav-link dropdown-container" style="position:relative; cursor:pointer;">
                 Tags ▾
                 <ul class="dropdown-menu">
@@ -94,10 +82,18 @@
       const style = document.createElement('style');
       style.innerHTML = `
         .dropdown-container:hover .dropdown-menu { display: block; }
+        .dropdown-container::before {
+          content: '';
+          position: absolute;
+          bottom: -4px;
+          left: 0;
+          right: 0;
+          height: 8px;
+        }
         .dropdown-menu {
           display: none;
           position: absolute;
-          top: 100%;
+          top: calc(100% + 4px);
           left: 0;
           background-color: var(--bg-secondary);
           border: 1px solid var(--border);
@@ -105,7 +101,6 @@
           min-width: 180px;
           list-style: none;
           padding: var(--space-sm) 0;
-          margin-top: var(--space-xs);
           box-shadow: var(--shadow-lg);
           z-index: 200;
         }
@@ -174,6 +169,42 @@
                 Upload Video
               </a>
             </li>
+            <li>
+              <a href="${adminPrefix}tags.html" class="sidebar-link ${activePage === 'tags' ? 'active' : ''}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                  <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                </svg>
+                Tags
+              </a>
+            </li>
+            <li>
+              <a href="${adminPrefix}analytics.html" class="sidebar-link ${activePage === 'analytics' ? 'active' : ''}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line>
+                  <line x1="6" y1="20" x2="6" y2="14"></line>
+                </svg>
+                Analytics
+              </a>
+            </li>
+            <li>
+              <a href="${adminPrefix}notifications.html" class="sidebar-link ${activePage === 'notifications' ? 'active' : ''}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                Notifications
+              </a>
+            </li>
+            <li>
+              <a href="${adminPrefix}settings.html" class="sidebar-link ${activePage === 'settings' ? 'active' : ''}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="3"></circle>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+                Settings
+              </a>
+            </li>
           </ul>
           
           <div class="sidebar-footer">
@@ -224,7 +255,7 @@
               <ul>
                 <li><a href="${rootPrefix}index.html">Trending</a></li>
                 <li><a href="${rootPrefix}search.html">Search</a></li>
-                <li><a href="${rootPrefix}index.html">Categories</a></li>
+                <li><a href="${rootPrefix}tag.html">Tags</a></li>
               </ul>
             </div>
             <div class="footer-col">
@@ -253,8 +284,19 @@
     // 4. VIDEO CARD
     renderVideoCard(video) {
       const isLiked = window.App.isVideoLiked(video.id);
+      const allTags = window.App.getTags();
+      const videoTagIds = (video.tags || []).slice(0, 3);
+      const extraCount = (video.tags || []).length - 3;
+      const tagPillsHtml = videoTagIds.map(tagId => {
+        const tag = allTags.find(t => t.id === tagId);
+        if (!tag) return '';
+        return `<a href="${rootPrefix}tag.html?tag=${encodeURIComponent(tag.name)}" class="tag-pill" style="display:inline-flex; align-items:center; gap:4px; padding:2px 8px; font-size:11px; border-radius:12px; border-left:4px solid ${tag.color}; background:${tag.color}18; color:var(--text-secondary); text-decoration:none; margin-right:4px; margin-bottom:4px;">${tag.name}</a>`;
+      }).join('');
+      const moreHtml = extraCount > 0 ? `<span style="font-size:11px; color:var(--text-muted); margin-left:2px;">+${extraCount}</span>` : '';
+      const tagsSection = (tagPillsHtml || moreHtml) ? `<div class="video-tag-pills" style="margin-top:6px;">${tagPillsHtml}${moreHtml}</div>` : '';
+
       return `
-        <article class="video-card reveal-on-scroll" data-video-id="${video.id}" onclick="window.location.href='${rootPrefix}watch.html?id=${video.id}'">
+        <article class="video-card" data-video-id="${video.id}" onclick="window.location.href='${rootPrefix}watch.html?id=${video.id}'">
           <div class="thumbnail-container">
             <img class="lazy" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9'%3E%3Crect width='100%25' height='100%25' fill='%231f1f1f'/%3E%3C/svg%3E" data-src="${video.thumbnail}" alt="${video.title} Preview">
             <span class="duration-badge">${video.duration}</span>
@@ -270,30 +312,22 @@
               <div class="video-creator">${video.creator}</div>
               <div>${Number(video.views).toLocaleString()} views &bull; ${video.publishDate}</div>
             </div>
+            ${tagsSection}
           </div>
         </article>
       `;
     },
 
-    // 5. CATEGORY CARD (Spotify Style Pill card)
-    renderCategoryCard(cat) {
-      return `
-        <a href="${rootPrefix}category.html?id=${cat.id}" class="category-pill" style="border-left: 4px solid ${cat.color};">
-          ${cat.name}
-        </a>
-      `;
-    },
-
-    // 6. TAG CARD
+    // 5. TAG CARD
     renderTagCard(tag) {
       return `
-        <a href="${rootPrefix}tag.html?id=${tag.id}" class="tag-badge">
-          #${tag.name}
+        <a href="${rootPrefix}tag.html?tag=${encodeURIComponent(tag.name)}" class="tag-badge" style="border-left:4px solid ${tag.color}; background:${tag.color}18;">
+          ${tag.name}
         </a>
       `;
     },
 
-    // 7. SKELETON LOADER
+    // 6. SKELETON LOADER
     renderSkeletonLoader() {
       return Array(6).fill(0).map(() => `
         <div class="video-card">
@@ -307,7 +341,7 @@
       `).join('');
     },
 
-    // 8. EMPTY STATE
+    // 7. EMPTY STATE
     renderEmptyState(message = 'No videos found matching your filters.') {
       return `
         <div class="empty-state-container" style="grid-column: 1 / -1; text-align: center; padding: var(--space-4xl) var(--space-xl); border: 1px dashed var(--border); border-radius: var(--radius-lg); background-color: var(--bg-secondary); margin: var(--space-xl) 0;">
@@ -321,7 +355,7 @@
       `;
     },
 
-    // 9. ERROR STATE
+    // 8. ERROR STATE
     renderErrorState(message = 'Failed to load videos.') {
       return `
         <div class="error-state-container" style="grid-column: 1 / -1; text-align: center; padding: var(--space-4xl) var(--space-xl); border: 1px solid var(--error); border-radius: var(--radius-lg); background-color: rgba(238, 0, 0, 0.05); margin: var(--space-xl) 0; color: var(--error);">

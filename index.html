@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
+<script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Browse and play high-quality video content from tech, music, gaming, and lifestyle creators on Antigravity Play.">
+  <meta name="description" content="Browse and play high-quality video content across tech, music, gaming, and lifestyle on Antigravity Play.">
   <title>Browse Videos - Antigravity Play</title>
   <link rel="stylesheet" href="./css/main.css">
   <link rel="stylesheet" href="./css/home.css">
@@ -38,11 +39,11 @@
     <!-- Hero Banner (populates via home.js) -->
     <section id="hero-section" aria-label="Featured Video"></section>
 
-    <!-- Categories row -->
-    <section class="row-section" aria-labelledby="cat-heading">
-      <h2 id="cat-heading" class="row-title" style="margin-bottom: var(--space-lg);">Explore Categories</h2>
-      <div id="categories-container" class="category-row">
-        <!-- Category cards injected here -->
+    <!-- Popular Tags row -->
+    <section class="row-section" aria-labelledby="tags-heading">
+      <h2 id="tags-heading" class="row-title" style="margin-bottom: var(--space-lg);">Popular Tags</h2>
+      <div id="popular-tags-container" class="tags-pill-row">
+        <!-- Tag pills injected here -->
       </div>
     </section>
 
@@ -72,29 +73,13 @@
       </div>
     </section>
 
-    <!-- Category Specific Rows (Tech & Gadgets) -->
-    <section class="row-section" aria-labelledby="tech-heading">
+    <!-- Browse by Tag Section -->
+    <section class="row-section" aria-labelledby="browse-tag-heading" style="margin-bottom: var(--space-5xl);">
       <div class="row-header">
-        <h2 id="tech-heading" class="row-title">Tech & Gadgets</h2>
-        <a href="./category.html?id=tech" class="row-link">Explore Category</a>
+        <h2 id="browse-tag-heading" class="row-title">Browse by Tag</h2>
       </div>
-      <div class="scroll-container-wrapper">
-        <div id="tech-row-container" class="scroll-container">
-          <!-- Video cards injected here -->
-        </div>
-      </div>
-    </section>
-
-    <!-- Category Specific Rows (Music) -->
-    <section class="row-section" aria-labelledby="music-heading" style="margin-bottom: var(--space-5xl);">
-      <div class="row-header">
-        <h2 id="music-heading" class="row-title">Music & Acoustic</h2>
-        <a href="./category.html?id=music" class="row-link">Explore Category</a>
-      </div>
-      <div class="scroll-container-wrapper">
-        <div id="music-row-container" class="scroll-container">
-          <!-- Video cards injected here -->
-        </div>
+      <div id="browse-tag-grid" class="browse-tag-grid">
+        <!-- Tag cards injected here -->
       </div>
     </section>
 

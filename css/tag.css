@@ -43,3 +43,21 @@
   gap: var(--space-xl);
   margin-bottom: var(--space-4xl);
 }
+
+/* --- RELATED TAGS GRID --- */
+.related-tags-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-md);
+}
+
+.related-tag-card:hover {
+  background: var(--bg-elevated) !important;
+  border-color: var(--text-muted) !important;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.related-tag-card:hover svg {
+  color: var(--text-secondary) !important;
+}

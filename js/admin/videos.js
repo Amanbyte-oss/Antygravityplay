@@ -3,13 +3,29 @@ document.addEventListener('DOMContentLoaded', () => {
   // 1. Inject Admin Sidebar
   window.Components.injectAdminSidebar('videos');
 
+  const TAG_PALETTE = ['#0070f3','#7928ca','#ff0080','#ffa42b','#50e3c2','#539df5','#1db954','#f3727f','#e91e63','#ff5722','#9c27b0','#00bcd4','#ff9800','#4caf50','#f44336','#3f51b5'];
+
+  function tagColor(tagId) {
+    const t = window.App.getTags().find(tg => tg.id === tagId);
+    return t ? t.color : '#888';
+  }
+
+  // Render tag pills for a video
+  function renderTagPills(video, state) {
+    const allTags = window.App.getTags();
+    const resolvedTags = (video.tags || []).map(tId => allTags.find(t => t.id === tId)).filter(Boolean);
+    if (resolvedTags.length === 0) return '<span style="font-size:var(--text-xs); color:var(--text-muted);">—</span>';
+    return resolvedTags.map(t => 
+      `<span class="tag-pill" style="border-left: 3px solid ${t.color}; padding: 1px 8px; font-size: 10px; margin: 2px; display:inline-block; border-radius: 9999px; background-color: ${t.color}15;">${t.name}</span>`
+    ).join(' ');
+  }
+
   // 2. Setup state
   const state = {
     videos: window.App.getVideos(),
-    categories: window.App.getCategories(),
     searchQuery: '',
     currentPage: 1,
-    itemsPerPage: 5,
+    itemsPerPage: 15,
     sortBy: 'publishDate',
     sortOrder: 'desc', // 'asc' or 'desc'
     selectedIds: []
@@ -53,12 +69,6 @@ function renderTable(state) {
     let valA = a[state.sortBy];
     let valB = b[state.sortBy];
 
-    // Resolve category name if sorting by category
-    if (state.sortBy === 'category') {
-      valA = state.categories.find(c => c.id === a.category)?.name || a.category;
-      valB = state.categories.find(c => c.id === b.category)?.name || b.category;
-    }
-
     if (typeof valA === 'string') {
       return state.sortOrder === 'asc' 
         ? valA.localeCompare(valB) 
@@ -88,7 +98,6 @@ function renderTable(state) {
   }
 
   tbody.innerHTML = pageItems.map(vid => {
-    const catName = state.categories.find(c => c.id === vid.category)?.name || vid.category;
     const isChecked = state.selectedIds.includes(vid.id) ? 'checked' : '';
     const statusBadgeClass = vid.status === 'published' ? 'badge-success' : 'badge-warning';
 
@@ -106,7 +115,9 @@ function renderTable(state) {
           <div class="inline-editable edit-title" data-id="${vid.id}">${vid.title}</div>
         </td>
         <td>
-          <div class="inline-editable edit-category" data-id="${vid.id}" data-value="${vid.category}">${catName}</div>
+          <div class="tags-cell-display" data-video-id="${vid.id}">
+            ${renderTagPills(vid, state)}
+          </div>
         </td>
         <td style="font-family: var(--font-mono);">${Number(vid.views).toLocaleString()}</td>
         <td style="font-family: var(--font-mono);">${Number(vid.likes).toLocaleString()}</td>
@@ -131,7 +142,7 @@ function renderTable(state) {
   bindTableRowActions(state);
 
   // Render pagination footer UI
-  renderPaginationControls(state, totalPages);
+  renderPaginationControls(state, totalPages, filtered.length);
 
   // Sync main checkbox header
   syncHeaderCheckbox(state, pageItems);
@@ -175,41 +186,113 @@ function bindTableRowActions(state) {
     });
   });
 
-  // Category Inline Edit
-  document.querySelectorAll('.edit-category').forEach(el => {
-    el.addEventListener('click', () => {
-      if (el.querySelector('select')) return;
+  // Tags Inline Edit (opens inline tag selector)
+  document.querySelectorAll('.tags-cell-display').forEach(el => {
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (el.querySelector('.inline-tag-selector')) return;
 
-      const videoId = el.dataset.id;
-      const curVal = el.dataset.value;
-      const select = document.createElement('select');
-      select.className = 'inline-edit-select';
-      
-      select.innerHTML = state.categories.map(c => 
-        `<option value="${c.id}" ${c.id === curVal ? 'selected' : ''}>${c.name}</option>`
-      ).join('');
+      const videoId = el.dataset.videoId;
+      const video = state.videos.find(v => v.id === videoId);
+      if (!video) return;
+
+      const allTags = window.App.getTags();
+      const videoTags = video.tags || [];
+
+      const selector = document.createElement('div');
+      selector.className = 'inline-tag-selector';
+      selector.style.cssText = 'display:flex; flex-wrap:wrap; gap:4px; padding:4px; background:var(--bg-elevated); border-radius:var(--radius-sm); max-width:300px;';
+
+      selector.innerHTML = allTags.map(tag => {
+        const isSelected = videoTags.includes(tag.id);
+        return `
+          <span class="inline-tag-option ${isSelected ? 'selected' : ''}" data-tag-id="${tag.id}" style="display:inline-flex; align-items:center; gap:3px; padding:2px 8px; border-radius:9999px; font-size:10px; cursor:pointer; border:1px solid ${tag.color}; background-color:${isSelected ? tag.color : 'transparent'}; color:${isSelected ? '#fff' : 'inherit'};">
+            ${tag.name}
+          </span>
+        `;
+      }).join('');
+
+      selector.innerHTML += `
+        <div style="width:100%; margin-top:4px; display:flex; gap:4px;">
+          <input type="text" class="inline-tag-search" placeholder="Add tag..." style="flex:1; font-size:10px; padding:2px 6px; border:1px solid var(--border); border-radius:9999px; background:var(--bg-primary);">
+        </div>
+      `;
 
       el.innerHTML = '';
-      el.appendChild(select);
-      select.focus();
+      el.appendChild(selector);
 
-      const saveEdit = () => {
-        const nextVal = select.value;
-        if (nextVal !== curVal) {
-          const vIdx = state.videos.findIndex(v => v.id === videoId);
-          if (vIdx !== -1) {
-            state.videos[vIdx].category = nextVal;
-            window.App.saveVideos(state.videos);
-            window.App.showToast('Category updated successfully.');
+      // Click option to toggle
+      selector.querySelectorAll('.inline-tag-option').forEach(opt => {
+        opt.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const tId = opt.dataset.tagId;
+          const idx = videoTags.indexOf(tId);
+          if (idx !== -1) {
+            videoTags.splice(idx, 1);
+            opt.classList.remove('selected');
+            opt.style.backgroundColor = 'transparent';
+            opt.style.color = 'inherit';
+          } else {
+            if (videoTags.length >= 10) {
+              window.App.showToast('Maximum 10 tags.', 'error');
+              return;
+            }
+            videoTags.push(tId);
+            opt.classList.add('selected');
+            opt.style.backgroundColor = tagColor(tId);
+            opt.style.color = '#fff';
           }
-        }
-        renderTable(state);
-      };
+          video.tags = videoTags;
+          window.App.saveVideos(state.videos);
+        });
+      });
 
-      select.addEventListener('blur', saveEdit);
-      select.addEventListener('change', saveEdit);
-      select.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') renderTable(state);
+      // Custom tag search
+      const searchInput = selector.querySelector('.inline-tag-search');
+      if (searchInput) {
+        searchInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            const name = searchInput.value.trim();
+            if (!name) return;
+            if (videoTags.length >= 10) {
+              window.App.showToast('Maximum 10 tags.', 'error');
+              return;
+            }
+
+            const allTagsData = window.App.getTags();
+            let existing = allTagsData.find(t => t.name.toLowerCase() === name.toLowerCase());
+            if (existing) {
+              if (!videoTags.includes(existing.id)) {
+                videoTags.push(existing.id);
+                video.tags = videoTags;
+                window.App.saveVideos(state.videos);
+              }
+            } else {
+              const newId = 'tag-' + Date.now();
+              const color = TAG_PALETTE[Math.floor(Math.random() * TAG_PALETTE.length)];
+              const newTag = { id: newId, name, color, usageCount: 0 };
+              allTagsData.push(newTag);
+              window.App.saveTags(allTagsData);
+              videoTags.push(newId);
+              video.tags = videoTags;
+              window.App.saveVideos(state.videos);
+            }
+            renderTable(state);
+          }
+        });
+
+        searchInput.addEventListener('blur', () => {
+          setTimeout(() => renderTable(state), 200);
+        });
+      }
+
+      // Close on click outside
+      document.addEventListener('click', function closeSelector(ev) {
+        if (!selector.contains(ev.target)) {
+          renderTable(state);
+          document.removeEventListener('click', closeSelector);
+        }
       });
     });
   });
@@ -289,13 +372,13 @@ function bindTableRowActions(state) {
 }
 
 // Generate pagination numbers and bindings
-function renderPaginationControls(state, totalPages) {
+function renderPaginationControls(state, totalPages, totalFiltered) {
   const container = document.getElementById('pagination-wrapper');
   if (!container) return;
 
   const startIdx = (state.currentPage - 1) * state.itemsPerPage + 1;
   let endIdx = state.currentPage * state.itemsPerPage;
-  const totalItems = state.videos.length;
+  const totalItems = totalFiltered !== undefined ? totalFiltered : state.videos.length;
   if (endIdx > totalItems) endIdx = totalItems;
 
   const prevDisabled = state.currentPage === 1 ? 'disabled' : '';

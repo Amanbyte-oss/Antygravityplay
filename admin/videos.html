@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
+<script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -43,7 +44,7 @@
       <!-- Top Mobile Header bar -->
       <header class="admin-header">
         <div class="admin-header-left">
-          <button class="admin-menu-btn theme-toggle" aria-label="Open sidebar menu" style="display:none; border:none; background:none; cursor:pointer;">
+          <button class="admin-menu-btn" aria-label="Open sidebar menu" style="display:none; border:none; background:none; cursor:pointer;">
             <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line>
             </svg>
@@ -51,7 +52,7 @@
           <span style="font-weight: 600; font-size: var(--text-sm);">Console</span>
         </div>
         <div class="admin-header-right">
-          <a href="../index.html" class="btn btn-secondary" style="border-radius: var(--radius-sm); padding: var(--space-xs) var(--space-md); font-size: var(--text-xs);">
+          <a href="../index.html" class="btn btn-secondary">
             View Live Site
           </a>
           <button class="theme-toggle" aria-label="Toggle theme">
@@ -74,7 +75,7 @@
             <p>Manage, paginate, search, and inline-edit your published clips and drafts.</p>
           </div>
           <div>
-            <a href="./upload.html" class="btn btn-primary" style="border-radius: var(--radius-sm); padding: var(--space-sm) var(--space-lg);">
+            <a href="./upload.html" class="btn btn-primary">
               Upload Video
             </a>
           </div>
@@ -95,9 +96,9 @@
           </div>
 
           <!-- Bulk actions toolbar (hidden by default) -->
-          <div class="management-right" id="bulk-actions-bar" style="display:none; background-color: var(--bg-secondary); border: 1px solid var(--border); padding: 4px var(--space-md); border-radius: var(--radius-sm);">
-            <span style="font-size: var(--text-xs); color: var(--text-secondary); margin-right: var(--space-md);" id="bulk-selected-count">0 selected</span>
-            <button id="delete-selected-btn" class="btn btn-secondary" style="border-radius:var(--radius-sm); padding: 4px var(--space-md); font-size:var(--text-xs); color: var(--error); border-color: var(--error);">
+          <div class="management-right" id="bulk-actions-bar" style="display:none;">
+            <span id="bulk-selected-count">0 selected</span>
+            <button id="delete-selected-btn" class="btn btn-secondary delete-btn-sm">
               Delete Selected
             </button>
           </div>
@@ -118,13 +119,13 @@
                   <th class="checkbox-cell">
                     <input type="checkbox" id="header-checkbox" class="admin-checkbox" aria-label="Select all visible videos">
                   </th>
-                  <th style="width: 100px;">Thumbnail</th>
+                  <th>Thumbnail</th>
                   <th class="sortable-header" data-sort="title">Title</th>
-                  <th class="sortable-header" data-sort="category">Category</th>
+                  <th>Tags</th>
                   <th class="sortable-header" data-sort="views">Views</th>
                   <th class="sortable-header" data-sort="likes">Likes</th>
                   <th class="sortable-header" data-sort="status">Status</th>
-                  <th style="width: 80px;">Actions</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody id="videos-tbody">
