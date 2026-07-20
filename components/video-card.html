@@ -1,0 +1,18 @@
+<article class="video-card reveal-on-scroll" data-video-id="{{video.id}}">
+  <div class="thumbnail-container">
+    <img class="lazy" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9'%3E%3Crect width='100%25' height='100%25' fill='%231f1f1f'/%3E%3C/svg%3E" data-src="{{video.thumbnail}}" alt="{{video.title}} Preview">
+    <span class="duration-badge">{{video.duration}}</span>
+    <button class="play-hover-btn" aria-label="Play video">
+      <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+        <polygon points="8,5 19,12 8,19"></polygon>
+      </svg>
+    </button>
+  </div>
+  <div class="video-info">
+    <h3 class="video-title">{{video.title}}</h3>
+    <div class="video-meta">
+      <div class="video-creator">{{video.creator}}</div>
+      <div>{{video.views}} views &bull; {{video.publishDate}}</div>
+    </div>
+  </div>
+</article>

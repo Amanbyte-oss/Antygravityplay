@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Sign in to your administration dashboard on Antigravity Play.">
+  <title>Admin Login - Antigravity Play</title>
+  <link rel="stylesheet" href="./css/main.css">
+  <link rel="stylesheet" href="./css/login.css">
+</head>
+<body>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+
+  <!-- Reusable Confirmation Modal Container -->
+  <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Confirm Action</h3>
+        <button class="modal-close" aria-label="Close dialog">&times;</button>
+      </div>
+      <div class="modal-body">Are you sure?</div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary cancel-modal-btn">Cancel</button>
+        <button class="btn btn-primary confirm-modal-btn">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Public Navbar injected here -->
+  <header id="navbar-container" class="navbar-wrapper"></header>
+
+  <main class="container login-layout">
+    
+    <article class="login-card">
+      <div class="login-logo">
+        <svg class="logo-icon" width="40" height="40" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" fill="var(--accent)"></circle>
+          <polygon points="10,8 16,12 10,16" fill="#000"></polygon>
+        </svg>
+        <h2>Admin Console</h2>
+        <p>Access analytics and manage video database catalog.</p>
+      </div>
+
+      <form id="login-form" class="login-form">
+        
+        <!-- Email field -->
+        <div class="form-group">
+          <label class="form-label" for="email-input">Email Address</label>
+          <input type="email" id="email-input" class="form-input-field" placeholder="admin@videoshare.com" required autocomplete="username">
+        </div>
+
+        <!-- Password field -->
+        <div class="form-group">
+          <label class="form-label" for="password-input">Password</label>
+          <input type="password" id="password-input" class="form-input-field" placeholder="••••••••" required autocomplete="current-password">
+          <div id="login-error-msg" class="login-error-msg" role="alert"></div>
+        </div>
+
+        <!-- Submit btn -->
+        <button type="submit" class="login-btn">
+          Sign In
+        </button>
+
+      </form>
+    </article>
+
+  </main>
+
+  <!-- Footer injected here -->
+  <footer id="footer-container"></footer>
+
+  <!-- Scripts -->
+  <script src="./js/mockData.js"></script>
+  <script src="./js/main.js"></script>
+  <script src="./js/components.js"></script>
+  <script src="./js/animations.js"></script>
+  <script src="./js/login.js"></script>
+</body>
+</html>

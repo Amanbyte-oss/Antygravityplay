@@ -1,0 +1,59 @@
+/* --- CATEGORY HERO --- */
+.category-hero {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin: var(--space-2xl) 0;
+  min-height: 200px;
+  display: flex;
+  align-items: flex-end;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+}
+
+.category-hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, transparent 30%, rgba(0, 0, 0, 0.8) 100%);
+  z-index: 1;
+}
+
+.category-hero-content {
+  position: relative;
+  z-index: 10;
+  padding: var(--space-2xl) var(--space-3xl);
+  color: #ffffff;
+}
+
+.category-hero-title {
+  font-size: var(--text-4xl);
+  font-weight: 700;
+  margin-bottom: var(--space-sm);
+  letter-spacing: -1px;
+}
+
+.category-hero-desc {
+  font-size: var(--text-sm);
+  color: rgba(255, 255, 255, 0.7);
+  max-width: 600px;
+}
+
+.category-grid-title {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  margin-bottom: var(--space-lg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.category-video-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-xl);
+  margin-bottom: var(--space-4xl);
+}

@@ -1,0 +1,45 @@
+/* --- TAG HEADER --- */
+.tag-header-container {
+  margin: var(--space-2xl) 0;
+  padding: var(--space-2xl) 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.tag-title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.tag-icon-badge {
+  background-color: var(--accent);
+  color: #000;
+  font-family: var(--font-mono);
+  font-size: var(--text-md);
+  font-weight: 700;
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-sm);
+}
+
+[data-theme="light"] .tag-icon-badge {
+  color: #fff;
+}
+
+.tag-page-title {
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.tag-page-desc {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin-top: var(--space-sm);
+}
+
+.tag-results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-xl);
+  margin-bottom: var(--space-4xl);
+}

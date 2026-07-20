@@ -1,0 +1,18 @@
+[
+  {"id": "programming", "name": "Programming"},
+  {"id": "review", "name": "Review"},
+  {"id": "live", "name": "Live"},
+  {"id": "highlight", "name": "Highlight"},
+  {"id": "tutorial", "name": "Tutorial"},
+  {"id": "vlogging", "name": "Vlogging"},
+  {"id": "gameplay", "name": "Gameplay"},
+  {"id": "indie", "name": "Indie"},
+  {"id": "pop", "name": "Pop"},
+  {"id": "rock", "name": "Rock"},
+  {"id": "design", "name": "Design"},
+  {"id": "setup", "name": "Setup"},
+  {"id": "food", "name": "Food"},
+  {"id": "workout", "name": "Workout"},
+  {"id": "speedrun", "name": "Speedrun"},
+  {"id": "unboxing", "name": "Unboxing"}
+]

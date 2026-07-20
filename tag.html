@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Browse published video items matching selected tag references on Antigravity Play.">
+  <title>Tag Videos - Antigravity Play</title>
+  <link rel="stylesheet" href="./css/main.css">
+  <link rel="stylesheet" href="./css/tag.css">
+</head>
+<body>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+
+  <!-- Reusable Confirmation Modal Container -->
+  <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Confirm Action</h3>
+        <button class="modal-close" aria-label="Close dialog">&times;</button>
+      </div>
+      <div class="modal-body">Are you sure?</div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary cancel-modal-btn">Cancel</button>
+        <button class="btn btn-primary confirm-modal-btn">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navbar injected here -->
+  <header id="navbar-container" class="navbar-wrapper"></header>
+
+  <main class="container" id="tag-page-container" style="min-height: 80vh;">
+    
+    <!-- Tag Page Title header (populates via tag.js) -->
+    <header class="tag-header-container" aria-label="Tag Details">
+      <div class="tag-title-row">
+        <span class="tag-icon-badge">#</span>
+        <h1 class="tag-page-title" id="tag-page-title">Tag Loading...</h1>
+      </div>
+      <p class="tag-page-desc" id="tag-page-desc">Searching tag database...</p>
+    </header>
+
+    <!-- Tag Video grid results -->
+    <section aria-labelledby="grid-heading">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: var(--space-lg);">
+        <h2 id="grid-heading" style="font-size: var(--text-md); font-weight:600; color:var(--text-primary);">Tag Playlist</h2>
+        <a href="./index.html" style="font-size: var(--text-sm); font-weight:600; color: var(--text-secondary);">&larr; Back to Browse</a>
+      </div>
+      <div id="tag-video-grid" class="tag-results-grid">
+        <!-- Videos injected here -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer injected here -->
+  <footer id="footer-container"></footer>
+
+  <!-- Scripts -->
+  <script src="./js/mockData.js"></script>
+  <script src="./js/main.js"></script>
+  <script src="./js/components.js"></script>
+  <script src="./js/animations.js"></script>
+  <script src="./js/tag.js"></script>
+</body>
+</html>

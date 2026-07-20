@@ -1,0 +1,97 @@
+.login-layout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 128px); /* Height minus navbar/footer spaces */
+  padding: var(--space-xl) 0;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3xl) var(--space-2xl);
+  box-shadow: var(--shadow-lg);
+  transition: background-color var(--transition-base), border-color var(--transition-base);
+}
+
+.login-logo {
+  text-align: center;
+  margin-bottom: var(--space-2xl);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.login-logo h2 {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.login-logo p {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.form-label {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  letter-spacing: 0.5px;
+}
+
+.form-input-field {
+  width: 100%;
+  height: 42px;
+  padding: 0 var(--space-md);
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  transition: border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.form-input-field:focus {
+  border-color: var(--text-secondary);
+  background-color: var(--bg-secondary);
+}
+
+.login-error-msg {
+  color: var(--error);
+  font-size: var(--text-xs);
+  margin-top: var(--space-xs);
+  display: none;
+}
+
+.login-btn {
+  width: 100%;
+  height: 42px;
+  border-radius: var(--radius-sm);
+  background-color: var(--text-primary);
+  color: var(--bg-primary);
+  font-weight: 600;
+  font-size: var(--text-sm);
+  transition: opacity var(--transition-fast);
+}
+
+.login-btn:hover {
+  opacity: 0.9;
+}
