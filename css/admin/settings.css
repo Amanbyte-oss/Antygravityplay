@@ -52,6 +52,15 @@
   background-color: var(--bg-elevated);
 }
 
+@media (max-width: 576px) {
+  .settings-row {
+    flex-direction: column;
+    gap: var(--space-md);
+    margin: 0;
+    padding: var(--space-md);
+  }
+}
+
 .settings-row:last-child {
   border-bottom: none;
 }
@@ -233,6 +242,15 @@
 .theme-radio-group {
   display: flex;
   gap: var(--space-lg);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+@media (max-width: 480px) {
+  .theme-radio-card {
+    min-width: 80px;
+    padding: var(--space-md);
+  }
 }
 
 .theme-radio-card {

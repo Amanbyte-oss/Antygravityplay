@@ -4,6 +4,12 @@
   const rootPrefix = isInsideAdmin ? '../' : './';
   const adminPrefix = isInsideAdmin ? './' : './admin/';
 
+  function escapeHtml(str) {
+    if (typeof str !== 'string') return String(str || '');
+    const map = { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' };
+    return str.replace(/[&<>"']/g, ch => map[ch]);
+  }
+
   const Components = {
     // 1. PUBLIC NAVBAR
     injectNavbar(activePage = '') {
@@ -16,11 +22,6 @@
       const tagDropdownItems = tags.map(tag => 
         `<li><a href="${rootPrefix}tag.html?tag=${encodeURIComponent(tag.name)}"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:${tag.color}; margin-right:6px;"></span>${tag.name}</a></li>`
       ).join('');
-
-      const isLoggedIn = localStorage.getItem('admin-session') !== null;
-      const adminLink = isLoggedIn 
-        ? `<a href="${adminPrefix}index.html" class="nav-link ${activePage === 'admin' ? 'active' : ''}">Dashboard</a>`
-        : `<a href="${rootPrefix}login.html" class="nav-link ${activePage === 'login' ? 'active' : ''}">Admin Login</a>`;
 
       container.innerHTML = `
         <div class="navbar">
@@ -57,7 +58,12 @@
           </div>
 
           <div class="nav-right">
-            ${adminLink}
+            <a href="${rootPrefix}search.html" class="nav-link ${activePage === 'search' ? 'active' : ''}">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px;">
+                <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              Advanced Search
+            </a>
             <button class="theme-toggle" aria-label="Toggle theme">
               <svg class="theme-icon-sun" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:none;">
                 <circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line>
@@ -124,6 +130,18 @@
       // Adjust theme icons on load
       updateThemeIcons();
       window.addEventListener('themechanged', updateThemeIcons);
+
+      // Mobile hamburger toggle (navbar is now in DOM)
+      const hamburger = container.querySelector('.hamburger');
+      const navMenu = container.querySelector('.nav-menu');
+      if (hamburger && navMenu) {
+        hamburger.addEventListener('click', () => {
+          const isOpen = navMenu.classList.toggle('active');
+          hamburger.classList.toggle('active');
+          hamburger.setAttribute('aria-expanded', isOpen);
+          document.body.style.overflow = isOpen ? 'hidden' : '';
+        });
+      }
     },
 
     // 2. ADMIN SIDEBAR
@@ -143,6 +161,7 @@
               </svg>
               <span>Antigravity Play</span>
             </a>
+            <button class="sidebar-close-btn" aria-label="Close sidebar">&times;</button>
           </div>
           <ul class="sidebar-menu">
             <li>
@@ -271,8 +290,8 @@
             <div class="footer-col">
               <h4>Legal</h4>
               <ul>
-                <li><a href="#">Privacy Policy</a></li>
-                <li><a href="#">Terms of Use</a></li>
+                <li><a href="${rootPrefix}privacy.html">Privacy Policy</a></li>
+                <li><a href="${rootPrefix}terms.html">Terms of Use</a></li>
               </ul>
             </div>
           </div>
@@ -293,17 +312,21 @@
       const tagPillsHtml = videoTagIds.map(tagId => {
         const tag = allTags.find(t => t.id === tagId);
         if (!tag) return '';
-        return `<a href="${rootPrefix}tag.html?tag=${encodeURIComponent(tag.name)}" class="tag-pill" style="display:inline-flex; align-items:center; gap:4px; padding:2px 8px; font-size:11px; border-radius:12px; border-left:4px solid ${tag.color}; background:${tag.color}18; color:var(--text-secondary); text-decoration:none; margin-right:4px; margin-bottom:4px;">${tag.name}</a>`;
+        return `<a href="${rootPrefix}tag.html?tag=${encodeURIComponent(tag.name)}" class="tag-pill" style="display:inline-flex; align-items:center; gap:4px; padding:2px 8px; font-size:11px; border-radius:12px; border-left:4px solid ${tag.color}; background:${tag.color}18; color:var(--text-secondary); text-decoration:none; margin-right:4px; margin-bottom:4px;">${escapeHtml(tag.name)}</a>`;
       }).join('');
       const moreHtml = extraCount > 0 ? `<span style="font-size:11px; color:var(--text-muted); margin-left:2px;">+${extraCount}</span>` : '';
       const tagsSection = (tagPillsHtml || moreHtml) ? `<div class="video-tag-pills" style="margin-top:6px;">${tagPillsHtml}${moreHtml}</div>` : '';
 
       const href = `${rootPrefix}watch.html?id=${encodeURIComponent(video.id)}`;
+      const safeTitle = escapeHtml(video.title);
+      const safeCreator = escapeHtml(video.creator);
+      const safeDuration = escapeHtml(video.duration);
+      const safePubDate = escapeHtml(video.publishDate);
       return `
         <article class="video-card" data-video-id="${video.id}" data-href="${href}">
           <div class="thumbnail-container">
-            <img class="lazy" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9'%3E%3Crect width='100%25' height='100%25' fill='%231f1f1f'/%3E%3C/svg%3E" data-src="${video.thumbnail}" alt="${video.title} Preview">
-            <span class="duration-badge">${video.duration}</span>
+            <img class="lazy" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9'%3E%3Crect width='100%25' height='100%25' fill='%231f1f1f'/%3E%3C/svg%3E" data-src="${video.thumbnail}" alt="${safeTitle} Preview">
+            <span class="duration-badge">${safeDuration}</span>
             <button class="play-hover-btn" data-href="${href}" aria-label="Play video">
               <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
                 <polygon points="8,5 19,12 8,19"></polygon>
@@ -311,10 +334,10 @@
             </button>
           </div>
           <div class="video-info">
-            <h3 class="video-title">${video.title}</h3>
+            <h3 class="video-title">${safeTitle}</h3>
             <div class="video-meta">
-              <div class="video-creator">${video.creator}</div>
-              <div>${Number(video.views).toLocaleString()} views &bull; ${video.publishDate}</div>
+              <div class="video-creator">${safeCreator}</div>
+              <div>${Number(video.views).toLocaleString()} views &bull; ${safePubDate}</div>
             </div>
             ${tagsSection}
           </div>
@@ -346,15 +369,16 @@
     },
 
     // 7. EMPTY STATE
-    renderEmptyState(message = 'No videos found matching your filters.') {
+    renderEmptyState(message = 'No videos found matching your filters.', subtitle = '') {
+      const sub = subtitle || 'Try adjusting your keywords, duration, or date queries.';
       return `
         <div class="empty-state-container" style="grid-column: 1 / -1; text-align: center; padding: var(--space-4xl) var(--space-xl); border: 1px dashed var(--border); border-radius: var(--radius-lg); background-color: var(--bg-secondary); margin: var(--space-xl) 0;">
           <svg width="48" height="48" fill="none" stroke="var(--text-muted)" stroke-width="1.5" viewBox="0 0 24 24" style="margin: 0 auto var(--space-md) auto; display:block;">
             <circle cx="12" cy="12" r="10"></circle>
             <line x1="8" y1="12" x2="16" y2="12"></line>
           </svg>
-          <h3 style="font-size: var(--text-lg); font-weight: 600; margin-bottom: var(--space-xs);">${message}</h3>
-          <p style="font-size: var(--text-sm); color: var(--text-muted);">Try adjusting your keywords, duration, or date queries.</p>
+          <h3 style="font-size: var(--text-lg); font-weight: 600; margin-bottom: var(--space-xs);">${escapeHtml(message)}</h3>
+          <p style="font-size: var(--text-sm); color: var(--text-muted);">${escapeHtml(sub)}</p>
         </div>
       `;
     },

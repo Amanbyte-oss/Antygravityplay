@@ -1,3 +1,9 @@
+function escapeHtml(str) {
+  if (typeof str !== 'string') return String(str || '');
+  const map = { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' };
+  return str.replace(/[&<>"']/g, ch => map[ch]);
+}
+
 // Home page logic
 document.addEventListener('DOMContentLoaded', () => {
   // 1. Inject Navbar & Footer
@@ -84,12 +90,15 @@ function setupHeroBanner(video) {
   }).filter(Boolean);
   const badgeText = tagNames.length > 0 ? tagNames[0] : 'Featured';
 
+  const safeTitle = escapeHtml(video.title);
+  const safeDesc = escapeHtml(video.description);
+  const safeBadge = escapeHtml(badgeText);
   heroSection.innerHTML = `
     <div class="hero-banner">
       <div class="hero-content">
-        <span class="hero-tag">${badgeText}</span>
-        <h1 class="hero-title">${video.title}</h1>
-        <p class="hero-desc">${video.description}</p>
+        <span class="hero-tag">${safeBadge}</span>
+        <h1 class="hero-title">${safeTitle}</h1>
+        <p class="hero-desc">${safeDesc}</p>
         <div class="hero-btns">
           <a href="./watch.html?id=${video.id}" class="btn btn-primary">
             <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24" style="margin-right:4px;">
@@ -132,10 +141,10 @@ function setupHeroBanner(video) {
 
     likeBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      window.App.toggleLikeVideo(video.id);
+      const isNowLiked = window.App.toggleLikeVideo(video.id);
       updateBtnState();
       window.Animations.animateLike(likeBtn);
-      window.App.showToast(window.App.isVideoLiked(video.id) ? 'Added to liked videos' : 'Removed from liked videos');
+      window.App.showToast(isNowLiked ? 'Added to liked videos' : 'Removed from liked videos');
     });
   }
 }

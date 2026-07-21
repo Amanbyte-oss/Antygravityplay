@@ -12,11 +12,21 @@ document.addEventListener('DOMContentLoaded', () => {
   // 3. Render recent uploads (5 rows max)
   renderRecentUploadsTable(videos, tags);
 
-  // 4. Draw Canvas Analytics Line Chart (7 days views trend)
+  // 4. Render Up Next Video Selector
+  renderUpNextSelector(videos, tags);
+
+  // 5. Draw Canvas Analytics Line Chart (7 days views trend)
   drawViewsChart();
 
   // Redraw chart if theme changes
   window.addEventListener('themechanged', () => {
+    invalidateChartCache();
+    drawViewsChart();
+  });
+
+  // Invalidate cache when videos change (e.g., from other admin pages)
+  window.addEventListener('videosupdated', () => {
+    invalidateChartCache();
     drawViewsChart();
   });
 });
@@ -81,6 +91,62 @@ function renderRecentUploadsTable(videos, tags) {
   }).join('');
 }
 
+function renderUpNextSelector(videos, tags) {
+  const container = document.getElementById('upnext-selector');
+  if (!container) return;
+
+  const published = videos.filter(v => v && v.status === 'published');
+  const savedId = localStorage.getItem('up-next-video-id');
+  const selectedVideo = savedId ? published.find(v => v.id === savedId) : null;
+
+  container.innerHTML = `
+    <div class="upnext-card">
+      <div class="upnext-card-body">
+        <div class="upnext-current">
+          <span class="upnext-label">Currently pinned:</span>
+          ${selectedVideo
+            ? `<div class="upnext-selected-video">
+                <img src="${selectedVideo.thumbnail || ''}" alt="" class="upnext-thumb">
+                <div class="upnext-info">
+                  <span class="upnext-title">${selectedVideo.title}</span>
+                  <span class="upnext-creator">${selectedVideo.creator}</span>
+                </div>
+              </div>`
+            : '<span class="upnext-none">None selected — showing auto-matched related videos</span>'
+          }
+        </div>
+        <div class="upnext-form">
+          <label for="upnext-select" class="upnext-select-label">Select a video to pin as "Up Next":</label>
+          <div class="upnext-select-row">
+            <select id="upnext-select" class="upnext-select">
+              <option value="">— Auto (no pin) —</option>
+              ${published.map(v => `
+                <option value="${v.id}" ${v.id === savedId ? 'selected' : ''}>
+                  ${v.title} (${v.creator})
+                </option>
+              `).join('')}
+            </select>
+            <button id="upnext-save-btn" class="btn btn-primary" style="white-space:nowrap; flex-shrink:0;">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('upnext-save-btn').addEventListener('click', () => {
+    const select = document.getElementById('upnext-select');
+    const val = select.value;
+    if (val) {
+      localStorage.setItem('up-next-video-id', val);
+      window.App.showToast('Up Next video pinned successfully!');
+    } else {
+      localStorage.removeItem('up-next-video-id');
+      window.App.showToast('Up Next pin removed. Auto-matching will be used.');
+    }
+    renderUpNextSelector(videos, tags);
+  });
+}
+
 let cachedChartData = null;
 
 function computeViewsLast7Days() {
@@ -96,7 +162,7 @@ function computeViewsLast7Days() {
     const dayViews = videos
       .filter(v => v.publishDate === dateStr)
       .reduce((sum, v) => sum + Number(v.views), 0);
-    days.push(dayViews || Math.floor(Math.random() * 5000) + 1000);
+    days.push(dayViews);
   }
   cachedChartData = { labels, data: days };
   return cachedChartData;

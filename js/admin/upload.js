@@ -9,6 +9,32 @@ let currentVideoUrl = null;
 let currentThumbnailUrl = null;
 let currentMetadata = null;
 
+// ─── JSONP Helper with timeout ──────────────────────────────────────────────
+let jsonpId = 0;
+function jsonp(url, callbackName, cb) {
+  const id = ++jsonpId;
+  const timeout = setTimeout(() => {
+    delete window[callbackName];
+    cb(new Error('Request timed out'), null);
+  }, 5000);
+
+  window[callbackName] = (data) => {
+    clearTimeout(timeout);
+    setTimeout(() => delete window[callbackName], 100);
+    cb(null, data);
+  };
+
+  const s = document.createElement('script');
+  s.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + callbackName;
+  s.onerror = () => {
+    clearTimeout(timeout);
+    delete window[callbackName];
+    cb(new Error('oEmbed failed'), null);
+    s.remove();
+  };
+  document.head.appendChild(s);
+}
+
 // ─── Platform Definitions ──────────────────────────────────────────────────
 
 const PLATFORMS = {
@@ -28,18 +54,14 @@ const PLATFORMS = {
     getVideoUrl(id) { return `https://www.youtube.com/watch?v=${id}`; },
     getThumbnailUrl(id) { return `https://i.ytimg.com/vi/${id}/maxresdefault.jpg`; },
     fetchMetadata(id, cb) {
-      const url = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${id}&format=json&callback=__ytCb`;
-      window.__ytCb = d => { delete window.__ytCb; cb(null,d); };
-      const s = document.createElement('script'); s.src = url;
-      s.onerror = () => { delete window.__ytCb; cb(new Error('oEmbed failed'),null); s.remove(); };
-      document.head.appendChild(s);
+      jsonp(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${id}&format=json`, '__ytCb', (err, d) => {
+        cb(err, d);
+      });
     },
     fetchDescription(id, cb) {
-      const url = `https://noembed.com/embed?url=https://www.youtube.com/watch?v=${id}&callback=__ndCb`;
-      window.__ndCb = d => { delete window.__ndCb; cb(null,(d&&d.description)||''); };
-      const s = document.createElement('script'); s.src = url;
-      s.onerror = () => { delete window.__ndCb; cb(new Error('noembed failed'),''); s.remove(); };
-      document.head.appendChild(s);
+      jsonp(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${id}`, '__ndCb', (err, d) => {
+        cb(err, (d && d.description) || '');
+      });
     }
   },
 
@@ -54,11 +76,9 @@ const PLATFORMS = {
     getVideoUrl(id) { return `https://vimeo.com/${id}`; },
     getThumbnailUrl() { return null; },
     fetchMetadata(id, cb) {
-      const url = `https://vimeo.com/api/oembed.json?url=https://vimeo.com/${id}&callback=__vmCb`;
-      window.__vmCb = d => { delete window.__vmCb; cb(null,d); };
-      const s = document.createElement('script'); s.src = url;
-      s.onerror = () => { delete window.__vmCb; cb(new Error('oEmbed failed'),null); s.remove(); };
-      document.head.appendChild(s);
+      jsonp(`https://vimeo.com/api/oembed.json?url=https://vimeo.com/${id}`, '__vmCb', (err, d) => {
+        cb(err, d);
+      });
     }
   },
 
@@ -73,11 +93,9 @@ const PLATFORMS = {
     getVideoUrl(id) { return `https://www.dailymotion.com/video/${id}`; },
     getThumbnailUrl(id) { return `https://www.dailymotion.com/thumbnail/video/${id}`; },
     fetchMetadata(id, cb) {
-      const url = `https://www.dailymotion.com/services/oembed?url=https://www.dailymotion.com/video/${id}&format=json&callback=__dmCb`;
-      window.__dmCb = d => { delete window.__dmCb; cb(null,d); };
-      const s = document.createElement('script'); s.src = url;
-      s.onerror = () => { delete window.__dmCb; cb(new Error('oEmbed failed'),null); s.remove(); };
-      document.head.appendChild(s);
+      jsonp(`https://www.dailymotion.com/services/oembed?url=https://www.dailymotion.com/video/${id}&format=json`, '__dmCb', (err, d) => {
+        cb(err, d);
+      });
     }
   },
 
@@ -92,11 +110,9 @@ const PLATFORMS = {
     getVideoUrl(id) { return `https://streamable.com/${id}`; },
     getThumbnailUrl() { return null; },
     fetchMetadata(id, cb) {
-      const url = `https://api.streamable.com/oembed.json?url=https://streamable.com/${id}&callback=__stCb`;
-      window.__stCb = d => { delete window.__stCb; cb(null,d); };
-      const s = document.createElement('script'); s.src = url;
-      s.onerror = () => { delete window.__stCb; cb(new Error('oEmbed failed'),null); s.remove(); };
-      document.head.appendChild(s);
+      jsonp(`https://api.streamable.com/oembed.json?url=https://streamable.com/${id}`, '__stCb', (err, d) => {
+        cb(err, d);
+      });
     }
   },
 
@@ -776,7 +792,13 @@ function setupFormSubmission(selectedTags) {
 
     const title = document.getElementById('title-input').value.trim();
     const description = document.getElementById('description-input').value.trim();
-    const duration = document.getElementById('duration-input').value.trim() || '5:00';
+    let duration = document.getElementById('duration-input').value.trim();
+    if (!duration) duration = '5:00';
+    const durValid = /^[0-9]+:[0-5]?[0-9]:[0-5][0-9]$|^[0-9]+:[0-5][0-9]$/.test(duration);
+    if (!durValid) {
+      window.App.showToast('Invalid duration format. Use mm:ss or hh:mm:ss.', 'error');
+      return;
+    }
     const publishToggle = document.getElementById('publish-toggle').checked;
     const thumbnailImg = document.getElementById('thumbnail-preview');
 

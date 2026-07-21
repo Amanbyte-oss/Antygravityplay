@@ -14,7 +14,12 @@
   border-radius: var(--radius-lg);
   padding: var(--space-3xl) var(--space-2xl);
   box-shadow: var(--shadow-lg);
-  transition: background-color var(--transition-base), border-color var(--transition-base);
+  transition: background-color var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
+  animation: fadeInUp 0.5s var(--ease-spring) both;
+}
+
+.login-card:hover {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
 }
 
 .login-logo {
@@ -94,4 +99,22 @@
 
 .login-btn:hover {
   opacity: 0.9;
+}
+
+/* ─── FORGOT PASSWORD LINK ─────────────────────────── */
+.forgot-link-wrap {
+  text-align: center;
+  margin-top: var(--space-sm);
+}
+
+.forgot-link {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.forgot-link:hover {
+  color: var(--accent);
+  text-decoration: underline;
 }

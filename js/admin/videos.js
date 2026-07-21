@@ -153,7 +153,17 @@ function bindCardActions(state) {
     });
   });
 
-  // Tags inline edit
+  // Tags inline edit – single delegated close listener
+  let activeTagSelector = null;
+
+  document.addEventListener('click', function closeTagSelector(ev) {
+    if (!activeTagSelector) return;
+    if (!activeTagSelector.contains(ev.target)) {
+      renderCards(state);
+      activeTagSelector = null;
+    }
+  });
+
   document.querySelectorAll('.tags-cell-display').forEach(el => {
     el.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -166,6 +176,7 @@ function bindCardActions(state) {
       const videoTags = video.tags || [];
       const selector = document.createElement('div');
       selector.className = 'inline-tag-selector';
+      activeTagSelector = selector;
       selector.innerHTML = allTags.map(tag => {
         const isSelected = videoTags.includes(tag.id);
         return `
@@ -244,13 +255,6 @@ function bindCardActions(state) {
           if (!selector.contains(document.activeElement)) renderCards(state);
         });
       }
-
-      document.addEventListener('click', function closeSelector(ev) {
-        if (!selector.contains(ev.target)) {
-          renderCards(state);
-          document.removeEventListener('click', closeSelector);
-        }
-      });
     });
   });
 

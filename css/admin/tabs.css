@@ -5,8 +5,19 @@
   background-color: var(--bg-secondary);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  overflow: hidden;
-  width: fit-content;
+  overflow: auto;
+  width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 768px) {
+  .tabs-nav {
+    width: 100%;
+  }
+  .tab-btn {
+    padding: var(--space-sm) var(--space-md);
+    font-size: var(--text-xs);
+  }
 }
 
 .tab-btn {

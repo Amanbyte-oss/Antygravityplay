@@ -88,7 +88,6 @@
         <div class="tabs-container settings-tabs" data-tabs>
           <div class="tabs-nav" role="tablist">
             <button class="tabs-tab active" role="tab" aria-selected="true" data-tab="profile" id="tab-profile">Profile</button>
-            <button class="tabs-tab" role="tab" aria-selected="false" data-tab="security" id="tab-security">Security</button>
             <button class="tabs-tab" role="tab" aria-selected="false" data-tab="appearance" id="tab-appearance">Appearance</button>
             <button class="tabs-tab" role="tab" aria-selected="false" data-tab="notifications" id="tab-notifications">Notifications</button>
             <button class="tabs-tab" role="tab" aria-selected="false" data-tab="data" id="tab-data">Data</button>
@@ -123,31 +122,6 @@
                   <textarea id="admin-bio-input" class="textarea-field" placeholder="A short bio about yourself..."></textarea>
                 </div>
                 <button class="btn btn-primary" id="save-profile-btn">Save Profile</button>
-              </div>
-            </div>
-
-            <div class="tabs-panel" role="tabpanel" id="panel-security" aria-labelledby="tab-security">
-              <div class="settings-card">
-                <h2 class="settings-section-title">Change Password</h2>
-                <div class="form-group">
-                  <label class="form-label" for="current-password">Current Password</label>
-                  <input type="password" id="current-password" class="form-input-field" placeholder="Enter current password" autocomplete="off">
-                </div>
-                <div class="form-group">
-                  <label class="form-label" for="new-password">New Password</label>
-                  <input type="password" id="new-password" class="form-input-field" placeholder="Enter new password" autocomplete="off">
-                  <div class="password-strength">
-                    <div class="strength-bar">
-                      <div class="strength-bar-fill" id="strength-bar-fill" style="width:0;"></div>
-                    </div>
-                    <span class="strength-label" id="strength-label"></span>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label class="form-label" for="confirm-password">Confirm New Password</label>
-                  <input type="password" id="confirm-password" class="form-input-field" placeholder="Confirm new password" autocomplete="off">
-                </div>
-                <button class="btn btn-primary" id="save-security-btn">Update Password</button>
               </div>
             </div>
 

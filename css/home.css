@@ -69,6 +69,24 @@
   }
 }
 
+@media (max-width: 480px) {
+  .hero-content {
+    padding: var(--space-xl) var(--space-lg);
+  }
+  .hero-title {
+    font-size: var(--text-xl);
+  }
+  .hero-desc {
+    font-size: var(--text-sm);
+  }
+  .hero-btns {
+    flex-direction: column;
+  }
+  .hero-banner {
+    min-height: 240px;
+  }
+}
+
 /* --- HORIZONTAL SCROLL ROW --- */
 .row-section {
   margin-bottom: var(--space-4xl);
@@ -102,6 +120,20 @@
   position: relative;
   margin: 0 calc(-1 * var(--space-lg));
   padding: 0 var(--space-lg);
+  overflow: hidden;
+}
+
+@media (max-width: 576px) {
+  .scroll-container-wrapper {
+    margin: 0 calc(-1 * var(--space-md));
+    padding: 0 var(--space-md);
+  }
+  .scroll-container {
+    gap: var(--space-md);
+  }
+  .video-card {
+    flex: 0 0 180px;
+  }
 }
 
 .scroll-container {

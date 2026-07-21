@@ -184,42 +184,6 @@ function bindSettingsEvents() {
     }
   });
 
-  document.getElementById('save-security-btn').addEventListener('click', () => {
-    const current = document.getElementById('current-password').value;
-    const newPw = document.getElementById('new-password').value;
-    const confirmPw = document.getElementById('confirm-password').value;
-
-    if (!current || !newPw || !confirmPw) {
-      window.App.showToast('Please fill in all password fields.', 'error');
-      return;
-    }
-    if (newPw.length < 6) {
-      window.App.showToast('New password must be at least 6 characters.', 'error');
-      return;
-    }
-    if (newPw !== confirmPw) {
-      window.App.showToast('Passwords do not match.', 'error');
-      return;
-    }
-    const users = window.MOCK_USERS;
-    if (current !== users[0].password) {
-      window.App.showToast('Current password is incorrect.', 'error');
-      return;
-    }
-    users[0].password = newPw;
-    window.MOCK_USERS[0] = users[0];
-    try { localStorage.setItem('mock-users', JSON.stringify(users)); } catch(e) {}
-    window.App.showToast('Password updated successfully.');
-    document.getElementById('current-password').value = '';
-    document.getElementById('new-password').value = '';
-    document.getElementById('confirm-password').value = '';
-    updatePasswordStrength('');
-  });
-
-  document.getElementById('new-password').addEventListener('input', function() {
-    updatePasswordStrength(this.value);
-  });
-
   // Sync settings radio cards when theme is changed via navbar toggle
   window.addEventListener('themechanged', (e) => {
     const theme = e.detail && e.detail.theme;
@@ -232,39 +196,6 @@ function bindSettingsEvents() {
       saveSetting('theme', theme);
     }
   });
-}
-
-function updatePasswordStrength(password) {
-  const bar = document.getElementById('strength-bar-fill');
-  const label = document.getElementById('strength-label');
-
-  if (!password) {
-    bar.style.width = '0';
-    bar.className = 'strength-bar-fill';
-    label.textContent = '';
-    return;
-  }
-
-  let score = 0;
-  if (password.length >= 6) score++;
-  if (password.length >= 10) score++;
-  if (/[A-Z]/.test(password)) score++;
-  if (/[0-9]/.test(password)) score++;
-  if (/[^A-Za-z0-9]/.test(password)) score++;
-
-  if (score <= 2) {
-    bar.className = 'strength-bar-fill weak';
-    label.textContent = 'Weak';
-    label.className = 'strength-label weak';
-  } else if (score <= 3) {
-    bar.className = 'strength-bar-fill medium';
-    label.textContent = 'Medium';
-    label.className = 'strength-label medium';
-  } else {
-    bar.className = 'strength-bar-fill strong';
-    label.textContent = 'Strong';
-    label.className = 'strength-label strong';
-  }
 }
 
 function updateFontSizePreview(val) {

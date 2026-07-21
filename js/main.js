@@ -5,13 +5,12 @@
   document.documentElement.setAttribute('data-theme', currentTheme);
 
   // 2. Authentication Check / Route Guard
-  const path = window.location.pathname;
+  const path = window.location.pathname.replace(/\\/g, '/');
   const isAdminPage = path.includes('/admin/');
   const isLoggedIn = localStorage.getItem('admin-session') !== null;
 
   if (isAdminPage && !isLoggedIn) {
-    // Determine relative depth to redirect to login.html
-    const redirectPath = path.includes('/admin/') ? '../login.html' : './login.html';
+    const redirectPath = '../login.html';
     window.location.href = redirectPath;
   }
 
@@ -50,33 +49,32 @@
       }
     });
 
-    // Mobile nav menu burger toggle (public side)
-    const hamburger = document.querySelector('.hamburger');
-    const navMenu = document.querySelector('.nav-menu');
-    if (hamburger && navMenu) {
-      hamburger.addEventListener('click', () => {
-        hamburger.classList.toggle('active');
-        navMenu.classList.toggle('active');
-      });
-    }
-
     // Admin Sidebar Toggle (Mobile)
-    const adminMenuBtn = document.querySelector('.admin-menu-btn');
-    const adminSidebar = document.querySelector('.admin-sidebar');
-    const sidebarOverlay = document.querySelector('.sidebar-overlay');
-    if (adminMenuBtn && adminSidebar) {
-      adminMenuBtn.addEventListener('click', () => {
-        adminSidebar.classList.add('active');
-        if (sidebarOverlay) sidebarOverlay.classList.add('active');
-      });
+    function toggleAdminSidebar(open) {
+      const sidebar = document.querySelector('.admin-sidebar');
+      const overlay = document.querySelector('.sidebar-overlay');
+      if (!sidebar) return;
+      if (open) {
+        sidebar.classList.add('active');
+        if (overlay) overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      } else {
+        sidebar.classList.remove('active');
+        if (overlay) overlay.classList.remove('active');
+        document.body.style.overflow = '';
+      }
     }
 
-    if (sidebarOverlay) {
-      sidebarOverlay.addEventListener('click', () => {
-        if (adminSidebar) adminSidebar.classList.remove('active');
-        sidebarOverlay.classList.remove('active');
-      });
+    const adminMenuBtn = document.querySelector('.admin-menu-btn');
+    if (adminMenuBtn) {
+      adminMenuBtn.addEventListener('click', () => toggleAdminSidebar(true));
     }
+
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('.sidebar-overlay') || e.target.closest('.sidebar-close-btn')) {
+        toggleAdminSidebar(false);
+      }
+    });
   });
 
   // Theme toggle utility (uses event delegation for dynamically injected navbar)
@@ -129,7 +127,9 @@
   window.App = {
     // Parse query params (compatibility with file://)
     getQueryParams() {
-      const search = window.location.search || window.location.hash.split('?')[1] || '';
+      const raw = window.location.search || window.location.hash.split('?')[1] || '';
+      if (!raw || raw.length < 2) return {};
+      const search = raw.charAt(0) === '?' ? raw : '?' + raw;
       const params = {};
       const pairs = search.substring(1).split('&');
       for (let i = 0; i < pairs.length; i++) {
@@ -171,9 +171,16 @@
       try {
         let parsed = JSON.parse(raw);
         if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-        // Empty array – user deleted all videos; preserve empty state, DON'T reseed
-        return [];
+        if (Array.isArray(parsed)) return [];
+        // Corruption – re-seed from MOCK and warn
+        console.warn('Video database corrupted, re-seeding from defaults.');
+        this.showToast('Video data was corrupted. Default data restored.', 'warning');
+        const mockCopy = JSON.parse(JSON.stringify(window.MOCK_VIDEOS));
+        localStorage.setItem('db-videos', JSON.stringify(mockCopy));
+        return mockCopy;
       } catch (e) {
+        console.warn('Video database parse error, re-seeding from defaults.');
+        this.showToast('Video data was corrupted. Default data restored.', 'warning');
         const mockCopy = JSON.parse(JSON.stringify(window.MOCK_VIDEOS));
         localStorage.setItem('db-videos', JSON.stringify(mockCopy));
         return mockCopy;
@@ -220,6 +227,8 @@
         ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>'
         : type === 'warning'
         ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>'
+        : type === 'info'
+        ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>'
         : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>';
 
       toast.innerHTML = `
@@ -237,7 +246,8 @@
 
       // Auto dismiss
       setTimeout(() => {
-        toast.style.animation = 'fadeIn 0.2s reverse';
+        toast.style.animation = 'fadeIn 0.2s';
+        toast.style.animationDirection = 'reverse';
         setTimeout(() => toast.remove(), 200);
       }, 3500);
     },

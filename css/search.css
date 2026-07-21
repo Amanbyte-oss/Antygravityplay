@@ -2,6 +2,7 @@
 .search-layout {
   margin-top: var(--space-3xl);
   margin-bottom: var(--space-4xl);
+  animation: fadeIn 0.4s var(--ease-relax) forwards;
 }
 
 .search-header-box {
@@ -17,6 +18,23 @@
   margin-bottom: var(--space-md);
 }
 
+@media (max-width: 576px) {
+  .search-page-title {
+    font-size: var(--text-xl);
+  }
+  .filter-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+  .results-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: var(--space-md);
+  }
+  .filter-chips-list {
+    max-height: 140px;
+  }
+}
+
 .search-page-desc {
   font-size: var(--text-sm);
   color: var(--text-secondary);
@@ -29,7 +47,11 @@
   border-radius: var(--radius-lg);
   padding: var(--space-xl);
   margin-bottom: var(--space-2xl);
-  transition: background-color var(--transition-base), border-color var(--transition-base);
+  transition: background-color var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
+}
+
+.filter-panel:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
 .filter-grid {

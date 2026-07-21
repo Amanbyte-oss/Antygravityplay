@@ -18,14 +18,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (!tag) {
-    // Try to find by tag name as last resort
     if (tagName) {
       tag = tags.find(t => t.name.toLowerCase() === decodeURIComponent(tagName).toLowerCase());
     }
   }
 
+  // If no specific tag is requested, show "Browse All Tags" view
   if (!tag) {
-    renderErrorView('Tag not found. The tag you are looking for does not exist or the link may be incorrect. Try browsing from the <a href="./index.html" style="color: var(--accent);">home page</a>.');
+    renderAllTagsView();
     return;
   }
 
@@ -45,6 +45,83 @@ document.addEventListener('DOMContentLoaded', () => {
   window.Animations.initScrollReveal();
   if (window.refreshLazyLoading) window.refreshLazyLoading();
 });
+
+// Render "Browse All Tags" view with search
+function renderAllTagsView() {
+  const titleEl = document.getElementById('tag-page-title');
+  const descEl = document.getElementById('tag-page-desc');
+  const heroIcon = document.getElementById('tag-hero-icon');
+  const heroSection = document.getElementById('tag-hero');
+  const gridHeading = document.getElementById('grid-heading');
+  const gridEl = document.getElementById('tag-video-grid');
+  const relatedSection = document.querySelector('.related-tags-section');
+  if (titleEl) titleEl.innerText = 'Browse All Tags';
+  if (descEl) descEl.innerText = 'Click on a tag to explore videos';
+  if (heroIcon) {
+    heroIcon.style.backgroundColor = 'var(--accent)';
+    heroIcon.innerText = '#';
+  }
+  if (heroSection) {
+    heroSection.style.background = 'linear-gradient(135deg, var(--accent)15, transparent 100%)';
+  }
+  if (gridHeading) gridHeading.innerText = 'All Tags';
+  if (relatedSection) relatedSection.style.display = 'none';
+
+  if (!gridEl) return;
+
+  const allVideos = window.App.getVideos().filter(v => v.status === 'published');
+  const allTags = window.App.getTags();
+
+  // Count videos per tag
+  const tagCounts = {};
+  allVideos.forEach(v => {
+    (v.tags || []).forEach(tId => {
+      tagCounts[tId] = (tagCounts[tId] || 0) + 1;
+    });
+  });
+
+  const sortedTags = [...allTags].sort((a, b) => (tagCounts[b.id] || 0) - (tagCounts[a.id] || 0));
+
+  gridEl.innerHTML = `
+    <div class="alltags-wrapper">
+      <div class="alltags-search-bar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="alltags-search-icon">
+          <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="alltags-search-input" class="alltags-search-input" placeholder="Search tags..." autofocus>
+      </div>
+      <div id="alltags-grid" class="alltags-grid">
+        ${sortedTags.map(t => renderTagCard(t, tagCounts[t.id] || 0)).join('')}
+      </div>
+    </div>
+  `;
+
+  // Live search filter
+  const searchInput = document.getElementById('alltags-search-input');
+  const gridContainer = document.getElementById('alltags-grid');
+  if (searchInput && gridContainer) {
+    searchInput.addEventListener('input', () => {
+      const q = searchInput.value.toLowerCase().trim();
+      const filtered = q
+        ? sortedTags.filter(t => t.name.toLowerCase().includes(q))
+        : sortedTags;
+      gridContainer.innerHTML = filtered.map(t => renderTagCard(t, tagCounts[t.id] || 0)).join('');
+    });
+  }
+
+  window.Animations.initScrollReveal();
+  if (window.refreshLazyLoading) window.refreshLazyLoading();
+}
+
+function renderTagCard(tag, count) {
+  return `
+    <a href="./tag.html?tag=${encodeURIComponent(tag.name)}" class="alltags-card">
+      <span class="alltags-card-dot" style="background-color:${tag.color};"></span>
+      <span class="alltags-card-name">#${tag.name}</span>
+      <span class="alltags-card-count">${count} video${count === 1 ? '' : 's'}</span>
+    </a>
+  `;
+}
 
 // Setup tag header details with hero banner
 function setupTagHeader(tag, count) {

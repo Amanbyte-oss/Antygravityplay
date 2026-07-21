@@ -77,6 +77,8 @@
 
 .notification-item:hover {
   background-color: var(--bg-elevated);
+  transform: translateX(3px);
+  border-color: var(--text-muted);
 }
 
 .notification-item.unread {

@@ -18,8 +18,8 @@
           }
         });
       }, {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
+        threshold: 0.08,
+        rootMargin: '0px 0px -30px 0px'
       });
 
       document.querySelectorAll('.reveal-on-scroll').forEach(el => {
@@ -31,11 +31,22 @@
       if (!buttonEl) return;
       const svg = buttonEl.querySelector('svg');
       if (svg) {
+        svg.classList.remove('heart-beat');
+        void svg.offsetWidth;
         svg.classList.add('heart-beat');
         svg.addEventListener('animationend', () => {
           svg.classList.remove('heart-beat');
         }, { once: true });
       }
+    },
+
+    staggerEntrance(containerSelector, itemSelector, baseDelay = 0.05) {
+      const container = document.querySelector(containerSelector);
+      if (!container) return;
+      const items = container.querySelectorAll(itemSelector);
+      items.forEach((el, i) => {
+        el.style.animationDelay = `${i * baseDelay}s`;
+      });
     }
   };
 
