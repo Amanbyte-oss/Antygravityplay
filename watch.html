@@ -14,9 +14,9 @@
 <html lang="en">
 
 <head>
+  <meta charset="UTF-8">
   <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
 
-  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Watch high-quality streaming videos, view descriptions, and explore related suggestions on Antigravity Play.">
 
@@ -63,7 +63,7 @@
 <main class="container">
   <!-- Back navigation link -->
   <div style="padding-top: var(--space-xl); margin-bottom: var(--space-lg);">
-    <a href="#" onclick="history.back(); return false;" style="display:inline-flex; align-items:center; gap:4px; font-size:var(--text-xs); color:var(--text-muted);">
+    <a href="#" onclick="history.back(); return false;" class="inline-flex-center text-xs-muted">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
       Back
     </a>
@@ -282,7 +282,7 @@
     <!-- ═══════════════════════════════════════ -->
     <aside class="watch-sidebar" aria-labelledby="sidebar-heading">
       <h2 id="sidebar-heading" class="sidebar-title">Up Next</h2>
-      <div id="related-videos-container" style="display:flex; flex-direction:column; gap: var(--space-lg);">
+      <div id="related-videos-container" class="flex-col-lg">
         <!-- Related video items injected here via watch.js -->
       </div>
     </aside>
@@ -300,7 +300,7 @@
   <!-- Left: thumbnail, title, creator, like -->
   <div class="now-playing-left">
     <div class="now-playing-thumb">
-      <img id="np-thumb" src="" alt="Thumbnail">
+      <img id="np-thumb" alt="Thumbnail">
     </div>
     <div class="now-playing-info">
       <span class="now-playing-title" id="np-title">Title</span>
@@ -361,7 +361,7 @@
 <!-- ═══════════════════════════════════════════ -->
 <!-- SECTION: FOOTER                             -->
 <!-- ═══════════════════════════════════════════ -->
-<footer id="footer-container" style="margin-top: 100px;"></footer>
+<footer id="footer-container" class="footer-spacer"></footer>
 
 <!-- ═══════════════════════════════════════════ -->
 <!-- SECTION: SCRIPTS                            -->

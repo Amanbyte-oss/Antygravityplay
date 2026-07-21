@@ -292,7 +292,6 @@
         // If it's an empty array, return it as-is
         if (Array.isArray(parsed)) return [];
         // Data is corrupted (not an array) - re-seed from defaults
-        console.warn('Video database corrupted, re-seeding from defaults.');
         // Notify the user with a warning toast
         this.showToast('Video data was corrupted. Default data restored.', 'warning');
         const mockCopy = JSON.parse(JSON.stringify(window.MOCK_VIDEOS));
@@ -300,7 +299,6 @@
         return mockCopy;
       } catch (e) {
         // JSON parse error - re-seed from defaults
-        console.warn('Video database parse error, re-seeding from defaults.');
         this.showToast('Video data was corrupted. Default data restored.', 'warning');
         const mockCopy = JSON.parse(JSON.stringify(window.MOCK_VIDEOS));
         localStorage.setItem('db-videos', JSON.stringify(mockCopy));

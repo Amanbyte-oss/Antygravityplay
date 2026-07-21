@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <!-- ═══════════════════════════════════════════ -->
 <!-- FILE: maintenance.html                      -->
 <!-- PURPOSE: Shown during scheduled maintenance -->
@@ -7,13 +8,12 @@
 <!-- ═══════════════════════════════════════════ -->
 <!-- SECTION: HEAD                               -->
 <!-- ═══════════════════════════════════════════ -->
-<!DOCTYPE html>
 <html lang="en">
 
 <head>
-  <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
-
   <meta charset="UTF-8">
+  <script>document.documentElement.setAttribute("data-theme", localStorage.getItem("site-theme") || "dark")</script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Scheduled maintenance - Antigravity Play is temporarily unavailable">
 
@@ -24,65 +24,76 @@
   <!-- system.css: System/status page styles (centered content, error icons) -->
   <link rel="stylesheet" href="./css/system.css">
 </head>
+
 <body>
 
-<!-- ═══════════════════════════════════════════ -->
-<!-- SECTION: TOAST NOTIFICATION CONTAINER       -->
-<!-- ═══════════════════════════════════════════ -->
-<div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- SECTION: TOAST NOTIFICATION CONTAINER       -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
 
-<!-- ═══════════════════════════════════════════ -->
-<!-- SECTION: CONFIRMATION MODAL                 -->
-<!-- ═══════════════════════════════════════════ -->
-<div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
-  <div class="modal">
-    <div class="modal-header"><h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button></div>
-    <div class="modal-body">Are you sure?</div>
-    <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button class="btn btn-primary confirm-modal-btn">Confirm</button></div>
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- SECTION: CONFIRMATION MODAL                 -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">Are you sure?</div>
+      <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button
+          class="btn btn-primary confirm-modal-btn">Confirm</button></div>
+    </div>
   </div>
-</div>
 
-<!-- ═══════════════════════════════════════════ -->
-<!-- SECTION: HEADER / NAVBAR                    -->
-<!-- ═══════════════════════════════════════════ -->
-<header id="navbar-container" class="navbar-wrapper"></header>
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- SECTION: HEADER / NAVBAR                    -->
+  <!-- ═══════════════════════════════════════════ -->
+  <header id="navbar-container" class="navbar-wrapper"></header>
 
-<!-- ═══════════════════════════════════════════ -->
-<!-- SECTION: MAIN CONTENT (system-page)         -->
-<!-- ═══════════════════════════════════════════ -->
-<main class="container system-page">
-  <!-- Warning icon: wrench/screwdriver indicating maintenance -->
-  <svg class="system-icon warning" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-  <h1 class="system-title">Under Maintenance</h1>
-  <p class="system-desc">We are performing scheduled maintenance to improve your experience. The platform will be back online shortly. Thank you for your patience.</p>
-  <!-- Animated progress bar showing maintenance progress -->
-  <div class="system-progress"><div class="system-progress-bar"></div></div>
-  <p style="font-size:var(--text-sm);color:var(--text-muted);">Estimated completion: 30 minutes</p>
-  <div class="system-actions">
-    <a href="./index.html" class="btn btn-primary">Go Home</a>
-    <a href="./search.html" class="btn btn-secondary">Browse Videos</a>
-  </div>
-</main>
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- SECTION: MAIN CONTENT (system-page)         -->
+  <!-- ═══════════════════════════════════════════ -->
+  <main class="container system-page">
+    <!-- Warning icon: wrench/screwdriver indicating maintenance -->
+    <svg class="system-icon warning" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path
+        d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+    </svg>
+    <h1 class="system-title">Under Maintenance</h1>
+    <p class="system-desc">We are performing scheduled maintenance to improve your experience. The platform will be back
+      online shortly. Thank you for your patience.</p>
+    <!-- Animated progress bar showing maintenance progress -->
+    <div class="system-progress">
+      <div class="system-progress-bar"></div>
+    </div>
+    <p style="font-size:var(--text-sm);color:var(--text-muted);">Estimated completion: 30 minutes</p>
+    <div class="system-actions">
+      <a href="./index.html" class="btn btn-primary">Go Home</a>
+      <a href="./search.html" class="btn btn-secondary">Browse Videos</a>
+    </div>
+  </main>
 
-<!-- ═══════════════════════════════════════════ -->
-<!-- SECTION: FOOTER                             -->
-<!-- ═══════════════════════════════════════════ -->
-<footer id="footer-container" style="margin-top: 100px;"></footer>
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- SECTION: FOOTER                             -->
+  <!-- ═══════════════════════════════════════════ -->
+  <footer id="footer-container" class="footer-spacer"></footer>
 
-<!-- ═══════════════════════════════════════════ -->
-<!-- SECTION: SCRIPTS                            -->
-<!-- ═══════════════════════════════════════════ -->
-<script src="./js/mockData.js"></script>
-<script src="./js/main.js"></script>
-<script src="./js/components.js"></script>
-<script src="./js/animations.js"></script>
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- SECTION: SCRIPTS                            -->
+  <!-- ═══════════════════════════════════════════ -->
+  <script src="./js/mockData.js"></script>
+  <script src="./js/main.js"></script>
+  <script src="./js/components.js"></script>
+  <script src="./js/animations.js"></script>
 
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    window.Components.injectNavbar();
-    window.Components.injectFooter();
-    window.Animations.initScrollReveal();
-  });
-</script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      window.Components.injectNavbar();
+      window.Components.injectFooter();
+      window.Animations.initScrollReveal();
+    });
+  </script>
 </body>
+
 </html>

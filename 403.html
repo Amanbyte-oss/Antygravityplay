@@ -15,11 +15,11 @@
 <!-- (empty line: spacing before <head> section) -->
 <!-- Opening <head> tag: contains metadata, stylesheets, and pre-paint scripts -->
 <head>
+  <meta charset="UTF-8">
   <!-- Blocking inline script: Sets data-theme before paint to avoid FOUC -->
   <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
   <!-- (empty line: spacing between script and meta tags) -->
   <!-- Declares UTF-8 character encoding for proper text rendering of all characters -->
-  <meta charset="UTF-8">
   <!-- Enables responsive viewport sizing on mobile devices; initial-scale=1.0 prevents zoom issues -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Provides page description for SEO / search snippet shown in search results -->
@@ -103,7 +103,7 @@
 <!-- SECTION: FOOTER                             -->
 <!-- ═══════════════════════════════════════════ -->
 <!-- Placeholder for site footer, injected dynamically by window.Components.injectFooter() -->
-<footer id="footer-container" style="margin-top: 100px;"></footer>
+<footer id="footer-container" class="footer-spacer"></footer>
 <!-- Closing </footer> for footer container -->
 <!-- (empty line: spacing between sections) -->
 <!-- ═══════════════════════════════════════════ -->

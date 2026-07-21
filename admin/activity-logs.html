@@ -16,7 +16,9 @@
   ============================================================================
 -->
 <html lang="en">
+
 <head>
+  <meta charset="UTF-8">
   <!-- ==================== HEAD ==================== -->
   <!--
     THEME INIT SCRIPT:
@@ -26,9 +28,8 @@
     preference is stored. The theme toggle button in the header calls
     window.App.toggleTheme() which updates localStorage and this attribute.
   -->
-  <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+  <script>document.documentElement.setAttribute("data-theme", localStorage.getItem("site-theme") || "dark")</script>
   <!-- META: Declares UTF-8 character encoding for proper Unicode text rendering -->
-  <meta charset="UTF-8">
   <!-- META: Viewport width=device-width + initial-scale=1.0 ensures responsive
        layout on mobile devices by preventing default zoom and fitting content
        to the screen width -->
@@ -50,6 +51,7 @@
   <link rel="stylesheet" href="../css/main.css">
 </head>
 <!-- ==================== BODY ==================== -->
+
 <body>
   <!--
     TOAST CONTAINER:
@@ -69,9 +71,12 @@
   -->
   <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
     <div class="modal">
-      <div class="modal-header"><h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button></div>
+      <div class="modal-header">
+        <h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button>
+      </div>
       <div class="modal-body">Are you sure?</div>
-      <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button class="btn btn-primary confirm-modal-btn">Confirm</button></div>
+      <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button
+          class="btn btn-primary confirm-modal-btn">Confirm</button></div>
     </div>
   </div>
   <!-- ─── SECTION: ADMIN LAYOUT ──────────────── -->
@@ -107,12 +112,16 @@
              Uses an SVG with three horizontal lines (hamburger icon).
              aria-label="Open menu" provides accessible context. -->
         <button class="admin-menu-btn" aria-label="Open menu">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
         </button>
         <!-- PAGE TITLE: Displayed in the mobile header bar -->
         <h1>Activity Logs</h1>
         <!-- SPACER: Fills remaining space in the flex header row -->
-        <div style="flex:1;"></div>
+        <div class="flex-1"></div>
       </div>
       <!-- ─── SECTION: ADMIN CONTENT ──────────── -->
       <!--
@@ -141,10 +150,15 @@
           <!-- CARD BODY: Holds the log table or a loading/empty state placeholder -->
           <div class="admin-card-body">
             <div id="log-container">
-              <div class="empty-state-container" style="text-align:center;padding:var(--space-4xl);">
-                <svg width="48" height="48" fill="none" stroke="var(--text-muted)" stroke-width="1.5" viewBox="0 0 24 24" style="margin:0 auto var(--space-md);display:block;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                <h3 style="font-size:var(--text-lg);font-weight:600;margin-bottom:var(--space-xs);">Loading logs...</h3>
-                <p style="font-size:var(--text-sm);color:var(--text-muted);">Please wait while log data is being loaded.</p>
+              <div class="empty-state-container empty-state-body">
+                <svg width="48" height="48" fill="none" stroke="var(--text-muted)" stroke-width="1.5"
+                  viewBox="0 0 24 24" class="mx-auto-block">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+                <h3 class="text-lg-heading">Loading logs...</h3>
+                <p style="font-size:var(--text-sm);color:var(--text-muted);">Please wait while log data is being loaded.
+                </p>
               </div>
             </div>
           </div>
@@ -198,20 +212,20 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       window.Components.injectAdminSidebar('activity-logs');
-      
+
       const logContainer = document.getElementById('log-container');
       const logCount = document.getElementById('log-count');
-      
+
       // Generate sample log entries
       const entries = generateLogEntries();
       logCount.textContent = entries.length + ' entries';
-      
+
       if (entries.length === 0) {
         logContainer.innerHTML = '<div class="empty-state-container" style="text-align:center;padding:var(--space-4xl);"><svg width="48" height="48" fill="none" stroke="var(--text-muted)" stroke-width="1.5" viewBox="0 0 24 24" style="margin:0 auto var(--space-md);display:block;"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg><h3 style="font-size:var(--text-lg);font-weight:600;margin-bottom:var(--space-xs);">No log entries found.</h3></div>';
       } else {
         logContainer.innerHTML = '<div class="log-table-wrapper"><table class="admin-table"><thead><tr><th>Timestamp</th><th>Action</th><th>User</th><th>Details</th></tr></thead><tbody>' + entries.map(e => '<tr><td style="white-space:nowrap;font-size:var(--text-xs);color:var(--text-muted);font-family:var(--font-mono);">' + e.time + '</td><td>' + e.col2 + '</td><td><span class="badge ' + e.badgeClass + '">' + e.col3 + '</span></td><td style="font-size:var(--text-sm);color:var(--text-secondary);">' + e.detail + '</td></tr>').join('') + '</tbody></table></div>';
       }
-      
+
       function generateLogEntries() {
         return [
           { time: formatTime(0), col2: 'Video published', col3: 'Administrator', badgeClass: 'badge-success', detail: 'New video "Getting Started with Antigravity Play" was published.' },
@@ -233,4 +247,5 @@
     });
   </script>
 </body>
+
 </html>

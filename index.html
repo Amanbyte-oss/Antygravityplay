@@ -12,10 +12,10 @@
 <html lang="en">
 
 <head>
+  <meta charset="UTF-8">
   <!-- Blocking inline script: Sets data-theme before paint to prevent FOUC -->
   <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
 
-  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Browse and play high-quality video content across tech, music, gaming, and lifestyle on Antigravity Play.">
 
@@ -65,14 +65,14 @@
 <!-- ═══════════════════════════════════════════ -->
 <!-- SECTION: MAIN CONTENT                       -->
 <!-- ═══════════════════════════════════════════ -->
-<main class="container" style="min-height: 80vh;">
+<main class="container min-h-80vh">
 
   <!-- Hero Banner: featured video area populated by home.js -->
   <section id="hero-section" aria-label="Featured Video"></section>
 
   <!-- Popular Tags Row: pill-style tag buttons -->
   <section class="row-section" aria-labelledby="tags-heading">
-    <h2 id="tags-heading" class="row-title" style="margin-bottom: var(--space-lg);">Popular Tags</h2>
+    <h2 id="tags-heading" class="row-title row-title-mb">Popular Tags</h2>
     <div id="popular-tags-container" class="tags-pill-row">
       <!-- Tag pills injected via home.js -->
     </div>

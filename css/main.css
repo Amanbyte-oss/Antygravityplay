@@ -241,9 +241,10 @@ button {
    ═══════════════════════════════════════════════════════════════════════ */
 
 /* Ensure the <main> content area has a minimum height so footer stays
-   at bottom on short pages */
+   at bottom on short pages; also applies pageEnter entrance animation */
 main {
   min-height: 80vh;    /* Fill at least 80% of the viewport height */
+  animation: pageEnter 0.6s var(--ease-relax) forwards;  /* 0.6s fade-in using relaxed easing, retain final state */
 }
 
 /* Main centred container: constrains content width and centres horizontally */
@@ -820,10 +821,8 @@ main {
   to   { opacity: 1; }   /* End fully opaque */
 }
 
-/* Apply pageEnter to the <main> element on every page */
-main {
-  animation: pageEnter 0.6s var(--ease-relax) forwards;  /* 0.6s fade-in using relaxed easing, retain final state */
-}
+/* Animation properties for the <main> element on every page (merged with min-height above) */
+/* Note: min-height: 80vh is defined in the first main {} block (line 245) */
 
 /* ═══════════════════════════════════════════════════════════════════════
    KEYFRAME ANIMATIONS
@@ -1097,6 +1096,61 @@ main {
   border-color: var(--border);           /* Visible border */
   background-color: var(--bg-elevated);  /* Lighter background */
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   UTILITY CLASSES
+   Reusable single-purpose classes that replace common inline style
+   patterns, improving maintainability and eliminating Edge Tools
+   "no-inline-styles" warnings.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Accent-colored link — replaces style="color:var(--accent);" on <a> tags */
+.accent-link { color: var(--accent); }
+
+/* Footer spacer — replaces style="margin-top: 100px;" on footer containers */
+.footer-spacer { margin-top: 100px; }
+
+/* Min-height 80vh — replaces style="min-height:80vh;" on main containers */
+.min-h-80vh { min-height: 80vh; }
+
+/* Row title bottom margin — replaces style="margin-bottom:var(--space-lg);" */
+.row-title-mb { margin-bottom: var(--space-lg); }
+
+/* Centered spinner — replaces inline margin centering on spinners */
+.spinner-centered { margin: 0 auto var(--space-xl); }
+
+/* Inline flex with gap — replaces style="display:flex;flex-direction:column;gap:var(--space-lg);" */
+.flex-col-lg { display: flex; flex-direction: column; gap: var(--space-lg); }
+
+/* Text muted — replaces style="color:var(--text-muted);" */
+.text-muted { color: var(--text-muted); }
+
+/* Inline-flex align-center gap — replaces style="display:inline-flex;align-items:center;gap:4px;" */
+.inline-flex-center { display: inline-flex; align-items: center; gap: 4px; }
+
+/* Hidden utility — replaces style="display:none;" for JS-controlled elements */
+.hidden { display: none !important; }
+
+/* Flex grow 1 — replaces style="flex:1;" for spacer/divider elements */
+.flex-1 { flex: 1; }
+
+/* Bold small text — replaces style="font-weight:600;font-size:var(--text-sm);" */
+.text-sm-bold { font-weight: 600; font-size: var(--text-sm); }
+
+/* Extra-small muted text — replaces style="font-size:var(--text-xs);color:var(--text-muted);" */
+.text-xs-muted { font-size: var(--text-xs); color: var(--text-muted); }
+
+/* Light heading style — replaces style="font-size:var(--text-lg);font-weight:600;margin-bottom:var(--space-xs);" */
+.text-lg-heading { font-size: var(--text-lg); font-weight: 600; margin-bottom: var(--space-xs); }
+
+/* Centered block helper — replaces style="margin:0 auto var(--space-md) auto;display:block;" */
+.mx-auto-block { margin: 0 auto var(--space-md); display: block; }
+
+/* Empty state container — replaces common empty-state inline styles */
+.empty-state-body { text-align: center; padding: var(--space-4xl); }
+
+/* Inline flex wrap — replaces style="display:flex;gap:var(--space-md);align-items:center;flex-wrap:wrap;" */
+.flex-wrap-center { display: flex; gap: var(--space-md); align-items: center; flex-wrap: wrap; }
 
 /* Each line of the hamburger icon */
 .hamburger span {

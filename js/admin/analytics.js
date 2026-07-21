@@ -20,8 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Otherwise, try to fetch analytics.json from the server
     fetch('../data/analytics.json')
       .then(r => r.json())
-      .catch(() => getDefaultAnalytics())   // Fallback to computed data on fetch failure
-      .then(data => {
+      .catch(() => Promise.resolve(getDefaultAnalytics()))   // Fallback to computed data on fetch failure
+        .then(data => {
         // Validate that the loaded data has the expected structure
         if (!data || !Array.isArray(data.viewsByDay)) {
           data = getDefaultAnalytics();
@@ -200,8 +200,8 @@ function initAnalytics(data, range) {
     drawPieChart('pie-chart', data.tagDistribution);  // Tag distribution (pie with hole)
     drawDonutChart('donut-chart', data.deviceBreakdown); // Device breakdown (donut)
   } catch (e) {
-    // Log any rendering errors without crashing the page
-    console.warn('Analytics render error:', e);
+    // Log any rendering errors without crashing the page (silent in production)
+    console.error('Analytics render error:', e);
   }
 }
 

@@ -17,6 +17,7 @@
 -->
 <html lang="en">
 <head>
+  <meta charset="UTF-8">
   <!-- ==================== HEAD ==================== -->
   <!--
     THEME INIT SCRIPT:
@@ -25,7 +26,6 @@
   -->
   <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
   <!-- META: UTF-8 encoding declaration for proper Unicode character handling -->
-  <meta charset="UTF-8">
   <!-- META: Viewport settings for responsive mobile layout -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- META: Page description for search engine result snippets -->
@@ -82,7 +82,7 @@
         <!-- PAGE TITLE: Displayed in the mobile header bar -->
         <h1>Login Logs</h1>
         <!-- SPACER: Fills remaining flex space in header row -->
-        <div style="flex:1;"></div>
+        <div class="flex-1"></div>
       </div>
       <!-- ─── SECTION: ADMIN CONTENT ──────────── -->
       <div class="admin-content">
@@ -95,9 +95,9 @@
           <!-- ─── CARD BODY ─────────────────────── -->
           <div class="admin-card-body">
             <div id="log-container">
-              <div class="empty-state-container" style="text-align:center;padding:var(--space-4xl);">
-                <svg width="48" height="48" fill="none" stroke="var(--text-muted)" stroke-width="1.5" viewBox="0 0 24 24" style="margin:0 auto var(--space-md);display:block;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                <h3 style="font-size:var(--text-lg);font-weight:600;margin-bottom:var(--space-xs);">Loading logs...</h3>
+              <div class="empty-state-container empty-state-body">
+                <svg width="48" height="48" fill="none" stroke="var(--text-muted)" stroke-width="1.5" viewBox="0 0 24 24" class="mx-auto-block"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <h3 class="text-lg-heading">Loading logs...</h3>
                 <p style="font-size:var(--text-sm);color:var(--text-muted);">Please wait while log data is being loaded.</p>
               </div>
             </div>

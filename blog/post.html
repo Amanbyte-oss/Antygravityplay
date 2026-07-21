@@ -17,11 +17,11 @@
 <html lang="en">
 <!-- ─── HTML ──────────────────────────────────── -->
 <head>
+  <meta charset="UTF-8">
   <!-- ==================== HEAD ==================== -->
   <!-- THEME INIT: Sets data-theme from localStorage before render to prevent FOUC -->
   <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
   <!-- META: UTF-8 encoding declaration -->
-  <meta charset="UTF-8">
   <!-- META: Responsive viewport for mobile scaling -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- META: SEO description (generic, dynamically updated by JS on post load) -->
@@ -59,8 +59,8 @@
       Hidden once the post content is rendered.
     -->
     <div id="post-loading" style="text-align:center;padding:var(--space-5xl);">
-      <div class="system-spinner" style="margin:0 auto var(--space-xl);"></div>
-      <p style="color:var(--text-muted);">Loading post...</p>
+      <div class="system-spinner spinner-centered"></div>
+      <p class="text-muted">Loading post...</p>
     </div>
     <!--
       POST CONTENT CONTAINER: Hidden by default. Populated dynamically by the
@@ -75,7 +75,7 @@
     FOOTER CONTAINER: Public site footer injected by Components.injectFooter().
     Copyright, links, and site information.
   -->
-  <footer id="footer-container" style="margin-top: 100px;"></footer>
+  <footer id="footer-container" class="footer-spacer"></footer>
   <!-- ==================== SCRIPTS ==================== -->
   <!-- mockData.js: Mock data generation functions -->
   <script src="../js/mockData.js"></script>

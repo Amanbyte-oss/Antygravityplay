@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <!-- ═══════════════════════════════════════════ -->
 <!-- FILE: help-centre.html                      -->
 <!-- PURPOSE: Help centre page with guides,      -->
@@ -7,13 +8,12 @@
 <!-- ═══════════════════════════════════════════ -->
 <!-- SECTION: HEAD                               -->
 <!-- ═══════════════════════════════════════════ -->
-<!DOCTYPE html>
 <html lang="en">
 
 <head>
-  <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
-
   <meta charset="UTF-8">
+  <script>document.documentElement.setAttribute("data-theme", localStorage.getItem("site-theme") || "dark")</script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Antigravity Play Help Centre - guides and support">
 
@@ -24,83 +24,97 @@
   <!-- legal.css: Legal/info page-specific styles (headers, sections, date) -->
   <link rel="stylesheet" href="./css/legal.css">
 </head>
+
 <body>
 
-<!-- ═══════════════════════════════════════════ -->
-<!-- SECTION: TOAST NOTIFICATION CONTAINER       -->
-<!-- ═══════════════════════════════════════════ -->
-<div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- SECTION: TOAST NOTIFICATION CONTAINER       -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
 
-<!-- ═══════════════════════════════════════════ -->
-<!-- SECTION: CONFIRMATION MODAL                 -->
-<!-- ═══════════════════════════════════════════ -->
-<div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
-  <div class="modal">
-    <div class="modal-header"><h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button></div>
-    <div class="modal-body">Are you sure?</div>
-    <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button class="btn btn-primary confirm-modal-btn">Confirm</button></div>
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- SECTION: CONFIRMATION MODAL                 -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">Are you sure?</div>
+      <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button
+          class="btn btn-primary confirm-modal-btn">Confirm</button></div>
+    </div>
   </div>
-</div>
 
-<!-- ═══════════════════════════════════════════ -->
-<!-- SECTION: HEADER / NAVBAR                    -->
-<!-- ═══════════════════════════════════════════ -->
-<header id="navbar-container" class="navbar-wrapper"></header>
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- SECTION: HEADER / NAVBAR                    -->
+  <!-- ═══════════════════════════════════════════ -->
+  <header id="navbar-container" class="navbar-wrapper"></header>
 
-<!-- ═══════════════════════════════════════════ -->
-<!-- SECTION: MAIN CONTENT (legal-page)          -->
-<!-- ═══════════════════════════════════════════ -->
-<!-- legal-page: standard layout for legal/info content
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- SECTION: MAIN CONTENT (legal-page)          -->
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- legal-page: standard layout for legal/info content
      with a header section and content sections -->
-<main class="container legal-page">
-  <div class="legal-header">
-    <h1>Help Centre</h1>
-    <p class="legal-date">Guides, tutorials, and support resources</p>
-  </div>
-  <div class="legal-content">
-    <section>
-      <h2>Getting Started</h2>
-      <p>Welcome to Antigravity Play! To begin, simply browse the trending videos on the home page or use the search bar to find specific content. The platform is designed to be intuitive, but we have compiled some guides to help you make the most of your experience.</p>
-    </section>
-    <section>
-      <h2>Video Player Guide</h2>
-      <p>The custom video player offers a range of features. Click the play button or press the spacebar to toggle playback. Use the progress bar to seek, the volume slider to adjust audio, and the settings menu to change playback speed. On mobile, double-tap the left or right side of the player to rewind or forward 10 seconds.</p>
-    </section>
-    <section>
-      <h2>Admin Guide</h2>
-      <p>The Admin Panel provides tools for managing videos, tags, and platform settings. You can publish, edit, or delete videos, manage tags with the inline editor, and view analytics to track performance.</p>
-    </section>
-    <section>
-      <h2>Troubleshooting</h2>
-      <p>If a video fails to load, try refreshing the page. If emoji reactions aren't saving, check that localStorage is enabled in your browser. For persistent issues, use the <a href="./report-bug.html" style="color:var(--accent);">Report a Bug</a> form.</p>
-    </section>
-    <section>
-      <h2>Still Need Help?</h2>
-      <p>If you couldn't find the answer you were looking for, please <a href="./contact.html" style="color:var(--accent);">contact us</a> and our team will be happy to assist you.</p>
-    </section>
-  </div>
-</main>
+  <main class="container legal-page">
+    <div class="legal-header">
+      <h1>Help Centre</h1>
+      <p class="legal-date">Guides, tutorials, and support resources</p>
+    </div>
+    <div class="legal-content">
+      <section>
+        <h2>Getting Started</h2>
+        <p>Welcome to Antigravity Play! To begin, simply browse the trending videos on the home page or use the search
+          bar to find specific content. The platform is designed to be intuitive, but we have compiled some guides to
+          help you make the most of your experience.</p>
+      </section>
+      <section>
+        <h2>Video Player Guide</h2>
+        <p>The custom video player offers a range of features. Click the play button or press the spacebar to toggle
+          playback. Use the progress bar to seek, the volume slider to adjust audio, and the settings menu to change
+          playback speed. On mobile, double-tap the left or right side of the player to rewind or forward 10 seconds.
+        </p>
+      </section>
+      <section>
+        <h2>Admin Guide</h2>
+        <p>The Admin Panel provides tools for managing videos, tags, and platform settings. You can publish, edit, or
+          delete videos, manage tags with the inline editor, and view analytics to track performance.</p>
+      </section>
+      <section>
+        <h2>Troubleshooting</h2>
+        <p>If a video fails to load, try refreshing the page. If emoji reactions aren't saving, check that localStorage
+          is enabled in your browser. For persistent issues, use the <a href="./report-bug.html"
+            class="accent-link">Report a Bug</a> form.</p>
+      </section>
+      <section>
+        <h2>Still Need Help?</h2>
+        <p>If you couldn't find the answer you were looking for, please <a href="./contact.html"
+            class="accent-link">contact us</a> and our team will be happy to assist you.</p>
+      </section>
+    </div>
+  </main>
 
-<!-- ═══════════════════════════════════════════ -->
-<!-- SECTION: FOOTER                             -->
-<!-- ═══════════════════════════════════════════ -->
-<footer id="footer-container" style="margin-top: 100px;"></footer>
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- SECTION: FOOTER                             -->
+  <!-- ═══════════════════════════════════════════ -->
+  <footer id="footer-container" class="footer-spacer"></footer>
 
-<!-- ═══════════════════════════════════════════ -->
-<!-- SECTION: SCRIPTS                            -->
-<!-- ═══════════════════════════════════════════ -->
-<script src="./js/mockData.js"></script>
-<script src="./js/main.js"></script>
-<script src="./js/components.js"></script>
-<script src="./js/animations.js"></script>
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- SECTION: SCRIPTS                            -->
+  <!-- ═══════════════════════════════════════════ -->
+  <script src="./js/mockData.js"></script>
+  <script src="./js/main.js"></script>
+  <script src="./js/components.js"></script>
+  <script src="./js/animations.js"></script>
 
   <!-- Init: inject shared navbar, footer, and scroll-reveal animations -->
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    window.Components.injectNavbar();
-    window.Components.injectFooter();
-    window.Animations.initScrollReveal();
-  });
-</script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      window.Components.injectNavbar();
+      window.Components.injectFooter();
+      window.Animations.initScrollReveal();
+    });
+  </script>
 </body>
+
 </html>

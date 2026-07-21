@@ -17,6 +17,7 @@
 -->
 <html lang="en">
 <head>
+  <meta charset="UTF-8">
   <!-- ==================== HEAD ==================== -->
   <!--
     THEME INIT SCRIPT:
@@ -25,7 +26,6 @@
   -->
   <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
   <!-- META: UTF-8 encoding declaration for proper character rendering -->
-  <meta charset="UTF-8">
   <!-- META: Responsive viewport for mobile device scaling -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- META: Search engine description - analytics dashboard with charts -->
@@ -104,17 +104,17 @@
       <header class="admin-header">
         <div class="admin-header-left">
           <!-- HAMBURGER BUTTON: Toggles sidebar on narrow screens; hidden on desktop -->
-          <button class="admin-menu-btn" aria-label="Open sidebar menu" style="display:none;border:none;background:none;cursor:pointer;">
+          <button class="admin-menu-btn hidden" aria-label="Open sidebar menu" style="border:none;background:none;cursor:pointer;">
             <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line>
             </svg>
           </button>
-          <span style="font-weight:600;font-size:var(--text-sm);">Console</span>
+          <span class="text-sm-bold">Console</span>
         </div>
         <div class="admin-header-right">
           <a href="../index.html" class="btn btn-secondary">View Live Site</a>
           <button class="theme-toggle" aria-label="Toggle theme">
-            <svg class="theme-icon-sun" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:none;"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line></svg>
+            <svg class="theme-icon-sun hidden" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line></svg>
             <svg class="theme-icon-moon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
           </button>
         </div>
@@ -131,7 +131,7 @@
             <h1>Analytics</h1>
             <p>Platform metrics, trends, and content performance data.</p>
           </div>
-          <div style="display:flex;gap:var(--space-md);align-items:center;flex-wrap:wrap;">
+          <div class="flex-wrap-center">
             <!--
               DATE RANGE PICKER: Button group for selecting analytics period.
               "active" class on Last 30 Days indicates the default selection.

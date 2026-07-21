@@ -16,11 +16,11 @@
 <html lang="en">
 <!-- ─── HTML ──────────────────────────────────── -->
 <head>
+  <meta charset="UTF-8">
   <!-- ==================== HEAD ==================== -->
   <!-- THEME INIT: Sets data-theme from localStorage before render to avoid FOUC -->
   <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
   <!-- META: UTF-8 encoding for proper Unicode rendering -->
-  <meta charset="UTF-8">
   <!-- META: Responsive viewport for mobile-friendly layout -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- META: SEO description for the blog homepage -->
@@ -85,7 +85,7 @@
           <div class="blog-card-meta"><span class="blog-tag">Announcement</span><span>July 21, 2026</span><span>3 min read</span></div>
           <h2><a href="./post.html?id=welcome">Welcome to Antigravity Play</a></h2>
           <p class="blog-card-excerpt">We are thrilled to announce the launch of Antigravity Play — a new video sharing platform built from the ground up with vanilla JavaScript and a focus on design, performance, and accessibility.</p>
-          <div class="blog-card-footer"><span>By The Team</span><a href="./post.html?id=welcome" style="color:var(--accent);font-size:var(--text-sm);text-decoration:none;font-weight:500;">Read More →</a></div>
+          <div class="blog-card-footer"><span>By The Team</span><a href="./post.html?id=welcome" class="accent-link" style="font-size:var(--text-sm);text-decoration:none;font-weight:500;">Read More →</a></div>
         </div>
       </article>
       <!-- BLOG CARD: Feature post "Introducing the Custom Video Player" -->
@@ -95,7 +95,7 @@
           <div class="blog-card-meta"><span class="blog-tag">Feature</span><span>July 20, 2026</span><span>5 min read</span></div>
           <h2><a href="./post.html?id=player">Introducing the Custom Video Player</a></h2>
           <p class="blog-card-excerpt">Our new custom video player brings glassmorphism controls, emoji reactions, theater mode, picture-in-picture, swipe seek, and animated error handling to your video watching experience.</p>
-          <div class="blog-card-footer"><span>By The Team</span><a href="./post.html?id=player" style="color:var(--accent);font-size:var(--text-sm);text-decoration:none;font-weight:500;">Read More →</a></div>
+          <div class="blog-card-footer"><span>By The Team</span><a href="./post.html?id=player" class="accent-link" style="font-size:var(--text-sm);text-decoration:none;font-weight:500;">Read More →</a></div>
         </div>
       </article>
       <!-- BLOG CARD: Tutorial post "Complete Guide to Dark & Light Themes" -->
@@ -105,7 +105,7 @@
           <div class="blog-card-meta"><span class="blog-tag">Tutorial</span><span>July 19, 2026</span><span>7 min read</span></div>
           <h2><a href="./post.html?id=theming">Complete Guide to Dark & Light Themes</a></h2>
           <p class="blog-card-excerpt">Learn how Antigravity Play implements seamless dark and light theme switching using CSS custom properties, and how you can customize the look and feel to match your preferences.</p>
-          <div class="blog-card-footer"><span>By The Team</span><a href="./post.html?id=theming" style="color:var(--accent);font-size:var(--text-sm);text-decoration:none;font-weight:500;">Read More →</a></div>
+          <div class="blog-card-footer"><span>By The Team</span><a href="./post.html?id=theming" class="accent-link" style="font-size:var(--text-sm);text-decoration:none;font-weight:500;">Read More →</a></div>
         </div>
       </article>
     </div>
@@ -116,7 +116,7 @@
     window.Components.injectFooter() on DOMContentLoaded. Contains
     copyright, links, and site information.
   -->
-  <footer id="footer-container" style="margin-top: 100px;"></footer>
+  <footer id="footer-container" class="footer-spacer"></footer>
   <!-- ==================== SCRIPTS ==================== -->
   <!-- mockData.js: Mock data factory for prototype data across the app -->
   <script src="../js/mockData.js"></script>
