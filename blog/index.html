@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Antigravity Play Blog - news, tutorials, and updates">
+  <title>Blog - Antigravity Play</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/blog.css">
+</head>
+<body>
+  <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+  <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-header"><h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button></div>
+      <div class="modal-body">Are you sure?</div>
+      <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button class="btn btn-primary confirm-modal-btn">Confirm</button></div>
+    </div>
+  </div>
+  <header id="navbar-container" class="navbar-wrapper"></header>
+  <main class="container blog-page">
+    <div class="blog-header">
+      <h1>Antigravity Play Blog</h1>
+      <p>News, tutorials, release notes, and stories from the team behind Antigravity Play.</p>
+    </div>
+    <div class="blog-grid" id="blog-grid">
+      <article class="blog-card">
+        <div class="blog-card-image" style="background:linear-gradient(135deg,var(--accent),#1a1a2e);display:flex;align-items:center;justify-content:center;"><svg width="48" height="48" fill="none" stroke="#fff" stroke-width="1.5" viewBox="0 0 24 24"><polygon points="8,5 19,12 8,19"></polygon></svg></div>
+        <div class="blog-card-body">
+          <div class="blog-card-meta"><span class="blog-tag">Announcement</span><span>July 21, 2026</span><span>3 min read</span></div>
+          <h2><a href="./post.html?id=welcome">Welcome to Antigravity Play</a></h2>
+          <p class="blog-card-excerpt">We are thrilled to announce the launch of Antigravity Play — a new video sharing platform built from the ground up with vanilla JavaScript and a focus on design, performance, and accessibility.</p>
+          <div class="blog-card-footer"><span>By The Team</span><a href="./post.html?id=welcome" style="color:var(--accent);font-size:var(--text-sm);text-decoration:none;font-weight:500;">Read More →</a></div>
+        </div>
+      </article>
+      <article class="blog-card">
+        <div class="blog-card-image" style="background:linear-gradient(135deg,#1ed760,#0d8b3e);display:flex;align-items:center;justify-content:center;"><svg width="48" height="48" fill="none" stroke="#fff" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <div class="blog-card-body">
+          <div class="blog-card-meta"><span class="blog-tag">Feature</span><span>July 20, 2026</span><span>5 min read</span></div>
+          <h2><a href="./post.html?id=player">Introducing the Custom Video Player</a></h2>
+          <p class="blog-card-excerpt">Our new custom video player brings glassmorphism controls, emoji reactions, theater mode, picture-in-picture, swipe seek, and animated error handling to your video watching experience.</p>
+          <div class="blog-card-footer"><span>By The Team</span><a href="./post.html?id=player" style="color:var(--accent);font-size:var(--text-sm);text-decoration:none;font-weight:500;">Read More →</a></div>
+        </div>
+      </article>
+      <article class="blog-card">
+        <div class="blog-card-image" style="background:linear-gradient(135deg,#7928ca,#ff0080);display:flex;align-items:center;justify-content:center;"><svg width="48" height="48" fill="none" stroke="#fff" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+        <div class="blog-card-body">
+          <div class="blog-card-meta"><span class="blog-tag">Tutorial</span><span>July 19, 2026</span><span>7 min read</span></div>
+          <h2><a href="./post.html?id=theming">Complete Guide to Dark & Light Themes</a></h2>
+          <p class="blog-card-excerpt">Learn how Antigravity Play implements seamless dark and light theme switching using CSS custom properties, and how you can customize the look and feel to match your preferences.</p>
+          <div class="blog-card-footer"><span>By The Team</span><a href="./post.html?id=theming" style="color:var(--accent);font-size:var(--text-sm);text-decoration:none;font-weight:500;">Read More →</a></div>
+        </div>
+      </article>
+    </div>
+  </main>
+  <footer id="footer-container" style="margin-top: 100px;"></footer>
+  <script src="../js/mockData.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/components.js"></script>
+  <script src="../js/animations.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      window.Components.injectNavbar();
+      window.Components.injectFooter();
+      window.Animations.initScrollReveal();
+    });
+  </script>
+</body>
+</html>

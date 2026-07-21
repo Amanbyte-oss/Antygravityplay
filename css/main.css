@@ -401,8 +401,8 @@ main {
 
 .footer {
   display: grid;
-  grid-template-columns: 2fr repeat(3, 1fr);
-  gap: var(--space-3xl);
+  grid-template-columns: 2fr repeat(4, 1fr);
+  gap: var(--space-2xl);
   margin-bottom: var(--space-3xl);
 }
 

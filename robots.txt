@@ -1,0 +1,21 @@
+User-agent: *
+Allow: /
+Sitemap: https://antigravityplay.com/sitemap.xml
+
+# Disallow admin pages from indexing
+Disallow: /admin/
+Disallow: /login.html
+Disallow: /forgot-password.html
+
+# Allow public pages
+Allow: /index.html
+Allow: /search.html
+Allow: /watch.html
+Allow: /tag.html
+Allow: /about.html
+Allow: /contact.html
+Allow: /faq.html
+Allow: /help-centre.html
+Allow: /privacy.html
+Allow: /terms.html
+Allow: /blog/

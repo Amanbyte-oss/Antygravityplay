@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Tutorials for Antigravity Play - learn how to use the platform">
+  <title>Tutorial - Antigravity Play</title>
+  <link rel="stylesheet" href="./css/main.css">
+  <link rel="stylesheet" href="./css/legal.css">
+</head>
+<body>
+  <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+  <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-header"><h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button></div>
+      <div class="modal-body">Are you sure?</div>
+      <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button class="btn btn-primary confirm-modal-btn">Confirm</button></div>
+    </div>
+  </div>
+  <header id="navbar-container" class="navbar-wrapper"></header>
+  <main class="container legal-page">
+    <div class="legal-header">
+      <h1>Tutorial</h1>
+      <p class="legal-date">Learn how to use Antigravity Play</p>
+    </div>
+    <div class="legal-content">
+      <section>
+        <h2>Browsing Videos</h2>
+        <p>The home page displays trending videos sorted by view count, new releases sorted by publish date, and popular tags for discovery. Use the search bar at the top of any page to find specific videos, creators, or tags. The search page supports filters for duration and publish date.</p>
+      </section>
+      <section>
+        <h2>Using the Video Player</h2>
+        <p>Click on any video card to open the watch page. The custom player overlays the native video element with glassmorphism controls. Use the play/pause button or spacebar to toggle playback. The progress bar shows buffered regions and supports click-to-seek. On mobile, double-tap the left or right side to rewind or forward 10 seconds.</p>
+        <p>Adjust volume with the slider, toggle mute, or change playback speed from the settings menu. Use theater mode for a wider view, Picture-in-Picture to float the video, or fullscreen for immersive playback.</p>
+      </section>
+      <section>
+        <h2>Managing the Admin Panel</h2>
+        <p>Log in to the Admin Portal to manage videos, tags, and settings. The dashboard provides an overview of platform statistics. Use the Videos section to publish, edit, or delete videos. The Upload section allows you to add videos from supported platforms by URL. Tags can be managed through the dedicated Tags page.</p>
+      </section>
+      <section>
+        <h2>Customizing Your Experience</h2>
+        <p>Toggle between dark and light themes using the theme button in the navigation bar. Your preference is saved and remembered across sessions. Use the like button on video cards or the watch page to save favorites.</p>
+      </section>
+    </div>
+  </main>
+  <footer id="footer-container" style="margin-top: 100px;"></footer>
+  <script src="./js/mockData.js"></script>
+  <script src="./js/main.js"></script>
+  <script src="./js/components.js"></script>
+  <script src="./js/animations.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      window.Components.injectNavbar();
+      window.Components.injectFooter();
+      window.Animations.initScrollReveal();
+    });
+  </script>
+</body>
+</html>

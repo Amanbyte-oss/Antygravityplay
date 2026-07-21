@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Report a bug on Antigravity Play - help us fix issues and improve stability">
+  <title>Report a Bug - Antigravity Play</title>
+  <link rel="stylesheet" href="./css/main.css">
+  <link rel="stylesheet" href="./css/legal.css">
+  <link rel="stylesheet" href="./css/forms.css">
+</head>
+<body>
+  <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+  <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-header"><h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button></div>
+      <div class="modal-body">Are you sure?</div>
+      <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button class="btn btn-primary confirm-modal-btn">Confirm</button></div>
+    </div>
+  </div>
+  <header id="navbar-container" class="navbar-wrapper"></header>
+  <main class="container form-page">
+    <div class="form-header">
+      <h1>Report a Bug</h1>
+      <p>Found something broken? Let us know so we can fix it.</p>
+    </div>
+    <div class="form-card">
+      <div class="form-success" id="form-success">
+        <svg class="form-success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <h2>Thank You!</h2>
+        <p>Our team will investigate and address the issue as soon as possible.</p>
+      </div>
+      <form id="main-form">
+        <div class="form-group">
+          <label class="form-label" for="bug-summary">Bug Title <span class="required">*</span></label>
+          <input class="form-input" id="bug-summary" type="text" placeholder="Brief summary of the bug" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="bug-page">Where did it happen? <span class="required">*</span></label>
+          <select class="form-select" id="bug-page" required>
+            <option value="">Select a page...</option>
+            <option value="home">Home</option>
+            <option value="watch">Watch / Player</option>
+            <option value="search">Search</option>
+            <option value="admin">Admin Panel</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="bug-description">Description <span class="required">*</span></label>
+          <textarea class="form-textarea" id="bug-description" placeholder="What happened? What did you expect to happen?" required></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="bug-steps">Steps to Reproduce</label>
+          <textarea class="form-textarea" id="bug-steps" placeholder="1. Go to... 2. Click on... 3. See error..." style="min-height:100px;"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="bug-browser">Browser</label>
+            <input class="form-input" id="bug-browser" type="text" placeholder="e.g. Chrome 120">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="bug-os">Operating System</label>
+            <input class="form-input" id="bug-os" type="text" placeholder="e.g. Windows 11">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Submit Bug Report</button>
+        </div>
+      </form>
+    </div>
+  </main>
+  <footer id="footer-container" style="margin-top: 100px;"></footer>
+  <script src="./js/mockData.js"></script>
+  <script src="./js/main.js"></script>
+  <script src="./js/components.js"></script>
+  <script src="./js/animations.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      window.Components.injectNavbar();
+      window.Components.injectFooter();
+      window.Animations.initScrollReveal();
+      const form = document.getElementById('main-form');
+      if (form) {
+        form.addEventListener('submit', (e) => {
+          e.preventDefault();
+          form.style.display = 'none';
+          document.getElementById('form-success').classList.add('show');
+        });
+      }
+    });
+  </script>
+</body>
+</html>

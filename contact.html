@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Contact Antigravity Play - get in touch with our team">
+  <title>Contact - Antigravity Play</title>
+  <link rel="stylesheet" href="./css/main.css">
+  <link rel="stylesheet" href="./css/legal.css">
+</head>
+<body>
+  <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+  <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-header"><h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button></div>
+      <div class="modal-body">Are you sure?</div>
+      <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button class="btn btn-primary confirm-modal-btn">Confirm</button></div>
+    </div>
+  </div>
+  <header id="navbar-container" class="navbar-wrapper"></header>
+  <main class="container legal-page">
+    <div class="legal-header">
+      <h1>Contact Us</h1>
+      <p class="legal-date">We'd love to hear from you</p>
+    </div>
+    <div class="legal-content">
+      <section>
+        <h2>Get in Touch</h2>
+        <p>Have a question, suggestion, or just want to say hello? Reach out to us through any of the channels below. We aim to respond to all inquiries within 24 hours.</p>
+      </section>
+      <section>
+        <h2>Email</h2>
+        <p>For general inquiries: <a href="mailto:hello@antigravityplay.com" style="color:var(--accent);">hello@antigravityplay.com</a></p>
+        <p>For support: <a href="mailto:support@antigravityplay.com" style="color:var(--accent);">support@antigravityplay.com</a></p>
+        <p>For legal matters: <a href="mailto:legal@antigravityplay.com" style="color:var(--accent);">legal@antigravityplay.com</a></p>
+      </section>
+      <section>
+        <h2>Report an Issue</h2>
+        <p>If you encounter a bug or have a feature request, please use our dedicated forms for the fastest response:</p>
+        <p><a href="./report-bug.html" style="color:var(--accent);">Report a Bug</a> &middot; <a href="./feature-request.html" style="color:var(--accent);">Request a Feature</a></p>
+      </section>
+      <section>
+        <h2>Social</h2>
+        <p>Follow us for updates, announcements, and community highlights.</p>
+        <p>GitHub: <a href="https://github.com" target="_blank" rel="noopener" style="color:var(--accent);">github.com/antigravityplay</a></p>
+      </section>
+    </div>
+  </main>
+  <footer id="footer-container" style="margin-top: 100px;"></footer>
+  <script src="./js/mockData.js"></script>
+  <script src="./js/main.js"></script>
+  <script src="./js/components.js"></script>
+  <script src="./js/animations.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      window.Components.injectNavbar();
+      window.Components.injectFooter();
+      window.Animations.initScrollReveal();
+    });
+  </script>
+</body>
+</html>

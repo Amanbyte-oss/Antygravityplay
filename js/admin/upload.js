@@ -10,9 +10,7 @@ let currentThumbnailUrl = null;
 let currentMetadata = null;
 
 // ─── JSONP Helper with timeout ──────────────────────────────────────────────
-let jsonpId = 0;
 function jsonp(url, callbackName, cb) {
-  const id = ++jsonpId;
   const timeout = setTimeout(() => {
     delete window[callbackName];
     cb(new Error('Request timed out'), null);

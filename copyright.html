@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Copyright policy for Antigravity Play">
+  <title>Copyright - Antigravity Play</title>
+  <link rel="stylesheet" href="./css/main.css">
+  <link rel="stylesheet" href="./css/legal.css">
+</head>
+<body>
+  <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+  <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-header"><h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button></div>
+      <div class="modal-body">Are you sure?</div>
+      <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button class="btn btn-primary confirm-modal-btn">Confirm</button></div>
+    </div>
+  </div>
+  <header id="navbar-container" class="navbar-wrapper"></header>
+  <main class="container legal-page">
+    <div class="legal-header">
+      <h1>Copyright Policy</h1>
+      <p class="legal-date">Last updated: July 21, 2026</p>
+    </div>
+    <div class="legal-content">
+      <section>
+        <h2>Copyright Ownership</h2>
+        <p>All content on Antigravity Play, including but not limited to the platform design, code, graphics, text, and user interface elements, is the intellectual property of Antigravity Play unless otherwise stated.</p>
+        <p>The Antigravity Play name, logo, and brand elements are trademarks and may not be used without explicit permission.</p>
+      </section>
+      <section>
+        <h2>User Content</h2>
+        <p>Users retain ownership of content they upload to the platform. By uploading content, users grant Antigravity Play a non-exclusive, royalty-free license to display, distribute, and stream the content through the platform.</p>
+      </section>
+      <section>
+        <h2>Third-Party Content</h2>
+        <p>Videos embedded from third-party platforms (YouTube, Vimeo, Dailymotion, etc.) remain the property of their respective owners and are subject to those platforms' terms of service.</p>
+      </section>
+      <section>
+        <h2>Reporting Infringement</h2>
+        <p>If you believe your copyright has been infringed, please see our <a href="./dmca.html" style="color:var(--accent);">DMCA Policy</a> for instructions on filing a takedown notice.</p>
+      </section>
+    </div>
+  </main>
+  <footer id="footer-container" style="margin-top: 100px;"></footer>
+  <script src="./js/mockData.js"></script>
+  <script src="./js/main.js"></script>
+  <script src="./js/components.js"></script>
+  <script src="./js/animations.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      window.Components.injectNavbar();
+      window.Components.injectFooter();
+      window.Animations.initScrollReveal();
+    });
+  </script>
+</body>
+</html>

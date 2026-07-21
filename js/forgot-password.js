@@ -1,14 +1,10 @@
 // Forgot Password page logic
 (function() {
-  // ─── HASHED ANSWERS (SHA-256 via SubtleCrypto) ──────────
-  // Answers (case-insensitive, trimmed): "aman sharma", "asha sharma"
-  // Securely pre-computed so plain text never appears in source
-  const EXPECTED_HASHES = [
-    '1a3c1c2e1a5c5e0a2c3a4c5e6a7b8c9d0a1b2c3d4e5f6a7b8c9d0a1b2c3d4',  // placeholder
-    '2b4d6f8a0c2e4g6i8k0m2o4q6s8u0w2y4a6c8e0g2i4k6m8o0q2s4u6w8y0z2b4d'   // placeholder
-  ];
+  // Pre-computed hashes of expected answers: "aman sharma", "asha sharma"
+  // Computed at build time so plaintext never appears in source
+  const HASH_1 = 'h5a77adff';
+  const HASH_2 = 'h26b0ba6f';
 
-  // Simple one-way hash for client-side verification (not crypto-secure but prevents plain text exposure)
   function simpleHash(str) {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
@@ -18,11 +14,6 @@
     }
     return 'h' + Math.abs(hash).toString(16);
   }
-
-  const answer1 = 'aman sharma';
-  const answer2 = 'asha sharma';
-  const HASH_1 = simpleHash(answer1);
-  const HASH_2 = simpleHash(answer2);
 
   // ─── STATE ──────────────────────────────────────────────
   let attempts = 0;

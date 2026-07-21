@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Activity logs - monitor user actions and system events">
+  <title>Activity Logs - Antigravity Play</title>
+  <link rel="stylesheet" href="../css/main.css">
+</head>
+<body>
+  <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+  <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-header"><h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button></div>
+      <div class="modal-body">Are you sure?</div>
+      <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button class="btn btn-primary confirm-modal-btn">Confirm</button></div>
+    </div>
+  </div>
+  <div class="admin-layout">
+    <div id="sidebar-container"></div>
+    <main class="admin-main">
+      <div class="admin-header">
+        <button class="admin-menu-btn" aria-label="Open menu">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <h1>Activity Logs</h1>
+        <div style="flex:1;"></div>
+      </div>
+      <div class="admin-content">
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <h2>Activity Logs</h2>
+            <span class="badge badge-info" id="log-count">0 entries</span>
+          </div>
+          <div class="admin-card-body">
+            <div id="log-container">
+              <div class="empty-state-container" style="text-align:center;padding:var(--space-4xl);">
+                <svg width="48" height="48" fill="none" stroke="var(--text-muted)" stroke-width="1.5" viewBox="0 0 24 24" style="margin:0 auto var(--space-md);display:block;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <h3 style="font-size:var(--text-lg);font-weight:600;margin-bottom:var(--space-xs);">Loading logs...</h3>
+                <p style="font-size:var(--text-sm);color:var(--text-muted);">Please wait while log data is being loaded.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="../js/mockData.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/components.js"></script>
+  <script src="../js/animations.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      window.Components.injectAdminSidebar('activity-logs');
+      
+      const logContainer = document.getElementById('log-container');
+      const logCount = document.getElementById('log-count');
+      
+      // Generate sample log entries
+      const entries = generateLogEntries();
+      logCount.textContent = entries.length + ' entries';
+      
+      if (entries.length === 0) {
+        logContainer.innerHTML = '<div class="empty-state-container" style="text-align:center;padding:var(--space-4xl);"><svg width="48" height="48" fill="none" stroke="var(--text-muted)" stroke-width="1.5" viewBox="0 0 24 24" style="margin:0 auto var(--space-md);display:block;"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg><h3 style="font-size:var(--text-lg);font-weight:600;margin-bottom:var(--space-xs);">No log entries found.</h3></div>';
+      } else {
+        logContainer.innerHTML = '<div class="log-table-wrapper"><table class="admin-table"><thead><tr><th>Timestamp</th><th>Action</th><th>User</th><th>Details</th></tr></thead><tbody>' + entries.map(e => '<tr><td style="white-space:nowrap;font-size:var(--text-xs);color:var(--text-muted);font-family:var(--font-mono);">' + e.time + '</td><td>' + e.col2 + '</td><td><span class="badge ' + e.badgeClass + '">' + e.col3 + '</span></td><td style="font-size:var(--text-sm);color:var(--text-secondary);">' + e.detail + '</td></tr>').join('') + '</tbody></table></div>';
+      }
+      
+      function generateLogEntries() {
+        return [
+          { time: formatTime(0), col2: 'Video published', col3: 'Administrator', badgeClass: 'badge-success', detail: 'New video "Getting Started with Antigravity Play" was published.' },
+          { time: formatTime(5), col2: 'Video edited', col3: 'Administrator', badgeClass: 'badge-info', detail: 'Video "Advanced CSS Techniques" tags were updated.' },
+          { time: formatTime(15), col2: 'Tag created', col3: 'Administrator', badgeClass: 'badge-info', detail: 'New tag "Tutorial" was added to the system.' },
+          { time: formatTime(30), col2: 'Video deleted', col3: 'Administrator', badgeClass: 'badge-warning', detail: 'Video "Test Upload 3" was permanently removed.' },
+          { time: formatTime(60), col2: 'Settings changed', col3: 'Administrator', badgeClass: 'badge-info', detail: 'Site theme preference was updated.' },
+          { time: formatTime(120), col2: 'Bulk action', col3: 'Administrator', badgeClass: 'badge-info', detail: '5 videos were moved to draft status.' },
+          { time: formatTime(240), col2: 'Login attempt', col3: 'Administrator', badgeClass: 'badge-success', detail: 'Successful login from IP 192.168.1.1' },
+          { time: formatTime(360), col2: 'Video archived', col3: 'Administrator', badgeClass: 'badge-warning', detail: 'Video "Old Stream 2025" was archived.' },
+          { time: formatTime(480), col2: 'Password changed', col3: 'Administrator', badgeClass: 'badge-info', detail: 'Admin account password was successfully updated.' },
+          { time: formatTime(600), col2: 'Video featured', col3: 'Administrator', badgeClass: 'badge-success', detail: 'Video "Epic Drone Shots" was featured on homepage.' }
+        ];
+        function formatTime(minutesAgo) {
+          const d = new Date(Date.now() - minutesAgo * 60000);
+          return d.toISOString().replace('T', ' ').slice(0, 19);
+        }
+      }
+    });
+  </script>
+</body>
+</html>

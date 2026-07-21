@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Submit feedback about Antigravity Play - help us improve the platform">
+  <title>Feedback - Antigravity Play</title>
+  <link rel="stylesheet" href="./css/main.css">
+  <link rel="stylesheet" href="./css/legal.css">
+  <link rel="stylesheet" href="./css/forms.css">
+</head>
+<body>
+  <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+  <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-header"><h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button></div>
+      <div class="modal-body">Are you sure?</div>
+      <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button class="btn btn-primary confirm-modal-btn">Confirm</button></div>
+    </div>
+  </div>
+  <header id="navbar-container" class="navbar-wrapper"></header>
+  <main class="container form-page">
+    <div class="form-header">
+      <h1>Feedback</h1>
+      <p>We'd love to hear your thoughts about Antigravity Play.</p>
+    </div>
+    <div class="form-card">
+      <div class="form-success" id="form-success">
+        <svg class="form-success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <h2>Thank You!</h2>
+        <p>Your feedback helps us improve the platform for everyone.</p>
+      </div>
+      <form id="main-form">
+        <div class="form-group">
+          <label class="form-label" for="feedback-type">Feedback Type <span class="required">*</span></label>
+          <select class="form-select" id="feedback-type" required>
+            <option value="">Select a type...</option>
+            <option value="general">General Feedback</option>
+            <option value="suggestion">Suggestion</option>
+            <option value="praise">Praise</option>
+            <option value="criticism">Criticism</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="feedback-name">Name</label>
+          <input class="form-input" id="feedback-name" type="text" placeholder="Your name (optional)">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="feedback-email">Email <span class="required">*</span></label>
+          <input class="form-input" id="feedback-email" type="email" placeholder="your@email.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="feedback-message">Message <span class="required">*</span></label>
+          <textarea class="form-textarea" id="feedback-message" placeholder="Tell us what's on your mind..." required></textarea>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Submit Feedback</button>
+        </div>
+      </form>
+    </div>
+  </main>
+  <footer id="footer-container" style="margin-top: 100px;"></footer>
+  <script src="./js/mockData.js"></script>
+  <script src="./js/main.js"></script>
+  <script src="./js/components.js"></script>
+  <script src="./js/animations.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      window.Components.injectNavbar();
+      window.Components.injectFooter();
+      window.Animations.initScrollReveal();
+      const form = document.getElementById('main-form');
+      if (form) {
+        form.addEventListener('submit', (e) => {
+          e.preventDefault();
+          form.style.display = 'none';
+          document.getElementById('form-success').classList.add('show');
+        });
+      }
+    });
+  </script>
+</body>
+</html>

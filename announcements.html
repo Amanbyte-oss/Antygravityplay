@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Announcements from Antigravity Play - latest news and updates">
+  <title>Announcements - Antigravity Play</title>
+  <link rel="stylesheet" href="./css/main.css">
+  <link rel="stylesheet" href="./css/legal.css">
+</head>
+<body>
+  <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+  <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-header"><h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button></div>
+      <div class="modal-body">Are you sure?</div>
+      <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button class="btn btn-primary confirm-modal-btn">Confirm</button></div>
+    </div>
+  </div>
+  <header id="navbar-container" class="navbar-wrapper"></header>
+  <main class="container legal-page">
+    <div class="legal-header">
+      <h1>Announcements</h1>
+      <p class="legal-date">Latest news and updates from the Antigravity Play team</p>
+    </div>
+    <div class="legal-content">
+      <section>
+        <h2>New Information Architecture — July 21, 2026</h2>
+        <p>We have expanded the platform with over 25 new pages covering information, utilities, system status, and blog content. The footer has been redesigned for improved navigation and SEO. Check out our new <a href="./about.html" style="color:var(--accent);">About page</a> to learn more about what we do.</p>
+      </section>
+      <section>
+        <h2>Custom Video Player Launch — July 20, 2026</h2>
+        <p>Our custom-built video player is now live! Experience glassmorphism controls, emoji reactions, theater mode, and more. We believe this player sets a new standard for video playback on the web.</p>
+      </section>
+      <section>
+        <h2>Welcome to Antigravity Play — July 19, 2026</h2>
+        <p>We are excited to announce the launch of Antigravity Play — a high-performance video sharing platform built with vanilla JavaScript. Explore our curated collection of videos and experience the web as it was meant to be.</p>
+      </section>
+    </div>
+  </main>
+  <footer id="footer-container" style="margin-top: 100px;"></footer>
+  <script src="./js/mockData.js"></script>
+  <script src="./js/main.js"></script>
+  <script src="./js/components.js"></script>
+  <script src="./js/animations.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      window.Components.injectNavbar();
+      window.Components.injectFooter();
+      window.Animations.initScrollReveal();
+    });
+  </script>
+</body>
+</html>

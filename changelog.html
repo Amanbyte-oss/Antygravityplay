@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Changelog - version history of Antigravity Play">
+  <title>Changelog - Antigravity Play</title>
+  <link rel="stylesheet" href="./css/main.css">
+  <link rel="stylesheet" href="./css/legal.css">
+</head>
+<body>
+  <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+  <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-header"><h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button></div>
+      <div class="modal-body">Are you sure?</div>
+      <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button class="btn btn-primary confirm-modal-btn">Confirm</button></div>
+    </div>
+  </div>
+  <header id="navbar-container" class="navbar-wrapper"></header>
+  <main class="container legal-page">
+    <div class="legal-header">
+      <h1>Changelog</h1>
+      <p class="legal-date">Complete version history of Antigravity Play</p>
+    </div>
+    <div class="legal-content">
+      <section>
+        <h2>v1.2.0 — July 21, 2026</h2>
+        <p>• New information pages: About, Contact, FAQ, Help Centre, Community Guidelines, DMCA, Copyright, Cookie Policy</p>
+        <p>• Utility pages: Feedback, Report Bug, Feature Request, Sitemap, Status</p>
+        <p>• System pages: 404, 403, 500, Maintenance, Offline modes</p>
+        <p>• Blog with individual post support</p>
+        <p>• Admin logs: Activity, Login, Error logs</p>
+        <p>• Changelog, Release Notes, Announcements, Tutorial pages</p>
+        <p>• RSS feed and OpenSearch support</p>
+      </section>
+      <section>
+        <h2>v1.1.0 — July 20, 2026</h2>
+        <p>• Privacy Policy and Terms of Use pages</p>
+        <p>• Forgot password flow with identity verification</p>
+        <p>• Removed Change Password from admin dashboard</p>
+        <p>• Global transition overhaul with slower easing curves</p>
+        <p>• Fixed page movement after refresh (scrollbar-gutter, translateY removed)</p>
+        <p>• Footer fully centered on mobile</p>
+        <p>• Hamburger menu light mode styling</p>
+      </section>
+      <section>
+        <h2>v1.0.0 — July 19, 2026</h2>
+        <p>• Initial release of Antigravity Play</p>
+        <p>• Custom video player with glassmorphism controls</p>
+        <p>• Emoji reactions with float animations</p>
+        <p>• Theater mode, Picture-in-Picture, fullscreen support</p>
+        <p>• Playback speed control (0.25x - 2x)</p>
+        <p>• Swipe seek and double-tap seek on mobile</p>
+        <p>• Continue watching with localStorage persistence</p>
+        <p>• Dark/light theme with persistent preference</p>
+        <p>• Responsive design for all screen sizes</p>
+        <p>• Admin panel with video management, tags, analytics</p>
+      </section>
+    </div>
+  </main>
+  <footer id="footer-container" style="margin-top: 100px;"></footer>
+  <script src="./js/mockData.js"></script>
+  <script src="./js/main.js"></script>
+  <script src="./js/components.js"></script>
+  <script src="./js/animations.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      window.Components.injectNavbar();
+      window.Components.injectFooter();
+      window.Animations.initScrollReveal();
+    });
+  </script>
+</body>
+</html>

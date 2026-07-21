@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Blog post - Antigravity Play">
+  <title>Blog Post - Antigravity Play</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/blog.css">
+</head>
+<body>
+  <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+  <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-header"><h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button></div>
+      <div class="modal-body">Are you sure?</div>
+      <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button class="btn btn-primary confirm-modal-btn">Confirm</button></div>
+    </div>
+  </div>
+  <header id="navbar-container" class="navbar-wrapper"></header>
+  <main class="container blog-post" id="blog-post">
+    <div id="post-loading" style="text-align:center;padding:var(--space-5xl);">
+      <div class="system-spinner" style="margin:0 auto var(--space-xl);"></div>
+      <p style="color:var(--text-muted);">Loading post...</p>
+    </div>
+    <div id="post-content" style="display:none;"></div>
+  </main>
+  <footer id="footer-container" style="margin-top: 100px;"></footer>
+  <script src="../js/mockData.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/components.js"></script>
+  <script src="../js/animations.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      window.Components.injectNavbar();
+      window.Components.injectFooter();
+      window.Animations.initScrollReveal();
+
+      const params = window.App.getQueryParams();
+      const postId = params.id || 'welcome';
+
+      // Simple blog post database
+      const posts = {
+        welcome: {
+          title: 'Welcome to Antigravity Play',
+          date: 'July 21, 2026',
+          author: 'The Team',
+          tag: 'Announcement',
+          readTime: '3 min read',
+          content: '<h2>A New Chapter in Video Sharing</h2><p>We are thrilled to announce the launch of Antigravity Play — a video sharing platform built from the ground up with vanilla JavaScript. Our mission is simple: provide a fast, beautiful, and accessible way to watch and share videos without the bloat of modern web frameworks.</p><h2>What Makes Us Different</h2><p>Every component of Antigravity Play is hand-crafted. From the glassmorphism video player controls to the seamless page transitions, we have paid attention to every detail. The platform features a design system inspired by Spotify and Vercel, with a consistent 4px spacing scale, custom easing curves, and full dark/light theme support.</p><h2>Key Features</h2><p><strong>Custom Video Player:</strong> Our player supports emoji reactions, theater mode, picture-in-picture, playback speed control, double-tap seek on mobile, and swipe-to-seek gestures.</p><p><strong>Theme Support:</strong> Seamless dark and light mode switching with persistent preferences.</p><p><strong>Responsive Design:</strong> Every page is fully responsive and optimized for all screen sizes.</p><p><strong>Zero Dependencies:</strong> The core platform has no framework dependencies — just HTML, CSS, and vanilla JavaScript.</p><h2>What\'s Next</h2><p>We have an exciting roadmap ahead, with new features, improvements, and content coming soon. Follow our blog and release notes to stay updated. Welcome to the community!</p>'
+        },
+        player: {
+          title: 'Introducing the Custom Video Player',
+          date: 'July 20, 2026',
+          author: 'The Team',
+          tag: 'Feature',
+          readTime: '5 min read',
+          content: '<h2>Built for Performance and Delight</h2><p>Today we are introducing our completely custom-built video player. Designed from scratch to provide a premium viewing experience, the player replaces browser-native controls with a glassmorphism-styled overlay that is both beautiful and functional.</p><h2>Feature Highlights</h2><p><strong>Glassmorphism Controls:</strong> The player controls feature a frosted glass effect with backdrop blur, adapting to both dark and light themes.</p><p><strong>Emoji Reactions:</strong> Click on any emoji to send a reaction that floats across the screen. Reactions are session-based and reset on each page load for a fresh experience.</p><p><strong>Theater Mode:</strong> Expand the player to fill the browser window while keeping navigation accessible. Perfect for immersive viewing.</p><p><strong>Picture-in-Picture:</strong> Pop the video out into a floating window that stays on top of other applications.</p><p><strong>Playback Speed:</strong> Choose from 0.25x to 2x speed with a simple menu toggle.</p><p><strong>Mobile Gestures:</strong> Double-tap left to rewind 10s, double-tap right to forward 10s. Swipe horizontally on the player to seek through the video.</p><p><strong>Continue Watching:</strong> Your position is saved automatically. When you return to a video, you can pick up where you left off.</p>'
+        },
+        theming: {
+          title: 'Complete Guide to Dark & Light Themes',
+          date: 'July 19, 2026',
+          author: 'The Team',
+          tag: 'Tutorial',
+          readTime: '7 min read',
+          content: '<h2>CSS Custom Properties for Theming</h2><p>Antigravity Play uses CSS custom properties (variables) to implement a complete theming system. Every color, spacing, and transition token is defined as a custom property, making theme switching instant and smooth.</p><h2>How It Works</h2><p>We define all design tokens under <code>:root</code> and <code>[data-theme="light"]</code> selectors. When the user clicks the theme toggle, JavaScript updates the <code>data-theme</code> attribute on the <code>&lt;html&gt;</code> element, and all colors update automatically via CSS cascade.</p><p>Transitions are applied to color properties with a custom cubic-bezier easing curve, ensuring smooth and natural-feeling theme switches. The theme preference is persisted in localStorage so your choice is remembered across sessions.</p><h2>Customizing Your Theme</h2><p>You can override any CSS custom property in your browser\'s developer tools to create a personalized experience. All theme variables are documented in our main.css file for easy reference.</p>'
+        }
+      };
+
+      const post = posts[postId];
+      if (!post) {
+        document.getElementById('post-loading').style.display = 'none';
+        document.getElementById('post-content').innerHTML = '<div class="system-page" style="min-height:50vh;"><h1 class="system-title">Post Not Found</h1><p class="system-desc">The blog post you are looking for does not exist.</p><div class="system-actions"><a href="./index.html" class="btn btn-primary">Back to Blog</a></div></div>';
+        document.getElementById('post-content').style.display = 'block';
+        return;
+      }
+
+      document.title = post.title + ' - Antigravity Play';
+
+      document.getElementById('post-loading').style.display = 'none';
+      document.getElementById('post-content').innerHTML = '<div class="blog-post-featured" style="background:linear-gradient(135deg,var(--accent),var(--bg-elevated));display:flex;align-items:center;justify-content:center;"><svg width="64" height="64" fill="none" stroke="var(--text-primary)" stroke-width="1.5" viewBox="0 0 24 24" style="opacity:0.5;"><polygon points="8,5 19,12 8,19"></polygon></svg></div><div class="blog-post-meta"><span class="blog-tag">' + post.tag + '</span><span>' + post.date + '</span><span>' + post.readTime + '</span></div><h1>' + post.title + '</h1><div class="blog-post-content">' + post.content + '</div><div class="blog-post-nav"><a href="./index.html">&larr; Back to Blog</a><a href="./index.html">All Posts &rarr;</a></div>';
+      document.getElementById('post-content').style.display = 'block';
+    });
+  </script>
+</body>
+</html>

@@ -190,6 +190,7 @@
     // Save video database
     saveVideos(videosList) {
       localStorage.setItem('db-videos', JSON.stringify(videosList));
+      window.dispatchEvent(new CustomEvent('videosupdated'));
     },
 
     // Get tags (merges MOCK_TAGS with localStorage custom tags)

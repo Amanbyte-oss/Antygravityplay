@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Press resources and media kit for Antigravity Play">
+  <title>Press - Antigravity Play</title>
+  <link rel="stylesheet" href="./css/main.css">
+  <link rel="stylesheet" href="./css/legal.css">
+</head>
+<body>
+  <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+  <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-header"><h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button></div>
+      <div class="modal-body">Are you sure?</div>
+      <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button class="btn btn-primary confirm-modal-btn">Confirm</button></div>
+    </div>
+  </div>
+  <header id="navbar-container" class="navbar-wrapper"></header>
+  <main class="container legal-page">
+    <div class="legal-header">
+      <h1>Press & Media</h1>
+      <p class="legal-date">Resources for journalists and media professionals</p>
+    </div>
+    <div class="legal-content">
+      <section>
+        <h2>About Antigravity Play</h2>
+        <p>Antigravity Play is a modern video sharing platform built with vanilla JavaScript, featuring a custom-designed video player with advanced controls, emoji reactions, and full theme support. The platform showcases what can be achieved with native web technologies without the need for heavy frameworks.</p>
+      </section>
+      <section>
+        <h2>Press Kit</h2>
+        <p>Our press kit includes logos, screenshots, and brand guidelines. For access to these materials, please contact our press team.</p>
+      </section>
+      <section>
+        <h2>Press Inquiries</h2>
+        <p>For press and media inquiries, please contact: <a href="mailto:press@antigravityplay.com" style="color:var(--accent);">press@antigravityplay.com</a></p>
+      </section>
+      <section>
+        <h2>Latest News</h2>
+        <p>For the latest announcements and updates, visit our <a href="./blog/index.html" style="color:var(--accent);">Blog</a> or read our <a href="./release-notes.html" style="color:var(--accent);">Release Notes</a>.</p>
+      </section>
+    </div>
+  </main>
+  <footer id="footer-container" style="margin-top: 100px;"></footer>
+  <script src="./js/mockData.js"></script>
+  <script src="./js/main.js"></script>
+  <script src="./js/components.js"></script>
+  <script src="./js/animations.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      window.Components.injectNavbar();
+      window.Components.injectFooter();
+      window.Animations.initScrollReveal();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Complete sitemap of Antigravity Play - browse all pages and sections">
+  <title>Sitemap - Antigravity Play</title>
+  <link rel="stylesheet" href="./css/main.css">
+  <link rel="stylesheet" href="./css/forms.css">
+</head>
+<body>
+  <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+  <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-header"><h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button></div>
+      <div class="modal-body">Are you sure?</div>
+      <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button class="btn btn-primary confirm-modal-btn">Confirm</button></div>
+    </div>
+  </div>
+  <header id="navbar-container" class="navbar-wrapper"></header>
+  <main class="container sitemap-page">
+    <div class="sitemap-header">
+      <h1>Sitemap</h1>
+      <p>Complete index of all pages on Antigravity Play.</p>
+    </div>
+    <div class="sitemap-grid">
+      <div class="sitemap-category">
+        <h2>Browse</h2>
+        <ul>
+          <li><a href="./index.html">Home / Trending</a></li>
+          <li><a href="./search.html">Search</a></li>
+          <li><a href="./tag.html">Tags</a></li>
+          <li><a href="./watch.html">Watch Video</a></li>
+        </ul>
+      </div>
+      <div class="sitemap-category">
+        <h2>Account</h2>
+        <ul>
+          <li><a href="./login.html">Admin Login</a></li>
+          <li><a href="./forgot-password.html">Forgot Password</a></li>
+        </ul>
+      </div>
+      <div class="sitemap-category">
+        <h2>Information</h2>
+        <ul>
+          <li><a href="./about.html">About</a></li>
+          <li><a href="./contact.html">Contact</a></li>
+          <li><a href="./faq.html">FAQ</a></li>
+          <li><a href="./help-centre.html">Help Centre</a></li>
+          <li><a href="./blog/index.html">Blog</a></li>
+          <li><a href="./tutorial.html">Tutorial</a></li>
+        </ul>
+      </div>
+      <div class="sitemap-category">
+        <h2>Utility</h2>
+        <ul>
+          <li><a href="./feedback.html">Feedback</a></li>
+          <li><a href="./report-bug.html">Report a Bug</a></li>
+          <li><a href="./feature-request.html">Feature Request</a></li>
+          <li><a href="./status.html">Status</a></li>
+          <li><a href="./sitemap.html">Sitemap</a></li>
+        </ul>
+      </div>
+      <div class="sitemap-category">
+        <h2>Legal</h2>
+        <ul>
+          <li><a href="./privacy.html">Privacy Policy</a></li>
+          <li><a href="./terms.html">Terms of Use</a></li>
+          <li><a href="./dmca.html">DMCA</a></li>
+          <li><a href="./copyright.html">Copyright</a></li>
+          <li><a href="./cookie-policy.html">Cookie Policy</a></li>
+          <li><a href="./community-guidelines.html">Community Guidelines</a></li>
+        </ul>
+      </div>
+      <div class="sitemap-category">
+        <h2>System</h2>
+        <ul>
+          <li><a href="./admin/index.html">Admin Dashboard</a></li>
+          <li><a href="./admin/videos.html">Admin Videos</a></li>
+          <li><a href="./admin/upload.html">Upload Video</a></li>
+          <li><a href="./admin/tags.html">Manage Tags</a></li>
+          <li><a href="./admin/notifications.html">Notifications</a></li>
+          <li><a href="./admin/analytics.html">Analytics</a></li>
+        </ul>
+      </div>
+      <div class="sitemap-category">
+        <h2>System Status</h2>
+        <ul>
+          <li><a href="./404.html">404 Not Found</a></li>
+          <li><a href="./403.html">403 Forbidden</a></li>
+          <li><a href="./500.html">500 Server Error</a></li>
+          <li><a href="./maintenance.html">Maintenance</a></li>
+          <li><a href="./offline.html">Offline</a></li>
+        </ul>
+      </div>
+    </div>
+  </main>
+  <footer id="footer-container" style="margin-top: 100px;"></footer>
+  <script src="./js/mockData.js"></script>
+  <script src="./js/main.js"></script>
+  <script src="./js/components.js"></script>
+  <script src="./js/animations.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      window.Components.injectNavbar();
+      window.Components.injectFooter();
+      window.Animations.initScrollReveal();
+    });
+  </script>
+</body>
+</html>

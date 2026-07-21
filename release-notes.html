@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Release notes for Antigravity Play - latest updates and improvements">
+  <title>Release Notes - Antigravity Play</title>
+  <link rel="stylesheet" href="./css/main.css">
+  <link rel="stylesheet" href="./css/legal.css">
+</head>
+<body>
+  <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+  <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-header"><h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button></div>
+      <div class="modal-body">Are you sure?</div>
+      <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button class="btn btn-primary confirm-modal-btn">Confirm</button></div>
+    </div>
+  </div>
+  <header id="navbar-container" class="navbar-wrapper"></header>
+  <main class="container legal-page">
+    <div class="legal-header">
+      <h1>Release Notes</h1>
+      <p class="legal-date">Latest updates and improvements to Antigravity Play</p>
+    </div>
+    <div class="legal-content">
+      <section>
+        <h2>Version 1.2.0 — "Information Expansion"</h2>
+        <p>This release focuses on expanding the platform's information architecture. We have added comprehensive utility pages, system status pages, admin logging capabilities, and a fully functional blog. The footer has been redesigned with better information hierarchy for improved accessibility and SEO.</p>
+        <p style="margin-top:var(--space-md);"><strong>New Pages:</strong> About, Contact, FAQ, Help Centre, Community Guidelines, DMCA, Copyright, Cookie Policy, Advertise, Press, Blog, Changelog, Release Notes, Announcements, Tutorial, Feedback, Report Bug, Feature Request, Sitemap, Status, 404, 403, 500, Maintenance, Offline, Search Empty, No Internet, Activity Logs, Login Logs, Error Logs</p>
+        <p><strong>Improvements:</strong> Footer information architecture redesigned, SEO optimization with descriptive meta tags, consistent page-enter animations across all new pages.</p>
+      </section>
+      <section>
+        <h2>Version 1.1.0 — "Polishing Pass"</h2>
+        <p>Focused on user experience improvements and bug fixes. Added legal pages (Privacy Policy, Terms of Use), forgot password flow, and enhanced the theme system. Fixed page movement issues after refresh and improved mobile responsiveness.</p>
+      </section>
+      <section>
+        <h2>Version 1.0.0 — "Initial Launch"</h2>
+        <p>The first release of Antigravity Play. Core video browsing and watching experience with custom player, admin panel, and full theme support.</p>
+      </section>
+    </div>
+  </main>
+  <footer id="footer-container" style="margin-top: 100px;"></footer>
+  <script src="./js/mockData.js"></script>
+  <script src="./js/main.js"></script>
+  <script src="./js/components.js"></script>
+  <script src="./js/animations.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      window.Components.injectNavbar();
+      window.Components.injectFooter();
+      window.Animations.initScrollReveal();
+    });
+  </script>
+</body>
+</html>

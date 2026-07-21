@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Frequently asked questions about Antigravity Play">
+  <title>FAQ - Antigravity Play</title>
+  <link rel="stylesheet" href="./css/main.css">
+  <link rel="stylesheet" href="./css/legal.css">
+</head>
+<body>
+  <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+  <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-header"><h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button></div>
+      <div class="modal-body">Are you sure?</div>
+      <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button class="btn btn-primary confirm-modal-btn">Confirm</button></div>
+    </div>
+  </div>
+  <header id="navbar-container" class="navbar-wrapper"></header>
+  <main class="container legal-page">
+    <div class="legal-header">
+      <h1>Frequently Asked Questions</h1>
+      <p class="legal-date">Find answers to common questions</p>
+    </div>
+    <div class="legal-content">
+      <section>
+        <h2>What is Antigravity Play?</h2>
+        <p>Antigravity Play is a video sharing platform that lets you upload, share, and watch videos. It features a custom-built video player with modern controls, emoji reactions, and seamless playback.</p>
+      </section>
+      <section>
+        <h2>How do I upload videos?</h2>
+        <p>Log in to the Admin Portal and navigate to the Upload section. You can add videos from YouTube, Vimeo, Dailymotion, Streamable, and other supported platforms by pasting the video URL.</p>
+      </section>
+      <section>
+        <h2>Is there a mobile app?</h2>
+        <p>Antigravity Play is a progressive web application optimized for mobile browsers. The video player supports touch gestures including double-tap to seek and swipe controls.</p>
+      </section>
+      <section>
+        <h2>Can I customize the video player?</h2>
+        <p>Yes! The player supports multiple playback speeds, theater mode, picture-in-picture, and fullscreen. You can also toggle between dark and light themes using the theme button.</p>
+      </section>
+      <section>
+        <h2>How do emoji reactions work?</h2>
+        <p>While watching a video, click on any emoji in the reaction bar to add your reaction. Each reaction creates a floating animation and increments the counter. Reactions reset each time you load the page.</p>
+      </section>
+      <section>
+        <h2>Is my data safe?</h2>
+        <p>All data is stored locally in your browser's localStorage. We do not transmit any personal information to external servers. For more details, see our <a href="./privacy.html" style="color:var(--accent);">Privacy Policy</a>.</p>
+      </section>
+      <section>
+        <h2>How do I reset my password?</h2>
+        <p>Visit the <a href="./forgot-password.html" style="color:var(--accent);">Forgot Password</a> page and follow the identity verification process to set a new password.</p>
+      </section>
+    </div>
+  </main>
+  <footer id="footer-container" style="margin-top: 100px;"></footer>
+  <script src="./js/mockData.js"></script>
+  <script src="./js/main.js"></script>
+  <script src="./js/components.js"></script>
+  <script src="./js/animations.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      window.Components.injectNavbar();
+      window.Components.injectFooter();
+      window.Animations.initScrollReveal();
+    });
+  </script>
+</body>
+</html>

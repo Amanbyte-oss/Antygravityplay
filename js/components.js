@@ -1,6 +1,6 @@
 // Reusable UI components injection layer
 (function() {
-  const isInsideAdmin = window.location.pathname.includes('/admin/');
+  const isInsideAdmin = window.location.pathname.replace(/\\/g, '/').includes('/admin/');
   const rootPrefix = isInsideAdmin ? '../' : './';
   const adminPrefix = isInsideAdmin ? './' : './admin/';
 
@@ -278,20 +278,43 @@
                 <li><a href="${rootPrefix}index.html">Trending</a></li>
                 <li><a href="${rootPrefix}search.html">Search</a></li>
                 <li><a href="${rootPrefix}tag.html">Tags</a></li>
+                <li><a href="${rootPrefix}about.html">About</a></li>
+                <li><a href="${rootPrefix}blog/index.html">Blog</a></li>
               </ul>
             </div>
             <div class="footer-col">
-              <h4>System</h4>
+              <h4>Resources</h4>
               <ul>
-                <li><a href="${rootPrefix}login.html">Admin Portal</a></li>
-                <li><a href="https://github.com" target="_blank" rel="noopener">Source Code</a></li>
+                <li><a href="${rootPrefix}sitemap.html" target="_blank" rel="noopener">Sitemap</a></li>
+                <li><a href="${rootPrefix}rss-feed.html" target="_blank" rel="noopener">RSS Feed</a></li>
+                <li><a href="${rootPrefix}changelog.html" target="_blank" rel="noopener">Changelog</a></li>
+                <li><a href="${rootPrefix}release-notes.html" target="_blank" rel="noopener">Release Notes</a></li>
+                <li><a href="${rootPrefix}announcements.html" target="_blank" rel="noopener">Announcements</a></li>
+                <li><a href="${rootPrefix}tutorial.html" target="_blank" rel="noopener">Tutorial</a></li>
+                <li><a href="${rootPrefix}status.html" target="_blank" rel="noopener">Status</a></li>
+              </ul>
+            </div>
+            <div class="footer-col">
+              <h4>Support</h4>
+              <ul>
+                <li><a href="${rootPrefix}help-centre.html" target="_blank" rel="noopener">Help Centre</a></li>
+                <li><a href="${rootPrefix}contact.html" target="_blank" rel="noopener">Contact</a></li>
+                <li><a href="${rootPrefix}faq.html" target="_blank" rel="noopener">FAQ</a></li>
+                <li><a href="${rootPrefix}feedback.html" target="_blank" rel="noopener">Feedback</a></li>
+                <li><a href="${rootPrefix}report-bug.html" target="_blank" rel="noopener">Report a Bug</a></li>
+                <li><a href="${rootPrefix}feature-request.html" target="_blank" rel="noopener">Feature Request</a></li>
+                <li><a href="${rootPrefix}login.html" target="_blank" rel="noopener">Admin Portal</a></li>
               </ul>
             </div>
             <div class="footer-col">
               <h4>Legal</h4>
               <ul>
-                <li><a href="${rootPrefix}privacy.html">Privacy Policy</a></li>
-                <li><a href="${rootPrefix}terms.html">Terms of Use</a></li>
+                <li><a href="${rootPrefix}privacy.html" target="_blank" rel="noopener">Privacy Policy</a></li>
+                <li><a href="${rootPrefix}terms.html" target="_blank" rel="noopener">Terms of Use</a></li>
+                <li><a href="${rootPrefix}dmca.html" target="_blank" rel="noopener">DMCA</a></li>
+                <li><a href="${rootPrefix}copyright.html" target="_blank" rel="noopener">Copyright</a></li>
+                <li><a href="${rootPrefix}cookie-policy.html" target="_blank" rel="noopener">Cookie Policy</a></li>
+                <li><a href="${rootPrefix}community-guidelines.html" target="_blank" rel="noopener">Guidelines</a></li>
               </ul>
             </div>
           </div>
@@ -301,6 +324,17 @@
           </div>
         </div>
       `;
+
+      // Don't open in new tab if already on that page
+      var currentFile = window.location.pathname.split('/').pop() || 'index.html';
+      container.querySelectorAll('a[target="_blank"]').forEach(function(link) {
+        var href = link.getAttribute('href');
+        var linkFile = href.split('/').pop().split('?')[0];
+        if (currentFile === linkFile || (currentFile === '' && linkFile === 'index.html')) {
+          link.removeAttribute('target');
+          link.removeAttribute('rel');
+        }
+      });
     },
 
     // 4. VIDEO CARD
