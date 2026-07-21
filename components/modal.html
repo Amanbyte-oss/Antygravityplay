@@ -1,12 +1,23 @@
+<!-- ═══════════════════════════════════════════ -->
+<!-- FILE: modal.html                           -->
+<!-- PURPOSE: Confirmation/dialog modal with    -->
+<!--   header, body text, Cancel & Confirm      -->
+<!--   buttons. Controlled via JS overlay.      -->
+<!-- ═══════════════════════════════════════════ -->
+
+<!-- ─── Modal overlay — shown/hidden via JS ───────────────── -->
 <div class="modal-overlay" id="confirm-modal-overlay">
   <div class="modal">
+    <!-- Modal header with title and close button -->
     <div class="modal-header">
       <h3 class="modal-title">Confirm Action</h3>
       <button class="modal-close" aria-label="Close dialog">&times;</button>
     </div>
+    <!-- Modal body — descriptive confirmation text -->
     <div class="modal-body">
       Are you sure you want to proceed? This action may be irreversible.
     </div>
+    <!-- Modal footer — action buttons -->
     <div class="modal-footer">
       <button class="btn btn-secondary cancel-modal-btn">Cancel</button>
       <button class="btn btn-primary confirm-modal-btn">Confirm</button>

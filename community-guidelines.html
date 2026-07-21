@@ -1,67 +1,110 @@
+<!-- ═══════════════════════════════════════════ -->
+<!-- FILE: community-guidelines.html             -->
+<!-- PURPOSE: Community rules and standards page -->
+<!--   defining acceptable behavior on platform. -->
+<!-- ═══════════════════════════════════════════ -->
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: HEAD                               -->
+<!-- ═══════════════════════════════════════════ -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Antigravity Play community guidelines - rules and standards">
+
   <title>Community Guidelines - Antigravity Play</title>
+
+  <!-- main.css: Global design system & base styles -->
   <link rel="stylesheet" href="./css/main.css">
+  <!-- legal.css: Legal/info page-specific styles (headers, sections, date) -->
   <link rel="stylesheet" href="./css/legal.css">
 </head>
 <body>
-  <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
-  <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
-    <div class="modal">
-      <div class="modal-header"><h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button></div>
-      <div class="modal-body">Are you sure?</div>
-      <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button class="btn btn-primary confirm-modal-btn">Confirm</button></div>
-    </div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: TOAST NOTIFICATION CONTAINER       -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: CONFIRMATION MODAL                 -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal-header"><h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button></div>
+    <div class="modal-body">Are you sure?</div>
+    <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button class="btn btn-primary confirm-modal-btn">Confirm</button></div>
   </div>
-  <header id="navbar-container" class="navbar-wrapper"></header>
-  <main class="container legal-page">
-    <div class="legal-header">
-      <h1>Community Guidelines</h1>
-      <p class="legal-date">Last updated: July 21, 2026</p>
-    </div>
-    <div class="legal-content">
-      <section>
-        <h2>Respectful Behavior</h2>
-        <p>Treat all community members with respect. Harassment, hate speech, bullying, and discriminatory language will not be tolerated. We are committed to maintaining a welcoming environment for everyone.</p>
-      </section>
-      <section>
-        <h2>Content Standards</h2>
-        <p>All content must comply with applicable laws and regulations. Do not upload or share content that is illegal, infringes on copyright, or contains explicit material without appropriate warnings and context.</p>
-      </section>
-      <section>
-        <h2>Copyright and Fair Use</h2>
-        <p>Respect intellectual property rights. Only upload content that you own or have permission to use. Unauthorized use of copyrighted material may result in content removal and account suspension. See our <a href="./copyright.html" style="color:var(--accent);">Copyright Policy</a> for details.</p>
-      </section>
-      <section>
-        <h2>Privacy</h2>
-        <p>Do not share personal information about yourself or others. This includes addresses, phone numbers, email addresses, and financial information. Protect your privacy and the privacy of others.</p>
-      </section>
-      <section>
-        <h2>Reporting Violations</h2>
-        <p>If you encounter content or behavior that violates these guidelines, please report it through the <a href="./report-bug.html" style="color:var(--accent);">Report a Bug</a> form or <a href="./contact.html" style="color:var(--accent);">contact us</a> directly.</p>
-      </section>
-      <section>
-        <h2>Consequences</h2>
-        <p>Violations of these guidelines may result in content removal, temporary suspension, or permanent ban from the platform, depending on the severity and frequency of the violation.</p>
-      </section>
-    </div>
-  </main>
-  <footer id="footer-container" style="margin-top: 100px;"></footer>
-  <script src="./js/mockData.js"></script>
-  <script src="./js/main.js"></script>
-  <script src="./js/components.js"></script>
-  <script src="./js/animations.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      window.Components.injectNavbar();
-      window.Components.injectFooter();
-      window.Animations.initScrollReveal();
-    });
-  </script>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: HEADER / NAVBAR                    -->
+<!-- ═══════════════════════════════════════════ -->
+<header id="navbar-container" class="navbar-wrapper"></header>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: MAIN CONTENT (legal-page)          -->
+<!-- ═══════════════════════════════════════════ -->
+<!-- legal-page: standard layout for legal/info content
+     with a header section and content sections -->
+<main class="container legal-page">
+  <div class="legal-header">
+    <h1>Community Guidelines</h1>
+    <p class="legal-date">Last updated: July 21, 2026</p>
+  </div>
+  <div class="legal-content">
+    <section>
+      <h2>Respectful Behavior</h2>
+      <p>Treat all community members with respect. Harassment, hate speech, bullying, and discriminatory language will not be tolerated. We are committed to maintaining a welcoming environment for everyone.</p>
+    </section>
+    <section>
+      <h2>Content Standards</h2>
+      <p>All content must comply with applicable laws and regulations. Do not upload or share content that is illegal, infringes on copyright, or contains explicit material without appropriate warnings and context.</p>
+    </section>
+    <section>
+      <h2>Copyright and Fair Use</h2>
+      <p>Respect intellectual property rights. Only upload content that you own or have permission to use. Unauthorized use of copyrighted material may result in content removal and account suspension. See our <a href="./copyright.html" style="color:var(--accent);">Copyright Policy</a> for details.</p>
+    </section>
+    <section>
+      <h2>Privacy</h2>
+      <p>Do not share personal information about yourself or others. This includes addresses, phone numbers, email addresses, and financial information. Protect your privacy and the privacy of others.</p>
+    </section>
+    <section>
+      <h2>Reporting Violations</h2>
+      <p>If you encounter content or behavior that violates these guidelines, please report it through the <a href="./report-bug.html" style="color:var(--accent);">Report a Bug</a> form or <a href="./contact.html" style="color:var(--accent);">contact us</a> directly.</p>
+    </section>
+    <section>
+      <h2>Consequences</h2>
+      <p>Violations of these guidelines may result in content removal, temporary suspension, or permanent ban from the platform, depending on the severity and frequency of the violation.</p>
+    </section>
+  </div>
+</main>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: FOOTER                             -->
+<!-- ═══════════════════════════════════════════ -->
+<footer id="footer-container" style="margin-top: 100px;"></footer>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: SCRIPTS                            -->
+<!-- ═══════════════════════════════════════════ -->
+<script src="./js/mockData.js"></script>
+<script src="./js/main.js"></script>
+<script src="./js/components.js"></script>
+<script src="./js/animations.js"></script>
+
+  <!-- Init: inject shared navbar, footer, and scroll-reveal animations -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    window.Components.injectNavbar();
+    window.Components.injectFooter();
+    window.Animations.initScrollReveal();
+  });
+</script>
 </body>
 </html>

@@ -1,25 +1,46 @@
+<!-- ═══════════════════════════════════════════ -->
+<!-- FILE: table.html                           -->
+<!-- PURPOSE: Data table component with title,  -->
+<!--   item count, sortable column headers,     -->
+<!--   checkbox selection, and tbody for rows.  -->
+<!-- ═══════════════════════════════════════════ -->
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: TABLE CARD                        -->
+<!-- ═══════════════════════════════════════════ -->
 <div class="table-card">
+
+  <!-- ─── Table Header ──────────────────────────── -->
   <div class="table-header">
     <h2 class="table-title">Data Table</h2>
     <span class="table-count">0 items</span>
   </div>
+
+  <!-- ─── Table Body ────────────────────────────── -->
   <div class="table-wrapper">
     <table class="admin-table">
+      <!-- Column headers with sort support -->
       <thead>
         <tr>
+          <!-- Select-all checkbox column -->
           <th class="checkbox-cell">
             <input type="checkbox" class="admin-checkbox table-header-checkbox" aria-label="Select all">
           </th>
+          <!-- Sortable columns -->
           <th class="sortable-header" data-sort="name">Name</th>
           <th class="sortable-header" data-sort="status">Status</th>
           <th class="sortable-header" data-sort="date">Date</th>
+          <!-- Actions column (fixed width) -->
           <th style="width: 80px;">Actions</th>
         </tr>
       </thead>
+      <!-- Data rows injected via JS -->
       <tbody id="table-tbody">
         <tr><td colspan="5" style="text-align:center;padding:var(--space-2xl);color:var(--text-muted);">No data available.</td></tr>
       </tbody>
     </table>
   </div>
+
+  <!-- ─── Table Footer Pagination ───────────────── -->
   <footer class="table-pagination"></footer>
 </div>

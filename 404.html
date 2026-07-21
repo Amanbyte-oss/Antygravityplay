@@ -1,44 +1,164 @@
+<!-- ═══════════════════════════════════════════ -->
+<!-- FILE: 404.html                              -->
+<!-- PURPOSE: 404 Not Found error page shown     -->
+<!--   when a user visits a non-existent route.  -->
+<!-- ═══════════════════════════════════════════ -->
+<!-- (empty line: spacing between file header and next section) -->
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: HEAD                               -->
+<!-- ═══════════════════════════════════════════ -->
+<!-- DOCTYPE declaration: tells browser this is an HTML5 document -->
 <!DOCTYPE html>
+<!-- Opening <html> tag with lang attribute set to English for accessibility/SEO -->
 <html lang="en">
+<!-- (empty line: spacing before <head> section) -->
+<!-- Opening <head> tag: contains metadata, stylesheets, and pre-paint scripts -->
 <head>
+  <!-- Blocking inline script: Sets data-theme attribute on <html> element -->
+  <!--   from localStorage before paint to prevent FOUC (Flash of             -->
+  <!--   Unstyled Content). Defaults to "dark" if no stored preference.       -->
   <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+  <!-- (empty line: spacing between script and meta tags) -->
+  <!-- Declares UTF-8 character encoding for proper text rendering of all characters -->
   <meta charset="UTF-8">
+  <!-- Enables responsive viewport sizing on mobile devices; initial-scale=1.0 prevents zoom issues -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Provides page description for SEO / search snippet shown in search results -->
   <meta name="description" content="Page not found - the requested page does not exist">
+  <!-- (empty line: spacing between meta tags and title) -->
+  <!-- Page title shown in browser tab and search engine results -->
   <title>404 Not Found - Antigravity Play</title>
+  <!-- (empty line: spacing between title and stylesheets) -->
+  <!-- main.css: Global design system — CSS custom properties, reset, -->
+  <!--   typography, grid, buttons, form elements, utility classes      -->
   <link rel="stylesheet" href="./css/main.css">
+  <!-- system.css: System/status page styles — centered layout,       -->
+  <!--   error icons, status cards, spinners, progress bars            -->
   <link rel="stylesheet" href="./css/system.css">
 </head>
+<!-- Closing </head> tag: end of metadata and style declarations -->
+<!-- Opening <body> tag: start of visible page content -->
 <body>
-  <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
-  <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
-    <div class="modal">
-      <div class="modal-header"><h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button></div>
-      <div class="modal-body">Are you sure?</div>
-      <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button class="btn btn-primary confirm-modal-btn">Confirm</button></div>
+<!-- (empty line: spacing before toast section) -->
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: TOAST NOTIFICATION CONTAINER       -->
+<!-- ═══════════════════════════════════════════ -->
+<!-- Toast container: renders ephemeral success/error/info messages. -->
+<!--   id="toast-container" is targeted by JS to inject toasts.       -->
+<!--   class="toast-container" provides styling.                      -->
+<!--   role="status" aria-live="polite" ensures accessibility by      -->
+<!--   announcing dynamic content to screen readers without interruption. -->
+<div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+<!-- Closing </div> for toast-container -->
+<!-- (empty line: spacing between sections) -->
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: CONFIRMATION MODAL                 -->
+<!-- ═══════════════════════════════════════════ -->
+<!-- Reusable confirmation dialog overlay.                                  -->
+<!--   class="modal-overlay" provides semi-transparent backdrop.            -->
+<!--   id="confirm-modal-overlay" targeted by JS to show/hide.              -->
+<!--   role="dialog" aria-modal="true" for accessibility (traps focus).     -->
+<!--   Visibility toggled via JS by Components.showConfirmModal().          -->
+<div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
+  <!-- Modal container: centered white/dark card with rounded corners -->
+  <div class="modal">
+    <!-- Modal header row: title and close button -->
+    <div class="modal-header">
+      <!-- Modal title text with class for styling -->
+      <h3 class="modal-title">Confirm</h3>
+      <!-- Close button: &times; produces multiplication sign (X icon) -->
+      <button class="modal-close">&times;</button>
     </div>
+    <!-- Closing </div> for modal-header -->
+    <!-- Modal body content: message text shown to user -->
+    <div class="modal-body">Are you sure?</div>
+    <!-- Closing </div> for modal-body -->
+    <!-- Modal footer: action buttons row -->
+    <div class="modal-footer">
+      <!-- Cancel button: secondary styling, dismisses modal via JS -->
+      <button class="btn btn-secondary cancel-modal-btn">Cancel</button>
+      <!-- Confirm button: primary styling, triggers confirmed action via JS -->
+      <button class="btn btn-primary confirm-modal-btn">Confirm</button>
+    </div>
+    <!-- Closing </div> for modal-footer -->
   </div>
-  <header id="navbar-container" class="navbar-wrapper"></header>
-  <main class="container system-page">
-    <div class="system-code">404</div>
-    <h1 class="system-title">Page Not Found</h1>
-    <p class="system-desc">The page you are looking for doesn't exist or has been moved. Check the URL or use the navigation to find what you need.</p>
-    <div class="system-actions">
-      <a href="./index.html" class="btn btn-primary">Go Home</a>
-      <a href="./search.html" class="btn btn-secondary">Browse Videos</a>
-    </div>
-  </main>
-  <footer id="footer-container" style="margin-top: 100px;"></footer>
-  <script src="./js/mockData.js"></script>
-  <script src="./js/main.js"></script>
-  <script src="./js/components.js"></script>
-  <script src="./js/animations.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      window.Components.injectNavbar();
-      window.Components.injectFooter();
-      window.Animations.initScrollReveal();
-    });
-  </script>
+  <!-- Closing </div> for modal -->
+</div>
+<!-- Closing </div> for modal-overlay -->
+<!-- (empty line: spacing between sections) -->
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: HEADER / NAVBAR                    -->
+<!-- ═══════════════════════════════════════════ -->
+<!-- Placeholder for the site navbar, injected dynamically                -->
+<!--   by window.Components.injectNavbar().                               -->
+<!--   id="navbar-container" targeted by JS for injection.                -->
+<!--   class="navbar-wrapper" provides styling container.                 -->
+<header id="navbar-container" class="navbar-wrapper"></header>
+<!-- Closing </header> for navbar container -->
+<!-- (empty line: spacing between sections) -->
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: MAIN CONTENT (system-page)         -->
+<!-- ═══════════════════════════════════════════ -->
+<!-- System page layout: centered error display                       -->
+<!--   with code, title, description, and action buttons.             -->
+<!--   class="container" provides max-width + horizontal centering.   -->
+<!--   class="system-page" provides flex-centered vertical layout.    -->
+<main class="container system-page">
+  <!-- Error status code: large bold number (404) for visual emphasis -->
+  <div class="system-code">404</div>
+  <!-- Error title: "Page Not Found" heading -->
+  <h1 class="system-title">Page Not Found</h1>
+  <!-- Error description: explanatory text guiding user what to do next -->
+  <p class="system-desc">The page you are looking for doesn't exist or has been moved. Check the URL or use the navigation to find what you need.</p>
+  <!-- Action buttons container: flex row with CTA links -->
+  <div class="system-actions">
+    <!-- Primary action: link back to home page -->
+    <a href="./index.html" class="btn btn-primary">Go Home</a>
+    <!-- Secondary action: link to search/browse page -->
+    <a href="./search.html" class="btn btn-secondary">Browse Videos</a>
+  </div>
+  <!-- Closing </div> for system-actions -->
+</main>
+<!-- Closing </main> for main content -->
+<!-- (empty line: spacing between sections) -->
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: FOOTER                             -->
+<!-- ═══════════════════════════════════════════ -->
+<!-- Placeholder for site footer, injected dynamically                       -->
+<!--   by window.Components.injectFooter().                                  -->
+<!--   id="footer-container" targeted by JS for injection.                   -->
+<!--   style="margin-top: 100px;" provides spacing from main content.        -->
+<footer id="footer-container" style="margin-top: 100px;"></footer>
+<!-- Closing </footer> for footer container -->
+<!-- (empty line: spacing between sections) -->
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: SCRIPTS                            -->
+<!-- ═══════════════════════════════════════════ -->
+<!-- mockData.js: Mock video/tag/creator data for demo purposes.              -->
+<!--   Loaded first so data is available to all subsequent scripts.           -->
+<script src="./js/mockData.js"></script>
+<!-- main.js: Core app logic — routing, theme toggle, utilities.             -->
+<!--   Loaded second since it provides foundational functions.                -->
+<script src="./js/main.js"></script>
+<!-- components.js: UI component factory — navbar, footer,                   -->
+<!--   toast, modal injection functions.                                      -->
+<script src="./js/components.js"></script>
+<!-- animations.js: ScrollReveal, fade-in, transition helpers.               -->
+<!--   Loaded last among core scripts before inline code.                     -->
+<script src="./js/animations.js"></script>
+<!-- (empty line: spacing between external and inline scripts) -->
+<!-- Inline DOMContentLoaded handler: waits for DOM ready, then:             -->
+<!--   1. injects navbar via Components.injectNavbar()                       -->
+<!--   2. injects footer via Components.injectFooter()                       -->
+<!--   3. initializes scroll-triggered animations via Animations.initScrollReveal() -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    window.Components.injectNavbar();
+    window.Components.injectFooter();
+    window.Animations.initScrollReveal();
+  });
+</script>
 </body>
+<!-- Closing </body> tag: end of visible page content -->
 </html>
+<!-- Closing </html> tag: end of HTML document -->

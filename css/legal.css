@@ -1,83 +1,86 @@
-/* ─── LEGAL PAGES (Privacy, Terms) ─────────────────────── */
-
-.legal-page {
-  max-width: 780px;
-  margin-top: var(--space-3xl);
-  margin-bottom: var(--space-5xl);
-  animation: pageEnter 0.6s var(--ease-relax) forwards;
-}
-
-.legal-header {
-  margin-bottom: var(--space-3xl);
-  padding-bottom: var(--space-xl);
-  border-bottom: 1px solid var(--border);
-}
-
-.legal-header h1 {
-  font-size: var(--text-3xl);
-  font-weight: 800;
-  letter-spacing: -0.5px;
-  margin-bottom: var(--space-sm);
-  background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.legal-date {
-  font-size: var(--text-sm);
-  color: var(--text-muted);
-}
-
-.legal-content section {
-  margin-bottom: var(--space-3xl);
-}
-
-.legal-content h2 {
-  font-size: var(--text-xl);
-  font-weight: 700;
-  margin-bottom: var(--space-md);
-  color: var(--text-primary);
-  position: relative;
-  padding-left: var(--space-xl);
-}
-
-.legal-content h2::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 8px;
-  width: 4px;
-  height: 20px;
-  background-color: var(--accent);
-  border-radius: var(--radius-full);
-}
-
-.legal-content p {
-  font-size: var(--text-sm);
-  color: var(--text-secondary);
-  line-height: 1.8;
-  margin-bottom: var(--space-md);
-}
-
-.legal-content p:last-child {
-  margin-bottom: 0;
-}
-
-@media (max-width: 576px) {
-  .legal-page {
-    margin-top: var(--space-2xl);
-    padding: 0 var(--space-lg);
-  }
-  .legal-header h1 {
-    font-size: var(--text-2xl);
-  }
-  .legal-content h2 {
-    font-size: var(--text-md);
-    padding-left: var(--space-lg);
-  }
-  .legal-content h2::before {
-    top: 6px;
-    height: 16px;
-  }
-}
+/* ═══════════════════════════════════════════════════════════════════════
+   LEGAL PAGES (Privacy, Terms of Service)
+   Styled content for privacy policy and terms of service pages.
+   ═══════════════════════════════════════════════════════════════════════ */
+/* Legal page container: constrained width for optimal readability (65-75 chars per line), plus fade-in entrance animation */
+.legal-page {  /* Class selector (specificity 0,1,0) - wrapper for all legal page content */
+  max-width: 780px;  /* Sizing token - 780px max-width keeps line length in comfortable reading range for legal text */  /* Wider than .container (1200px) because legal prose benefits from shorter lines */
+  margin-top: var(--space-3xl);  /* Spacing token - 48px top margin separates legal content from the sticky navbar */  /* Uses --space-3xl (48px) from the design token spacing scale */
+  margin-bottom: var(--space-5xl);  /* Spacing token - 96px bottom margin ensures content doesn't feel cramped above the footer */  /* Uses --space-5xl (96px), the largest spacing token, for generous bottom breathing room */
+  animation: pageEnter 0.6s var(--ease-relax) forwards;  /* Animation token - 0.6s fade-in on page load using relaxed cubic-bezier easing */  /* forwards fill mode retains the final opacity:1 state after animation completes */
+}  /* End of .legal-page rule set - closes the legal page container block */
+/* Legal page header: title row and last-updated date with bottom border separator */
+.legal-header {  /* Class selector (specificity 0,1,0) - contains h1 title and date paragraph */
+  margin-bottom: var(--space-3xl);  /* Spacing token - 48px margin below header separates it from the content sections */  /* Large margin creates visual hierarchy between header and body */
+  padding-bottom: var(--space-xl);  /* Spacing token - 24px internal padding below header content before the border */  /* Gives the text room to breathe above the separator line */
+  border-bottom: 1px solid var(--border);  /* Border token - 1px solid line using --border variable (#2e2e2e in dark, #dcdcdc in light) */  /* Separates header visually from main content */
+}  /* End of .legal-header rule set */
+/* Main title: uses a gradient text effect transitioning from white to grey for visual polish */
+.legal-header h1 {  /* Descendant selector (specificity 0,1,1) - targets h1 inside .legal-header */
+  font-size: var(--text-3xl);  /* Typography token - 32px font size for page-level heading prominence */  /* Matches the size used for search page titles and tag page titles for consistency */
+  font-weight: 800;  /* Typography token - Extra-bold weight (800) for strong visual impact on the page title */  /* Heavier than standard headings (700) to make the legal page title stand out */
+  letter-spacing: -0.5px;  /* Typography token - Slightly tightened letter-spacing for large headings */  /* Negative tracking brings characters closer together at large sizes for a polished look */
+  margin-bottom: var(--space-sm);  /* Spacing token - 8px margin below title before the date line */  /* Small gap keeps title and date visually connected as a group */
+  background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);  /* Visual effect - 135-degree gradient from white to secondary grey */  /* Creates a subtle metallic/textured appearance for the heading */
+  -webkit-background-clip: text;  /* Vendor prefix - WebKit-specific clip to text shape, hides gradient behind text glyphs */  /* Required for Safari/Chrome to render the text gradient effect */
+  -webkit-text-fill-color: transparent;  /* Vendor prefix - Makes text fill transparent so the background gradient shows through (WebKit) */  /* Works with background-clip:text to create gradient text effect */
+  background-clip: text;  /* Standard property - clips the background gradient to the text glyph boundaries */  /* Standard version of the text gradient technique, supported in modern browsers */
+}  /* End of .legal-header h1 rule set */
+/* Last updated date: small, muted text below the title */
+.legal-date {  /* Class selector (specificity 0,1,0) - displays "Last updated: DD/MM/YYYY" text */
+  font-size: var(--text-sm);  /* Typography token - 14px secondary text size */  /* Smaller than main content to de-emphasize the date */
+  color: var(--text-muted);  /* Color token - --text-muted (#7c7c7c in dark, #888888 in light) for less visual weight */  /* Muted colour signals this is supplementary metadata, not primary content */
+}  /* End of .legal-date rule set */
+/* Content sections: vertical spacing between each major section of the legal document */
+.legal-content section {  /* Descendant selector (specificity 0,1,1) - targets <section> elements inside .legal-content */
+  margin-bottom: var(--space-3xl);  /* Spacing token - 48px bottom margin between legal sections for clear separation */  /* Consistent spacing helps users visually scan between topics */
+}  /* End of .legal-content section rule set */
+/* Section heading: includes an accent-coloured left bar added via ::before pseudo-element */
+.legal-content h2 {  /* Descendant selector (specificity 0,1,1) - targets h2 headings within legal sections */
+  font-size: var(--text-xl);  /* Typography token - 20px section heading size */  /* Smaller than page title but clearly distinct from body text */
+  font-weight: 700;  /* Typography token - Bold weight for section headings */  /* Bold ensures headings stand out when scanning the document */
+  margin-bottom: var(--space-md);  /* Spacing token - 12px below heading before paragraph text */  /* Moderate gap creates clear heading-to-content association */
+  color: var(--text-primary);  /* Color token - --text-primary (#ffffff in dark, #171717 in light) for maximum contrast */  /* White text ensures headings are the most prominent element in each section */
+  position: relative;  /* Positioning - creates a positioning context for the ::before accent bar */  /* Required so the absolutely-positioned ::before bar positions relative to the h2 */
+  padding-left: var(--space-xl);  /* Spacing token - 24px left padding creates room for the ::before accent bar */  /* Prevents text from overlapping with the decorative bar */
+}  /* End of .legal-content h2 rule set */
+/* Accent bar ::before pseudo-element: a green vertical strip left of each h2 heading */
+.legal-content h2::before {  /* Pseudo-element selector (specificity 0,2,1) - inserts decorative bar before each h2 */
+  content: '';  /* Required for pseudo-element rendering - empty string creates a visible box */  /* Without content:'', the ::before element would not appear on the page */
+  position: absolute;  /* Positioning - positions the bar relative to the h2's position:relative context */  /* Removed from normal flow so it doesn't affect heading layout */
+  left: 0;  /* Positioning - aligns the bar to the far left of the h2's padding box */  /* Places the bar at the very left edge, before the padding-left space */
+  top: 8px;  /* Positioning - 8px from top to vertically centre the bar relative to the first line of text */  /* Manually calculated to align with approximately the vertical centre of the heading text */
+  width: 4px;  /* Sizing - thin vertical bar, 4px wide */  /* Thin enough to be subtle but thick enough to be visible */
+  height: 20px;  /* Sizing - 20px tall, roughly matching the x-height of the heading text */  /* Height similar to the text height for proportional appearance */
+  background-color: var(--accent);  /* Color token - --accent (#1ed760 in dark, #171717 in light) for brand-consistent accent bar */  /* Green accent bar ties into the overall design system colour scheme */
+  border-radius: var(--radius-full);  /* Border token - 9999px fully rounded ends for a polished, modern look */  /* Rounded ends soften the bar's appearance */
+}  /* End of .legal-content h2::before rule set */
+/* Paragraph text: small, secondary colour, comfortable line height for easy reading of legal content */
+.legal-content p {  /* Descendant selector (specificity 0,1,1) - targets all <p> paragraphs within legal sections */
+  font-size: var(--text-sm);  /* Typography token - 14px small text appropriate for dense legal reading */  /* Smaller than default body (16px) because legal documents contain lots of text */
+  color: var(--text-secondary);  /* Color token - --text-secondary (#b3b3b3 in dark, #4d4d4d in light) for comfortable contrast */  /* Not as bright as primary, reducing eye strain during extended reading */
+  line-height: 1.8;  /* Typography token - 1.8× line height for generous vertical spacing between lines */  /* Wider than normal (1.5-1.6) to improve readability of dense legal text */
+  margin-bottom: var(--space-md);  /* Spacing token - 12px margin below each paragraph creates visual separation */  /* Consistent vertical rhythm between paragraphs */
+}  /* End of .legal-content p rule set */
+/* Remove bottom margin from the last paragraph in a section to prevent extra whitespace */
+.legal-content p:last-child {  /* Pseudo-class selector (specificity 0,2,1) - targets final paragraph in each section */
+  margin-bottom: 0;  /* Spacing - zero margin to avoid double spacing at the bottom of the section */  /* Prevents excessive whitespace before the next section heading */
+}  /* End of .legal-content p:last-child rule set */
+/* Mobile breakpoint (≤576px): tighter spacing and smaller headings for small screens */
+@media (max-width: 576px) {  /* Media query - targets viewports ≤576px wide (small phones) */  /* Reduces all spacing and font sizes to fit limited screen real estate */
+  .legal-page {  /* Class selector (specificity 0,1,0) within the 576px media query */
+    margin-top: var(--space-2xl);  /* Spacing token - 32px top margin instead of 48px on mobile */  /* Reduced from --space-3xl to --space-2xl to conserve vertical space */
+    padding: 0 var(--space-lg);  /* Spacing token - 16px side padding on mobile for edge margins */  /* Adds horizontal padding since the container class may not be applied on mobile */
+  }  /* End of .legal-page override within mobile media query */
+  .legal-header h1 {  /* Descendant selector (specificity 0,1,1) within media query */
+    font-size: var(--text-2xl);  /* Typography token - 24px heading instead of 32px on mobile */  /* Reduced from --text-3xl to --text-2xl to fit smaller viewport */
+  }  /* End of .legal-header h1 override within mobile media query */
+  .legal-content h2 {  /* Descendant selector (specificity 0,1,1) within media query */
+    font-size: var(--text-md);  /* Typography token - 16px section heading instead of 20px on mobile */  /* Reduced from --text-xl to --text-md for compact mobile layout */
+    padding-left: var(--space-lg);  /* Spacing token - 16px left padding instead of 24px on mobile */  /* Reduced padding saves horizontal space on narrow screens */
+  }  /* End of .legal-content h2 override within mobile media query */
+  .legal-content h2::before {  /* Pseudo-element selector (specificity 0,2,1) within media query */
+    top: 6px;  /* Positioning - adjusted from 8px to 6px for smaller heading height on mobile */  /* Re-centres the accent bar vertically for the smaller font size */
+    height: 16px;  /* Sizing - reduced from 20px to 16px for proportional appearance with smaller text */  /* Shorter bar matches the reduced heading text height */
+  }  /* End of .legal-content h2::before override within mobile media query */
+}  /* End of @media (max-width: 576px) query block - closes the entire mobile responsive override section */

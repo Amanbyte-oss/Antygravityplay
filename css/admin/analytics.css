@@ -1,9 +1,11 @@
+/* --- DATE RANGE PICKER: row of preset buttons (7d, 30d, 90d, All) --- */
 .date-range-picker {
   display: flex;
   gap: var(--space-sm);
   flex-wrap: wrap;
 }
 
+/* --- INDIVIDUAL DATE RANGE BUTTON: pill-style preset selector --- */
 .date-range-btn {
   padding: var(--space-xs) var(--space-lg);
   border: 1px solid var(--border);
@@ -15,27 +17,32 @@
   transition: all var(--transition-fast);
 }
 
+/* --- HOVER: lighten border/text on date button --- */
 .date-range-btn:hover {
   border-color: var(--text-muted);
   color: var(--text-primary);
 }
 
+/* --- ACTIVE: accent highlight for selected date range --- */
 .date-range-btn.active {
   background-color: var(--accent);
   color: #000;
   border-color: var(--accent);
 }
 
+/* --- LIGHT THEME: white text on accent background --- */
 [data-theme="light"] .date-range-btn.active {
   color: #fff;
 }
 
+/* --- DISABLED: dimmed, non-interactive state --- */
 .date-range-btn.disabled {
   opacity: 0.4;
   cursor: not-allowed;
   pointer-events: none;
 }
 
+/* --- CHARTS GRID: two-column layout for chart cards --- */
 .charts-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -43,12 +50,14 @@
   margin-bottom: var(--space-2xl);
 }
 
+/* --- TABLET/MOBILE: single column chart layout --- */
 @media (max-width: 1024px) {
   .charts-grid {
     grid-template-columns: 1fr;
   }
 }
 
+/* --- CHART CARD: container for individual chart + legend --- */
 .chart-container-card {
   background-color: var(--bg-secondary);
   border: 1px solid var(--border);
@@ -58,17 +67,14 @@
   transition: box-shadow var(--transition-base), border-color var(--transition-base), transform var(--transition-base);
 }
 
+/* --- HOVER: subtle lift and border highlight for chart card --- */
 .chart-container-card:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
   border-color: var(--text-muted);
 }
 
-.chart-container-card:hover {
-  box-shadow: var(--shadow-md);
-  border-color: var(--text-muted);
-}
-
+/* --- CHART HEADER: title + subtitle on left, optional action on right --- */
 .chart-container-card .chart-header {
   display: flex;
   justify-content: space-between;
@@ -76,27 +82,32 @@
   margin-bottom: var(--space-lg);
 }
 
+/* --- CHART TITLE: bold heading describing the metric --- */
 .chart-container-card .chart-title {
   font-size: var(--text-md);
   font-weight: 600;
 }
 
+/* --- CHART SUBTITLE: muted descriptor under the title --- */
 .chart-container-card .chart-subtitle {
   font-size: var(--text-xs);
   color: var(--text-muted);
   margin-top: 2px;
 }
 
+/* --- CANVAS WRAPPER: responsive container for Chart.js canvas --- */
 .chart-canvas-wrapper {
   position: relative;
   width: 100%;
 }
 
+/* --- CANVAS: force full width/height for responsive charts --- */
 .chart-canvas-wrapper canvas {
   width: 100% !important;
   height: 100% !important;
 }
 
+/* --- CHART LEGEND: row of color-coded label pills below chart --- */
 .chart-legend {
   display: flex;
   flex-wrap: wrap;
@@ -105,6 +116,7 @@
   justify-content: center;
 }
 
+/* --- INDIVIDUAL LEGEND ITEM: colored dot + dataset label --- */
 .chart-legend-item {
   display: flex;
   align-items: center;
@@ -117,6 +129,7 @@
   border: 1px solid var(--border);
 }
 
+/* --- LEGEND DOT: colored circle indicating dataset color --- */
 .chart-legend-dot {
   width: 10px;
   height: 10px;
@@ -124,6 +137,7 @@
   flex-shrink: 0;
 }
 
+/* --- CHART TOOLTIP: floating info box on chart hover --- */
 .chart-tooltip {
   position: fixed;
   background-color: var(--bg-secondary);
@@ -139,34 +153,41 @@
   white-space: nowrap;
 }
 
+/* --- SHOW TOOLTIP when visible class is added via JS --- */
 .chart-tooltip.visible {
   display: block;
 }
 
+/* --- CHART SKELETON: placeholder while chart data loads --- */
 .chart-skeleton {
   width: 100%;
 }
 
+/* --- FULL-WIDTH CHART: spans both columns in the grid --- */
 .chart-container-card.full-width {
   grid-column: 1 / -1;
 }
 
+/* --- MOBILE: full-width charts stack naturally --- */
 @media (max-width: 1024px) {
   .chart-container-card.full-width {
     grid-column: auto;
   }
 }
 
+/* --- EXPORT BUTTON: icon + label for CSV/PNG export --- */
 .export-btn {
   display: inline-flex;
   align-items: center;
   gap: var(--space-sm);
 }
 
+/* --- LARGE STAT: bigger value text for featured metrics --- */
 .stat-card.large-stat .stat-value {
   font-size: var(--text-4xl);
 }
 
+/* --- LARGER CHANGE ICON for large stat cards --- */
 .stat-card.large-stat .stat-change svg {
   width: 14px;
   height: 14px;

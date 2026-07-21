@@ -1,9 +1,22 @@
+<!-- ═══════════════════════════════════════════ -->
+<!-- FILE: chart-container.html                 -->
+<!-- PURPOSE: Chart.js container card with      -->
+<!--   header, skeleton loader, hidden canvas   -->
+<!--   element, and legend area.                -->
+<!-- ═══════════════════════════════════════════ -->
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: CHART CARD                        -->
+<!-- ═══════════════════════════════════════════ -->
 <div class="chart-container-card">
+
+  <!-- ─── Chart Header ──────────────────────────── -->
   <div class="chart-header">
     <div>
       <h3 class="chart-title">Chart Title</h3>
       <p class="chart-subtitle">Chart subtitle or description</p>
     </div>
+    <!-- Refresh action button -->
     <div class="chart-actions">
       <button class="btn btn-secondary chart-refresh-btn" style="border-radius:var(--radius-sm);padding:var(--space-xs) var(--space-sm);font-size:var(--text-xs);">
         <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -14,11 +27,17 @@
       </button>
     </div>
   </div>
+
+  <!-- ─── Skeleton Placeholder ───────────────────── -->
   <div class="chart-skeleton">
     <div class="skeleton" style="width:100%;height:250px;border-radius:var(--radius-sm);"></div>
   </div>
+
+  <!-- ─── Chart Canvas (hidden until rendered) ───── -->
   <div class="chart-canvas-wrapper" style="display:none;">
     <canvas></canvas>
   </div>
+
+  <!-- ─── Chart Legend ───────────────────────────── -->
   <div class="chart-legend"></div>
 </div>

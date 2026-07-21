@@ -1,19 +1,55 @@
 <!DOCTYPE html>
+<!-- ═══════════════════════════════════════════ -->
+<!-- FILE: settings.html                        -->
+<!-- PURPOSE: Tabbed settings for profile,      -->
+<!--          appearance, notifications, and    -->
+<!--          data export/import/danger-zone.   -->
+<!-- ═══════════════════════════════════════════ -->
+<!--
+  ============================================================================
+  FILE: settings.html
+  SECTION: Admin / Configuration
+  DESCRIPTION: Tabbed settings panel for profile information, theme/appearance
+  customization, notification preferences, and data management (export/import,
+  clear all data with danger-zone confirmation).
+  DEPENDENCIES: main.js, components.js, admin/settings.js
+  ============================================================================
+-->
 <html lang="en">
 <head>
+  <!-- ==================== HEAD ==================== -->
+  <!--
+    THEME INIT SCRIPT: Sets data-theme on <html> from localStorage before
+    rendering to prevent flash of unstyled content. Defaults to "dark".
+  -->
   <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+  <!-- META: UTF-8 character encoding -->
   <meta charset="UTF-8">
+  <!-- META: Responsive viewport for mobile devices -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- META: Search engine description for the settings page -->
   <meta name="description" content="Admin settings for profile, security, appearance, notifications, and data management.">
+  <!-- TITLE: Browser tab title -->
   <title>Settings - Admin Console</title>
+  <!-- STYLESHEET: main.css - Global design system foundation -->
   <link rel="stylesheet" href="../css/main.css">
+  <!-- STYLESHEET: dashboard.css - Shared admin dashboard layout and card styles -->
   <link rel="stylesheet" href="../css/admin/dashboard.css">
+  <!--
+    STYLESHEET: settings.css
+    Settings-specific styles - tab navigation, settings cards, form controls,
+    avatar upload, theme radio cards, accent color swatches, font size slider,
+    toggle switches, danger zone styling, and responsive layout.
+  -->
   <link rel="stylesheet" href="../css/admin/settings.css">
 </head>
+<!-- ==================== BODY ==================== -->
 <body>
 
+  <!-- TOAST CONTAINER: Fixed notification area for feedback messages -->
   <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
 
+  <!-- CONFIRMATION MODAL: Standard reusable confirmation dialog for general actions -->
   <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
     <div class="modal">
       <div class="modal-header">
@@ -28,6 +64,13 @@
     </div>
   </div>
 
+  <!--
+    DANGER MODAL: Special confirmation dialog for the "Clear All Data" action.
+    Requires the user to type "DELETE" in a text input to enable the
+    confirmation button, preventing accidental irreversible data loss.
+    The "Clear Everything" button (#danger-proceed-btn) is disabled until
+    the exact text "DELETE" is typed into #danger-confirm-input.
+  -->
   <div class="modal-overlay" id="danger-modal-overlay" role="dialog" aria-modal="true">
     <div class="modal" style="max-width:420px;">
       <div class="modal-header">
@@ -46,11 +89,18 @@
     </div>
   </div>
 
+  <!-- ─── SECTION: ADMIN LAYOUT ──────────────── -->
+  <!-- ==================== ADMIN LAYOUT ==================== -->
   <div class="admin-layout">
+    <!-- SIDEBAR OVERLAY: Mobile backdrop for closing sidebar -->
     <div class="sidebar-overlay"></div>
+    <!-- SIDEBAR CONTAINER: Admin navigation injected by Components.injectAdminSidebar() -->
     <aside id="sidebar-container"></aside>
 
+    <!-- ==================== MAIN CONTENT ==================== -->
     <div class="admin-main">
+      <!-- ─── SECTION: MOBILE HEADER ──────────── -->
+      <!-- ADMIN HEADER: Mobile top bar with hamburger, label, site link, theme toggle -->
       <header class="admin-header">
         <div class="admin-header-left">
           <button class="admin-menu-btn" aria-label="Open sidebar menu" style="display:none;border:none;background:none;cursor:pointer;">
@@ -70,6 +120,7 @@
       </header>
 
       <main class="admin-body">
+        <!-- TITLE ROW: Page heading and description -->
         <div class="admin-title-row">
           <div class="admin-title-group">
             <h1>Settings</h1>
@@ -77,6 +128,8 @@
           </div>
         </div>
 
+        <!-- ─── SECTION: Breadcrumbs ──────────── -->
+        <!-- BREADCRUMBS: Dashboard > Settings navigation path -->
         <nav class="breadcrumbs" aria-label="Breadcrumb">
           <ol class="breadcrumbs-list">
             <li><a href="./index.html">Dashboard</a></li>
@@ -85,7 +138,10 @@
           </ol>
         </nav>
 
+        <!-- ─── SECTION: Settings Tabs ────────── -->
+        <!-- ==================== SETTINGS TABS ==================== -->
         <div class="tabs-container settings-tabs" data-tabs>
+          <!-- TAB NAVIGATION: Four settings categories as horizontal tabs -->
           <div class="tabs-nav" role="tablist">
             <button class="tabs-tab active" role="tab" aria-selected="true" data-tab="profile" id="tab-profile">Profile</button>
             <button class="tabs-tab" role="tab" aria-selected="false" data-tab="appearance" id="tab-appearance">Appearance</button>
@@ -93,10 +149,16 @@
             <button class="tabs-tab" role="tab" aria-selected="false" data-tab="data" id="tab-data">Data</button>
           </div>
 
+          <!-- ==================== TAB PANELS ==================== -->
           <div class="tabs-panels">
+
+            <!-- ─── TAB: Profile ───────────────────── -->
+            <!-- ======== TAB: Profile ======== -->
             <div class="tabs-panel active" role="tabpanel" id="panel-profile" aria-labelledby="tab-profile">
+              <!-- PROFILE INFO CARD: Admin name, email, bio, and avatar upload -->
               <div class="settings-card">
                 <h2 class="settings-section-title">Profile Information</h2>
+                <!-- AVATAR UPLOAD: Clickable circle to upload profile photo -->
                 <div class="avatar-upload">
                   <div class="avatar-circle" id="avatar-circle">
                     <img id="avatar-img" src="" alt="Avatar" style="display:none;">
@@ -109,23 +171,30 @@
                     <p style="font-size:var(--text-xs);color:var(--text-muted);">Click to upload a profile photo</p>
                   </div>
                 </div>
+                <!-- FORM FIELD: Admin display name -->
                 <div class="form-group">
                   <label class="form-label" for="admin-name-input">Admin Name</label>
                   <input type="text" id="admin-name-input" class="form-input-field" placeholder="Your name" autocomplete="off">
                 </div>
+                <!-- FORM FIELD: Email address (pre-filled with default) -->
                 <div class="form-group">
                   <label class="form-label" for="admin-email-input">Email</label>
                   <input type="email" id="admin-email-input" class="form-input-field" value="admin@videoshare.com" autocomplete="off">
                 </div>
+                <!-- FORM FIELD: Short bio / about textarea -->
                 <div class="form-group">
                   <label class="form-label" for="admin-bio-input">Bio</label>
                   <textarea id="admin-bio-input" class="textarea-field" placeholder="A short bio about yourself..."></textarea>
                 </div>
+                <!-- SAVE BUTTON: Persists profile changes to localStorage -->
                 <button class="btn btn-primary" id="save-profile-btn">Save Profile</button>
               </div>
             </div>
 
+            <!-- ─── TAB: Appearance ────────────────── -->
+            <!-- ======== TAB: Appearance ======== -->
             <div class="tabs-panel" role="tabpanel" id="panel-appearance" aria-labelledby="tab-appearance">
+              <!-- THEME SELECTION: Dark / Light / System radio cards with visual preview -->
               <div class="settings-card">
                 <h2 class="settings-section-title">Theme</h2>
                 <div class="theme-radio-group">
@@ -147,6 +216,7 @@
                 </div>
               </div>
 
+              <!-- ACCENT COLOR: Clickable color swatches to change the primary accent -->
               <div class="settings-card">
                 <h2 class="settings-section-title">Accent Color</h2>
                 <div class="accent-swatches">
@@ -161,6 +231,7 @@
                 </div>
               </div>
 
+              <!-- FONT SIZE: Slider with three steps (Small / Medium / Large) -->
               <div class="settings-card">
                 <h2 class="settings-section-title">Font Size</h2>
                 <div style="display:flex;align-items:center;gap:var(--space-lg);">
@@ -176,6 +247,7 @@
                 </div>
               </div>
 
+              <!-- ACCESSIBILITY: Reduced motion toggle to disable animations -->
               <div class="settings-card">
                 <h2 class="settings-section-title">Accessibility</h2>
                 <div class="settings-row">
@@ -193,7 +265,10 @@
               </div>
             </div>
 
+            <!-- ─── TAB: Notifications ─────────────── -->
+            <!-- ======== TAB: Notifications ======== -->
             <div class="tabs-panel" role="tabpanel" id="panel-notifications" aria-labelledby="tab-notifications">
+              <!-- NOTIFICATION TOGGLES: Toggle switches for each notification type -->
               <div class="settings-card">
                 <h2 class="settings-section-title">Notification Preferences</h2>
                 <div class="settings-row">
@@ -248,7 +323,10 @@
               </div>
             </div>
 
+            <!-- ─── TAB: Data ──────────────────────── -->
+            <!-- ======== TAB: Data ======== -->
             <div class="tabs-panel" role="tabpanel" id="panel-data" aria-labelledby="tab-data">
+              <!-- EXPORT / IMPORT: Download or restore all data as JSON -->
               <div class="settings-card">
                 <h2 class="settings-section-title">Export / Import</h2>
                 <div class="settings-row">
@@ -276,6 +354,11 @@
                 </div>
               </div>
 
+              <!--
+                DANGER ZONE: Destructive actions section with red styling.
+                "Clear All Data" opens the #danger-modal-overlay which requires
+                typing "DELETE" to confirm the irreversible operation.
+              -->
               <div class="danger-zone">
                 <h2 class="settings-section-title">Danger Zone</h2>
                 <div class="settings-row">
@@ -296,14 +379,35 @@
     </div>
   </div>
 
+  <!-- RESPONSIVE STYLE: Shows hamburger menu on narrow screens -->
   <style>
     @media (max-width: 896px) { .admin-menu-btn { display: flex !important; } }
   </style>
 
+  <!-- ─── SECTION: SCRIPTS ──────────────────── -->
+  <!-- ==================== SCRIPTS ==================== -->
+  <!-- mockData.js: Mock data factory functions for prototype data -->
   <script src="../js/mockData.js"></script>
+  <!-- main.js: App core - theme toggling, toast API, utility functions -->
   <script src="../js/main.js"></script>
+  <!-- components.js: UI injectors - sidebar, navbar, footer, pagination -->
   <script src="../js/components.js"></script>
+  <!-- animations.js: Scroll-triggered reveal and transition effects -->
   <script src="../js/animations.js"></script>
+  <!--
+    admin/settings.js: Settings page logic.
+    - Tab switching between Profile / Appearance / Notifications / Data panels
+    - Avatar upload preview via FileReader API
+    - Theme radio selection (Dark / Light / System) with localStorage persistence
+    - Accent color swatch click handler to update CSS custom property
+    - Font size slider with live label update
+    - Reduced motion toggle
+    - Notification toggle switches with localStorage persistence
+    - Export all data as JSON file download
+    - Import JSON file upload and restore
+    - Danger zone "Clear All Data" with type-confirmation modal
+    - Profile save button handler
+  -->
   <script src="../js/admin/settings.js"></script>
 </body>
 </html>

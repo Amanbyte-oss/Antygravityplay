@@ -1,31 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ============================================================================
+  sitemap.xml - Antigravity Play
+  XML Sitemap listing all public URLs on the site for search engine crawlers.
+  Follows the Sitemaps Protocol (sitemaps.org/schemas/sitemap/0.9).
+  Each <url> entry includes:
+  - <loc>: The full canonical URL of the page
+  - <priority>: Relative importance (1.0 = highest, 0.3 = lowest)
+  ============================================================================
+-->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- HOMEPAGE: Highest priority (1.0) -->
   <url><loc>https://antigravityplay.com/</loc><priority>1.0</priority></url>
+
+  <!-- CORE FEATURE PAGES: High priority (0.9 - 0.8) -->
   <url><loc>https://antigravityplay.com/search.html</loc><priority>0.9</priority></url>
   <url><loc>https://antigravityplay.com/watch.html</loc><priority>0.8</priority></url>
+
+  <!-- CONTENT PAGES: Medium-high priority (0.7) -->
   <url><loc>https://antigravityplay.com/tag.html</loc><priority>0.7</priority></url>
   <url><loc>https://antigravityplay.com/about.html</loc><priority>0.7</priority></url>
+  <url><loc>https://antigravityplay.com/blog/index.html</loc><priority>0.7</priority></url>
+
+  <!-- SUPPORT PAGES: Medium priority (0.6) -->
   <url><loc>https://antigravityplay.com/contact.html</loc><priority>0.6</priority></url>
   <url><loc>https://antigravityplay.com/faq.html</loc><priority>0.6</priority></url>
   <url><loc>https://antigravityplay.com/help-centre.html</loc><priority>0.6</priority></url>
+  <url><loc>https://antigravityplay.com/tutorial.html</loc><priority>0.6</priority></url>
+  <url><loc>https://antigravityplay.com/sitemap.html</loc><priority>0.6</priority></url>
+
+  <!-- INFORMATION PAGES: Medium-low priority (0.5) -->
   <url><loc>https://antigravityplay.com/privacy.html</loc><priority>0.5</priority></url>
   <url><loc>https://antigravityplay.com/terms.html</loc><priority>0.5</priority></url>
+  <url><loc>https://antigravityplay.com/changelog.html</loc><priority>0.5</priority></url>
+  <url><loc>https://antigravityplay.com/release-notes.html</loc><priority>0.5</priority></url>
+  <url><loc>https://antigravityplay.com/announcements.html</loc><priority>0.5</priority></url>
+  <url><loc>https://antigravityplay.com/feedback.html</loc><priority>0.5</priority></url>
+  <url><loc>https://antigravityplay.com/report-bug.html</loc><priority>0.5</priority></url>
+  <url><loc>https://antigravityplay.com/feature-request.html</loc><priority>0.5</priority></url>
+
+  <!-- SECONDARY PAGES: Low priority (0.4) -->
   <url><loc>https://antigravityplay.com/dmca.html</loc><priority>0.4</priority></url>
   <url><loc>https://antigravityplay.com/copyright.html</loc><priority>0.4</priority></url>
   <url><loc>https://antigravityplay.com/cookie-policy.html</loc><priority>0.4</priority></url>
   <url><loc>https://antigravityplay.com/community-guidelines.html</loc><priority>0.4</priority></url>
-  <url><loc>https://antigravityplay.com/blog/index.html</loc><priority>0.7</priority></url>
-  <url><loc>https://antigravityplay.com/changelog.html</loc><priority>0.5</priority></url>
-  <url><loc>https://antigravityplay.com/release-notes.html</loc><priority>0.5</priority></url>
-  <url><loc>https://antigravityplay.com/announcements.html</loc><priority>0.5</priority></url>
-  <url><loc>https://antigravityplay.com/tutorial.html</loc><priority>0.6</priority></url>
-  <url><loc>https://antigravityplay.com/sitemap.html</loc><priority>0.6</priority></url>
   <url><loc>https://antigravityplay.com/rss-feed.html</loc><priority>0.4</priority></url>
-  <url><loc>https://antigravityplay.com/feedback.html</loc><priority>0.5</priority></url>
-  <url><loc>https://antigravityplay.com/report-bug.html</loc><priority>0.5</priority></url>
-  <url><loc>https://antigravityplay.com/feature-request.html</loc><priority>0.5</priority></url>
   <url><loc>https://antigravityplay.com/status.html</loc><priority>0.4</priority></url>
   <url><loc>https://antigravityplay.com/advertise.html</loc><priority>0.4</priority></url>
   <url><loc>https://antigravityplay.com/press.html</loc><priority>0.4</priority></url>
+
+  <!-- AUTH PAGES: Lowest priority (0.3) -->
   <url><loc>https://antigravityplay.com/login.html</loc><priority>0.3</priority></url>
 </urlset>

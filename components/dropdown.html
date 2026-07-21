@@ -1,11 +1,25 @@
+<!-- ═══════════════════════════════════════════ -->
+<!-- FILE: dropdown.html                        -->
+<!-- PURPOSE: Dropdown menu component with      -->
+<!--   trigger button and action items (Edit,   -->
+<!--   Duplicate, Delete). Controlled via JS.   -->
+<!-- ═══════════════════════════════════════════ -->
+
+<!-- ─── Dropdown root ─────────────────────────────────────── -->
 <div class="dropdown" data-dropdown>
+
+  <!-- ─── Trigger Button ─────────────────────────── -->
   <button class="dropdown-trigger btn btn-secondary" data-dropdown-trigger>
     <span>Actions</span>
+    <!-- Chevron-down icon -->
     <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
       <polyline points="6 9 12 15 18 9"></polyline>
     </svg>
   </button>
+
+  <!-- ─── Dropdown Menu ──────────────────────────── -->
   <div class="dropdown-menu" data-dropdown-menu>
+    <!-- Edit action item -->
     <button class="dropdown-item" data-action="edit">
       <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
@@ -13,6 +27,7 @@
       </svg>
       Edit
     </button>
+    <!-- Duplicate action item -->
     <button class="dropdown-item" data-action="duplicate">
       <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
         <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -20,7 +35,9 @@
       </svg>
       Duplicate
     </button>
+    <!-- Visual divider -->
     <hr class="dropdown-divider">
+    <!-- Delete action item (danger-styled) -->
     <button class="dropdown-item dropdown-item-danger" data-action="delete">
       <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
         <polyline points="3 6 5 6 21 6"></polyline>

@@ -1,15 +1,61 @@
 <!DOCTYPE html>
+<!-- ═══════════════════════════════════════════ -->
+<!-- FILE: error-logs.html                      -->
+<!-- PURPOSE: Error/warning log table showing   -->
+<!--          oEmbed timeouts, JSON parse       -->
+<!--          errors, 404s, storage quota, etc. -->
+<!-- ═══════════════════════════════════════════ -->
+<!--
+  ============================================================================
+  FILE: error-logs.html
+  SECTION: Admin / Monitoring
+  DESCRIPTION: Displays a table of system errors and warnings (oEmbed
+  timeouts, JSON parse errors, 404s, storage quota warnings, etc.).
+  Data is generated client-side via mock data for prototyping.
+  DEPENDENCIES: main.js, components.js, mockData.js
+  ============================================================================
+-->
 <html lang="en">
 <head>
+  <!-- ==================== HEAD ==================== -->
+  <!--
+    THEME INIT SCRIPT:
+    Reads the "site-theme" key from localStorage and sets the "data-theme"
+    attribute on <html> BEFORE rendering. Prevents FOUC on theme switch.
+    Falls back to "dark" if no preference is stored.
+  -->
   <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+  <!-- META: Declares UTF-8 character encoding for proper text rendering -->
   <meta charset="UTF-8">
+  <!-- META: Responsive viewport configuration for mobile devices -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- META: Search engine description - briefly explains this page's purpose (error monitoring) -->
   <meta name="description" content="Error logs - monitor system errors and warnings">
+  <!-- TITLE: Browser tab text and search engine result title -->
   <title>Error Logs - Antigravity Play</title>
+  <!--
+    STYLESHEET: main.css
+    Global design system providing CSS custom properties, base resets,
+    layout utilities, component styles (buttons, badges, modals, toasts,
+    tables, cards), admin layout, and responsive breakpoints.
+  -->
   <link rel="stylesheet" href="../css/main.css">
 </head>
+<!-- ==================== BODY ==================== -->
 <body>
+  <!--
+    TOAST CONTAINER:
+    Fixed-position notification hub (top-right). window.App.showToast()
+    inserts feedback messages here. role="status" + aria-live="polite"
+    ensures screen reader accessibility.
+  -->
   <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+  <!--
+    CONFIRMATION MODAL OVERLAY:
+    Reusable dialog for confirming destructive actions. Uses role="dialog"
+    and aria-modal="true" for accessibility. Contains title, body, and
+    Cancel/Confirm buttons. Toggled via JavaScript .visible class.
+  -->
   <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
     <div class="modal">
       <div class="modal-header"><h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button></div>
@@ -17,22 +63,49 @@
       <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button class="btn btn-primary confirm-modal-btn">Confirm</button></div>
     </div>
   </div>
+  <!-- ─── SECTION: ADMIN LAYOUT ──────────────── -->
+  <!-- ==================== ADMIN LAYOUT ==================== -->
   <div class="admin-layout">
+    <!--
+      SIDEBAR CONTAINER: Dynamically populated by
+      window.Components.injectAdminSidebar() on DOMContentLoaded. Renders
+      the admin navigation menu with links to all admin sections.
+    -->
     <div id="sidebar-container"></div>
+    <!-- ==================== MAIN CONTENT ==================== -->
     <main class="admin-main">
+      <!-- ─── SECTION: MOBILE HEADER ──────────── -->
+      <!--
+        ADMIN HEADER (Mobile Top Bar):
+        Contains hamburger menu button for sidebar toggle on small screens,
+        the page title "Error Logs", and a flex spacer.
+      -->
       <div class="admin-header">
+        <!-- HAMBURGER MENU: Toggles sidebar on mobile using SVG icon -->
         <button class="admin-menu-btn" aria-label="Open menu">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         </button>
+        <!-- PAGE TITLE: Displayed in the mobile header bar -->
         <h1>Error Logs</h1>
+        <!-- SPACER: Fills remaining flex space in header row -->
         <div style="flex:1;"></div>
       </div>
+      <!-- ─── SECTION: ADMIN CONTENT ──────────── -->
+      <!--
+        ADMIN CONTENT WRAPPER: Contains the main error log card.
+      -->
       <div class="admin-content">
+        <!-- ERROR LOG CARD: Displays table of system errors and warnings -->
         <div class="admin-card">
+          <!-- ─── CARD HEADER ───────────────────── -->
+          <!-- CARD HEADER: Section title + dynamic entry count badge -->
           <div class="admin-card-header">
             <h2>Error Logs</h2>
+            <!-- BADGE: Updated by JS to show total error entry count -->
             <span class="badge badge-info" id="log-count">0 entries</span>
           </div>
+          <!-- ─── CARD BODY ─────────────────────── -->
+          <!-- CARD BODY: Holds the error log table or empty state -->
           <div class="admin-card-body">
             <div id="log-container">
               <div class="empty-state-container" style="text-align:center;padding:var(--space-4xl);">
@@ -46,10 +119,23 @@
       </div>
     </main>
   </div>
+  <!-- ─── SECTION: SCRIPTS ──────────────────── -->
+  <!-- ==================== SCRIPTS ==================== -->
+  <!-- mockData.js: Mock data factory functions (videos, tags, logs) for prototyping -->
   <script src="../js/mockData.js"></script>
+  <!-- main.js: Core app module - theme toggling, toast notifications, URL utils -->
   <script src="../js/main.js"></script>
+  <!-- components.js: UI injectors - admin sidebar, navbar, footer, pagination -->
   <script src="../js/components.js"></script>
+  <!-- animations.js: Scroll-reveal and transition animation utilities -->
   <script src="../js/animations.js"></script>
+  <!--
+    INLINE SCRIPT - Error Logs page logic:
+    1. Injects admin sidebar via Components.injectAdminSidebar().
+    2. Generates sample error log entries with generateLogEntries().
+    3. Renders entries as an HTML table (Timestamp, Error Type, Severity, Details).
+    4. Updates #log-count badge and shows empty state if no entries.
+  -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       window.Components.injectAdminSidebar('error-logs');

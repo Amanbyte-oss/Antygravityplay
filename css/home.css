@@ -1,165 +1,204 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   HOME PAGE STYLES
+   Hero banner, scrollable video rows, tag sections.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Hero section wrapper: ensures minimum height before content loads (prevents CLS) */
 #hero-section {
-  min-height: 320px;
+  min-height: 320px;    /* Reserve vertical space for the hero banner */
 }
 
-/* --- HERO BANNER --- */
+/* ═══════════════════════════════════════════════════════════════════════
+   HERO BANNER
+   Large featured banner at the top of the homepage with gradient background.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Hero banner container: mesh-gradient background with border and shadow */
 .hero-banner {
-  position: relative;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  margin: var(--space-2xl) 0;
-  background: var(--mesh-gradient);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-md);
-  min-height: 320px;
-  display: flex;
-  align-items: center;
+  position: relative;              /* Anchor for any absolutely-positioned decorative elements */
+  border-radius: var(--radius-lg); /* 12px rounded corners */
+  overflow: hidden;                /* Clip content to rounded corners */
+  margin: var(--space-2xl) 0;      /* 32px vertical margin */
+  background: var(--mesh-gradient);  /* Dynamic mesh gradient (theme-aware) */
+  border: 1px solid var(--border);   /* Subtle border */
+  box-shadow: var(--shadow-md);    /* Medium shadow for depth */
+  min-height: 320px;               /* Minimum height */
+  display: flex;                   /* Flex layout for content alignment */
+  align-items: center;             /* Vertically centre content */
 }
 
+/* Hero content: text block constrained to 600px wide, above the gradient */
 .hero-content {
-  padding: var(--space-3xl) var(--space-4xl);
-  max-width: 600px;
-  z-index: 10;
+  padding: var(--space-3xl) var(--space-4xl);  /* 48px vertical, 64px horizontal padding */
+  max-width: 600px;                             /* Don't stretch too wide */
+  z-index: 10;                                  /* Above the gradient background */
 }
 
+/* Hero tag/label: monospace, uppercase, accent-coloured badge */
 .hero-tag {
-  display: inline-block;
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  color: var(--accent);
-  background-color: rgba(30, 215, 96, 0.1);
-  padding: var(--space-xs) var(--space-sm);
-  border-radius: var(--radius-sm);
-  margin-bottom: var(--space-md);
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  display: inline-block;             /* Sit inline but respect padding */
+  font-family: var(--font-mono);    /* Monospace for technical/category tag */
+  font-size: var(--text-xs);        /* 12px */
+  color: var(--accent);              /* Accent green in dark mode */
+  background-color: rgba(30, 215, 96, 0.1);  /* Subtle green transparent background */
+  padding: var(--space-xs) var(--space-sm);   /* 4px vertical, 8px horizontal */
+  border-radius: var(--radius-sm);  /* 4px rounded */
+  margin-bottom: var(--space-md);   /* 12px below */
+  text-transform: uppercase;        /* ALL CAPS */
+  letter-spacing: 1px;             /* Spaced out for emphasis */
 }
 
+/* Light theme: hero tag uses blue tones instead of green */
 [data-theme="light"] .hero-tag {
-  background-color: rgba(0, 112, 243, 0.1);
-  color: var(--success);
+  background-color: rgba(0, 112, 243, 0.1);  /* Subtle blue background */
+  color: var(--success);                     /* Blue text */
 }
 
+/* Hero main heading: large, bold, tight line-height */
 .hero-title {
-  font-size: var(--text-4xl);
-  font-weight: 700;
-  line-height: 1.1;
-  letter-spacing: -1px;
-  margin-bottom: var(--space-md);
+  font-size: var(--text-4xl);      /* 40px on desktop */
+  font-weight: 700;                /* Bold */
+  line-height: 1.1;                /* Tight leading for impact */
+  letter-spacing: -1px;            /* Slightly tighter letter-spacing for headings */
+  margin-bottom: var(--space-md);  /* 12px below */
 }
 
+/* Hero description: secondary colour, comfortable line height */
 .hero-desc {
-  font-size: var(--text-md);
-  color: var(--text-secondary);
-  line-height: 1.5;
-  margin-bottom: var(--space-xl);
+  font-size: var(--text-md);       /* 16px */
+  color: var(--text-secondary);    /* Grey text */
+  line-height: 1.5;                /* 1.5× for readability */
+  margin-bottom: var(--space-xl);  /* 24px below */
 }
 
+/* Hero buttons row: CTA buttons side by side */
 .hero-btns {
-  display: flex;
-  gap: var(--space-md);
+  display: flex;        /* Horizontal row */
+  gap: var(--space-md); /* 12px between buttons */
 }
 
+/* Tablet: reduce padding and title size */
 @media (max-width: 768px) {
   .hero-content {
-    padding: var(--space-2xl) var(--space-xl);
+    padding: var(--space-2xl) var(--space-xl);  /* 32px vertical, 24px horizontal */
   }
   .hero-title {
-    font-size: var(--text-2xl);
+    font-size: var(--text-2xl);    /* 24px on tablet */
   }
 }
 
+/* Mobile: further reduce sizing and stack buttons vertically */
 @media (max-width: 480px) {
   .hero-content {
-    padding: var(--space-xl) var(--space-lg);
+    padding: var(--space-xl) var(--space-lg);  /* 24px vertical, 16px horizontal */
   }
   .hero-title {
-    font-size: var(--text-xl);
+    font-size: var(--text-xl);    /* 20px on mobile */
   }
   .hero-desc {
-    font-size: var(--text-sm);
+    font-size: var(--text-sm);    /* 14px on mobile */
   }
   .hero-btns {
-    flex-direction: column;
+    flex-direction: column;       /* Stack buttons vertically */
   }
   .hero-banner {
-    min-height: 240px;
+    min-height: 240px;            /* Shorter banner on mobile */
   }
 }
 
-/* --- HORIZONTAL SCROLL ROW --- */
+/* ═══════════════════════════════════════════════════════════════════════
+   HORIZONTAL SCROLL ROWS
+   Netflix-style horizontal scrolling sections for video lists.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Row section: vertical spacing between each horizontal scroll section */
 .row-section {
-  margin-bottom: var(--space-4xl);
+  margin-bottom: var(--space-4xl);    /* 64px below each row section */
 }
 
+/* Row header: title on the left, optional "View all" link on the right */
 .row-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: var(--space-lg);
+  display: flex;                   /* Horizontal layout */
+  justify-content: space-between;  /* Title left, link right */
+  align-items: flex-end;           /* Align both items at their bottom */
+  margin-bottom: var(--space-lg);  /* 16px below the header */
 }
 
+/* Row section title */
 .row-title {
-  font-size: var(--text-2xl);
-  font-weight: 700;
-  letter-spacing: -0.5px;
+  font-size: var(--text-2xl);      /* 24px */
+  font-weight: 700;                /* Bold */
+  letter-spacing: -0.5px;          /* Slightly tighter tracking */
 }
 
+/* "View all" or "See more" link */
 .row-link {
-  font-size: var(--text-sm);
-  font-weight: 600;
-  color: var(--text-secondary);
+  font-size: var(--text-sm);       /* 14px */
+  font-weight: 600;                /* Semi-bold */
+  color: var(--text-secondary);    /* Grey text */
 }
 
+/* Link hover: accent colour with underline */
 .row-link:hover {
-  color: var(--accent);
-  text-decoration: underline;
+  color: var(--accent);            /* Green accent */
+  text-decoration: underline;      /* Underline for clarity */
 }
 
+/* Scroll wrapper: extends beyond container edges to allow full-width scrolling,
+   hides overflow to prevent horizontal scrollbars on the page */
 .scroll-container-wrapper {
-  position: relative;
-  margin: 0 calc(-1 * var(--space-lg));
-  padding: 0 var(--space-lg);
-  overflow: hidden;
+  position: relative;                          /* For any future absolute-positioned arrows */
+  margin: 0 calc(-1 * var(--space-lg));        /* Negative margin pulls edges past container padding */
+  padding: 0 var(--space-lg);                  /* Restore padding inside the wrapper */
+  overflow: hidden;                            /* Hide scrollable overflow beyond wrapper */
 }
 
+/* Mobile: reduce the negative margin/padding for smaller screens */
 @media (max-width: 576px) {
   .scroll-container-wrapper {
-    margin: 0 calc(-1 * var(--space-md));
-    padding: 0 var(--space-md);
+    margin: 0 calc(-1 * var(--space-md));      /* Smaller negative margin */
+    padding: 0 var(--space-md);                /* Smaller padding */
   }
   .scroll-container {
-    gap: var(--space-md);
+    gap: var(--space-md);                      /* 12px gap on mobile */
   }
   .video-card {
-    flex: 0 0 180px;
+    flex: 0 0 180px;                           /* Smaller cards on mobile */
   }
 }
 
+/* Scroll container: horizontal flex row with snap scrolling, hidden scrollbar */
 .scroll-container {
-  display: flex;
-  gap: var(--space-xl);
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none; /* Firefox */
-  padding-bottom: var(--space-md);
-  min-height: 220px;
+  display: flex;                 /* Horizontal row of cards */
+  gap: var(--space-xl);          /* 24px between cards */
+  overflow-x: auto;              /* Horizontal scroll when content overflows */
+  scroll-snap-type: x mandatory; /* Snap to each card when scrolling stops */
+  scrollbar-width: none;         /* Hide scrollbar in Firefox */
+  padding-bottom: var(--space-md);  /* Space below cards for shadow visibility */
+  min-height: 220px;             /* Minimum height to prevent collapse while loading */
 }
 
+/* Hide scrollbar in Chrome/Safari/Edge */
 .scroll-container::-webkit-scrollbar {
-  display: none; /* Chrome/Safari */
+  display: none;                 /* Completely hide the scrollbar */
 }
 
-/* --- TAGS ROWS (Popular Tags + Browse by Tag) --- */
+/* ═══════════════════════════════════════════════════════════════════════
+   TAGS ROWS (Popular Tags + Browse by Tag)
+   Pill-shaped tag links displayed in a wrapping flex layout.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Row of tag pills with wrapping */
 .tags-pill-row {
-  display: flex;
-  gap: var(--space-md);
-  flex-wrap: wrap;
-  margin-bottom: var(--space-3xl);
+  display: flex;            /* Horizontal row */
+  gap: var(--space-md);     /* 12px between tags */
+  flex-wrap: wrap;          /* Wrap to next line on overflow */
+  margin-bottom: var(--space-3xl);  /* 48px below tags */
 }
 
+/* Browse by tag grid: wrapping flex for tag cards */
 .browse-tag-grid {
-  display: flex;
-  gap: var(--space-md);
-  flex-wrap: wrap;
+  display: flex;            /* Horizontal layout */
+  gap: var(--space-md);     /* 12px gaps */
+  flex-wrap: wrap;          /* Wrap on overflow */
 }

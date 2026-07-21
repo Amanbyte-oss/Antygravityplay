@@ -1,8 +1,19 @@
+<!-- ═══════════════════════════════════════════ -->
+<!-- FILE: toast.html                           -->
+<!-- PURPOSE: Toast notification component with -->
+<!--   success icon, message text, and close    -->
+<!--   button. Used for transient feedback.     -->
+<!-- ═══════════════════════════════════════════ -->
+
+<!-- ─── Toast notification element ────────────────────────── -->
 <div class="toast">
+  <!-- Checkmark / success icon -->
   <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
     <polyline points="22 4 12 14.01 9 11.01"></polyline>
   </svg>
+  <!-- Dynamic message text injected via JS -->
   <span class="toast-message">Success notification message</span>
+  <!-- Dismiss button -->
   <button class="toast-close" aria-label="Close message">&times;</button>
 </div>

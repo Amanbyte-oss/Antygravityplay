@@ -1,16 +1,51 @@
 <!DOCTYPE html>
+<!-- ═══════════════════════════════════════════ -->
+<!-- FILE: index.html                           -->
+<!-- PURPOSE: Blog listing page with article cards -->
+<!-- ═══════════════════════════════════════════ -->
+<!--
+  ============================================================================
+  FILE: blog/index.html
+  SECTION: Public / Blog
+  DESCRIPTION: Main blog listing page displaying article cards for news,
+  tutorials, release notes, and team updates. Cards show title, excerpt,
+  author, date, read time, and category tag. Links to individual post pages.
+  DEPENDENCIES: main.js, components.js
+  ============================================================================
+-->
 <html lang="en">
+<!-- ─── HTML ──────────────────────────────────── -->
 <head>
+  <!-- ==================== HEAD ==================== -->
+  <!-- THEME INIT: Sets data-theme from localStorage before render to avoid FOUC -->
   <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+  <!-- META: UTF-8 encoding for proper Unicode rendering -->
   <meta charset="UTF-8">
+  <!-- META: Responsive viewport for mobile-friendly layout -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- META: SEO description for the blog homepage -->
   <meta name="description" content="Antigravity Play Blog - news, tutorials, and updates">
+  <!-- TITLE: Browser tab text and search engine result title -->
   <title>Blog - Antigravity Play</title>
+  <!-- STYLESHEET: main.css - Global design system foundation (variables, resets, utilities) -->
   <link rel="stylesheet" href="../css/main.css">
+  <!--
+    STYLESHEET: blog.css
+    Blog-specific styles - blog page layout, card grid, blog card component,
+    header, typography, meta tags, excerpt, footer, and responsive grid.
+  -->
   <link rel="stylesheet" href="../css/blog.css">
 </head>
+<!-- ==================== BODY ==================== -->
 <body>
+  <!-- ─── SECTION: SHARED COMPONENTS ──────────── -->
+  <!-- TOAST CONTAINER: Fixed notification area for temporary feedback messages -->
   <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+  <!--
+    CONFIRMATION MODAL OVERLAY:
+    Standard reusable dialog with Cancel/Confirm for action confirmations.
+    role="dialog" + aria-modal="true" for accessibility support.
+  -->
   <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
     <div class="modal">
       <div class="modal-header"><h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button></div>
@@ -18,13 +53,32 @@
       <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button class="btn btn-primary confirm-modal-btn">Confirm</button></div>
     </div>
   </div>
+  <!--
+    NAVBAR CONTAINER: Public site navigation bar injected dynamically by
+    window.Components.injectNavbar() on DOMContentLoaded. Contains logo,
+    search link, theme toggle, and navigation links.
+  -->
   <header id="navbar-container" class="navbar-wrapper"></header>
+  <!-- ==================== BLOG MAIN ==================== -->
   <main class="container blog-page">
+    <!--
+      BLOG HEADER: Page title and description section at the top of the blog.
+      Provides context about the blog's purpose (news, tutorials, updates).
+    -->
     <div class="blog-header">
       <h1>Antigravity Play Blog</h1>
       <p>News, tutorials, release notes, and stories from the team behind Antigravity Play.</p>
     </div>
+    <!--
+      BLOG GRID: Responsive grid of blog post cards. Each card (article) has:
+      - A gradient background with icon (announcement/play/info SVG)
+      - Meta info: category tag, date, read time
+      - Title linked to ./post.html?id=<slug>
+      - Excerpt paragraph
+      - Footer with author and "Read More" link
+    -->
     <div class="blog-grid" id="blog-grid">
+      <!-- BLOG CARD: Announcement post "Welcome to Antigravity Play" -->
       <article class="blog-card">
         <div class="blog-card-image" style="background:linear-gradient(135deg,var(--accent),#1a1a2e);display:flex;align-items:center;justify-content:center;"><svg width="48" height="48" fill="none" stroke="#fff" stroke-width="1.5" viewBox="0 0 24 24"><polygon points="8,5 19,12 8,19"></polygon></svg></div>
         <div class="blog-card-body">
@@ -34,6 +88,7 @@
           <div class="blog-card-footer"><span>By The Team</span><a href="./post.html?id=welcome" style="color:var(--accent);font-size:var(--text-sm);text-decoration:none;font-weight:500;">Read More →</a></div>
         </div>
       </article>
+      <!-- BLOG CARD: Feature post "Introducing the Custom Video Player" -->
       <article class="blog-card">
         <div class="blog-card-image" style="background:linear-gradient(135deg,#1ed760,#0d8b3e);display:flex;align-items:center;justify-content:center;"><svg width="48" height="48" fill="none" stroke="#fff" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
         <div class="blog-card-body">
@@ -43,6 +98,7 @@
           <div class="blog-card-footer"><span>By The Team</span><a href="./post.html?id=player" style="color:var(--accent);font-size:var(--text-sm);text-decoration:none;font-weight:500;">Read More →</a></div>
         </div>
       </article>
+      <!-- BLOG CARD: Tutorial post "Complete Guide to Dark & Light Themes" -->
       <article class="blog-card">
         <div class="blog-card-image" style="background:linear-gradient(135deg,#7928ca,#ff0080);display:flex;align-items:center;justify-content:center;"><svg width="48" height="48" fill="none" stroke="#fff" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
         <div class="blog-card-body">
@@ -54,11 +110,29 @@
       </article>
     </div>
   </main>
+  <!-- ─── SECTION: FOOTER ──────────────────────── -->
+  <!--
+    FOOTER CONTAINER: Public site footer injected dynamically by
+    window.Components.injectFooter() on DOMContentLoaded. Contains
+    copyright, links, and site information.
+  -->
   <footer id="footer-container" style="margin-top: 100px;"></footer>
+  <!-- ==================== SCRIPTS ==================== -->
+  <!-- mockData.js: Mock data factory for prototype data across the app -->
   <script src="../js/mockData.js"></script>
+  <!-- main.js: Core app - theme management, toast API, shared utilities -->
   <script src="../js/main.js"></script>
+  <!-- components.js: UI injectors - navbar, footer, sidebar, pagination -->
   <script src="../js/components.js"></script>
+  <!-- animations.js: Scroll-reveal and transition animation utilities -->
   <script src="../js/animations.js"></script>
+  <!--
+    INLINE SCRIPT: Blog index page initialization.
+    On DOMContentLoaded:
+    1. Injects the public navigation bar (logo, links, theme toggle)
+    2. Injects the site footer (copyright, links)
+    3. Initializes scroll-triggered reveal animations for blog cards
+  -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       window.Components.injectNavbar();

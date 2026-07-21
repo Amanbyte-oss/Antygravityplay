@@ -1,20 +1,53 @@
 <!DOCTYPE html>
+<!-- ═══════════════════════════════════════════ -->
+<!-- FILE: tags.html                            -->
+<!-- PURPOSE: Tag CRUD with inline add, search, -->
+<!--          sort, merge, bulk select, and     -->
+<!--          paginated tag card grid.          -->
+<!-- ═══════════════════════════════════════════ -->
+<!--
+  ============================================================================
+  FILE: tags.html
+  SECTION: Admin / Taxonomy
+  DESCRIPTION: Tag management interface for creating, editing, merging, and
+  deleting video classification tags. Features inline-add, search, sort,
+  bulk select, and merge operations with pagination.
+  DEPENDENCIES: main.js, components.js, admin/tags.js
+  ============================================================================
+-->
 <html lang="en">
 <head>
+  <!-- ==================== HEAD ==================== -->
+  <!-- THEME INIT: Prevents FOUC by setting data-theme from localStorage before render -->
   <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+  <!-- META: UTF-8 encoding -->
   <meta charset="UTF-8">
+  <!-- META: Responsive viewport for mobile scaling -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- META: SEO description for search engine result snippets -->
   <meta name="description" content="Create, edit, merge, and delete video tags for content classification.">
+  <!-- TITLE: Browser tab title -->
   <title>Tags - Admin Console</title>
+  <!-- STYLESHEET: main.css - Global design system -->
   <link rel="stylesheet" href="../css/main.css">
+  <!-- STYLESHEET: dashboard.css - Shared admin dashboard layout -->
   <link rel="stylesheet" href="../css/admin/dashboard.css">
+  <!-- STYLESHEET: videos.css - Shared list/table styles reused for tag cards -->
   <link rel="stylesheet" href="../css/admin/videos.css">
+  <!--
+    STYLESHEET: tags.css
+    Tag-specific styles - chip preview, inline add bar, merge bar,
+    tags grid with pagination, management bar, and responsive layout.
+  -->
   <link rel="stylesheet" href="../css/admin/tags.css">
 </head>
+<!-- ==================== BODY ==================== -->
 <body>
 
+  <!-- TOAST CONTAINER: Fixed notification area for feedback messages -->
   <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
 
+  <!-- CONFIRMATION MODAL: Standard reusable confirmation dialog -->
   <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
     <div class="modal">
       <div class="modal-header">
@@ -29,6 +62,12 @@
     </div>
   </div>
 
+  <!--
+    DELETE TAG MODAL: Specialized confirmation dialog for tag deletion.
+    Shows a warning about the number of videos affected by deleting
+    the tag. Has Cancel and Delete buttons. The Delete button is styled
+    with error (red) color for visual emphasis of the destructive action.
+  -->
   <div class="modal-overlay" id="confirm-delete-overlay" role="dialog" aria-modal="true">
     <div class="modal">
       <div class="modal-header">
@@ -46,11 +85,18 @@
     </div>
   </div>
 
+  <!-- ─── SECTION: ADMIN LAYOUT ──────────────── -->
+  <!-- ==================== ADMIN LAYOUT ==================== -->
   <div class="admin-layout">
+    <!-- SIDEBAR OVERLAY: Mobile backdrop for closing sidebar -->
     <div class="sidebar-overlay"></div>
+    <!-- SIDEBAR CONTAINER: Admin nav injected by Components.injectAdminSidebar() -->
     <aside id="sidebar-container"></aside>
 
+    <!-- ==================== MAIN CONTENT ==================== -->
     <div class="admin-main">
+      <!-- ─── SECTION: MOBILE HEADER ──────────── -->
+      <!-- ADMIN HEADER: Mobile top bar with hamburger, label, site link, theme toggle -->
       <header class="admin-header">
         <div class="admin-header-left">
           <button class="admin-menu-btn" aria-label="Open sidebar menu" style="display:none;border:none;background:none;cursor:pointer;">
@@ -70,6 +116,7 @@
       </header>
 
       <main class="admin-body">
+        <!-- TITLE ROW: Page heading and description -->
         <div class="admin-title-row">
           <div class="admin-title-group">
             <h1>Tags</h1>
@@ -77,6 +124,8 @@
           </div>
         </div>
 
+        <!-- ─── SECTION: Breadcrumbs ──────────── -->
+        <!-- BREADCRUMBS: Dashboard > Tags navigation path -->
         <nav class="breadcrumbs" aria-label="Breadcrumb">
           <ol class="breadcrumbs-list">
             <li><a href="./index.html">Dashboard</a></li>
@@ -85,27 +134,55 @@
           </ol>
         </nav>
 
+        <!--
+          INLINE ADD TAG: Quick-create input at the top of the page.
+          Type a tag name and press Enter to create it immediately.
+          The new tag appears as a chip in the preview below (#tags-chips-container).
+        -->
+        <!-- ─── SECTION: Inline Add Tag ────────── -->
         <div class="inline-add-tag">
           <input type="text" id="add-tag-input" placeholder="Type tag name and press Enter to create..." autocomplete="off">
           <span style="font-size:var(--text-xs);color:var(--text-muted);">Press Enter to add</span>
         </div>
 
+        <!--
+          TAGS CHIPS PREVIEW: Shows existing tags as removable chips.
+          Each chip displays the tag name with an "x" button to delete.
+          Dynamically populated by admin/tags.js.
+        -->
+        <!-- ─── SECTION: Tags Chips Preview ────── -->
         <div id="tags-chips-container" class="tags-chips-preview"></div>
 
+        <!--
+          MERGE BAR: Appears when multiple tags are selected for merging.
+          Displays the number of selected tags and a dropdown to choose
+          the target tag (the one to keep). The "Merge Selected" button
+          performs the merge operation, reassigning all videos from the
+          selected tags to the target and deleting the source tags.
+        -->
+        <!-- ─── SECTION: Merge Bar ─────────────── -->
         <div class="merge-bar hidden" id="merge-bar">
           <span style="font-size:var(--text-sm);">Merge <strong id="merge-count">0</strong> selected tags into:</span>
           <select id="merge-target-select"></select>
           <button class="btn btn-primary" id="merge-btn" style="padding:var(--space-xs) var(--space-md);font-size:var(--text-xs);">Merge Selected</button>
         </div>
 
+        <!--
+          MANAGEMENT BAR: Controls for search, sort, and bulk selection.
+          Left side: search input and sort dropdown.
+          Right side: "Select All" checkbox and total tag count.
+        -->
+        <!-- ─── SECTION: Management Bar ────────── -->
         <div class="management-bar">
           <div class="management-left">
+            <!-- SEARCH: Filters tags by name client-side -->
             <div class="table-search-container">
               <span class="table-search-icon">
                 <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
               </span>
               <input type="text" id="table-search-input" placeholder="Search tags..." aria-label="Search tags">
             </div>
+            <!-- SORT: Dropdown to reorder tags by name, usage count, or creation date -->
             <select id="sort-select" class="sort-select" aria-label="Sort tags">
               <option value="name-asc">Name A-Z</option>
               <option value="name-desc">Name Z-A</option>
@@ -116,18 +193,28 @@
             </select>
           </div>
           <div class="management-right">
+            <!-- SELECT ALL: Toggles all tag checkboxes for bulk merge operations -->
             <label class="select-all-label">
               <input type="checkbox" id="header-checkbox" class="admin-checkbox" aria-label="Select all">
               <span>Select All</span>
             </label>
+            <!-- TAG COUNT: Total number of tags in the system, updated by JS -->
             <span style="font-size:var(--text-xs);color:var(--text-muted);" id="table-count-span">0 tags</span>
           </div>
         </div>
 
+        <!--
+          TAGS SECTION: Grid of tag cards with pagination.
+          Each card shows the tag name, usage count, creation date,
+          and action buttons (edit, delete, checkbox for merge).
+          Populated dynamically by admin/tags.js.
+        -->
+        <!-- ─── SECTION: Tags Grid ─────────────── -->
         <section class="tags-section" aria-label="Tags listing">
           <div class="tags-grid" id="tags-grid">
             <!-- Dynamically populated via JS -->
           </div>
+          <!-- PAGINATION: Page controls injected by Components.injectPagination() -->
           <footer id="pagination-wrapper"></footer>
         </section>
 
@@ -135,14 +222,33 @@
     </div>
   </div>
 
+  <!-- ─── SECTION: Responsive Style ──────────── -->
+  <!-- RESPONSIVE: Shows hamburger button on narrow screens -->
   <style>
     @media (max-width: 896px) { .admin-menu-btn { display: flex !important; } }
   </style>
 
+  <!-- ─── SECTION: SCRIPTS ──────────────────── -->
+  <!-- ==================== SCRIPTS ==================== -->
+  <!-- mockData.js: Mock data factory for prototype tags and usage data -->
   <script src="../js/mockData.js"></script>
+  <!-- main.js: Core app - theme toggling, toast API, utility functions -->
   <script src="../js/main.js"></script>
+  <!-- components.js: UI injectors - sidebar, navbar, footer, pagination -->
   <script src="../js/components.js"></script>
+  <!-- animations.js: Scroll-reveal and transition animation effects -->
   <script src="../js/animations.js"></script>
+  <!--
+    admin/tags.js: Tags management page logic.
+    - Renders tag chips preview and tag card grid with pagination
+    - Handles inline tag creation (Enter key on #add-tag-input)
+    - Tag deletion with confirmation (#confirm-delete-overlay)
+    - Tag editing (inline name change)
+    - Tag merge workflow: select multiple tags, choose target, merge
+    - Search/filter tags by name client-side
+    - Sort tags by name, usage, or creation date
+    - Select All / deselect all for bulk merge operations
+  -->
   <script src="../js/admin/tags.js"></script>
 </body>
 </html>

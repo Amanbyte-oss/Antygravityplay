@@ -1,44 +1,85 @@
+<!-- ═══════════════════════════════════════════ -->
+<!-- FILE: search-empty.html                     -->
+<!-- PURPOSE: Shown when a search query yields   -->
+<!--   zero results. Provides guidance to retry. -->
+<!-- ═══════════════════════════════════════════ -->
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: HEAD                               -->
+<!-- ═══════════════════════════════════════════ -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="No search results found">
+
   <title>No Results - Antigravity Play</title>
+
+  <!-- main.css: Global design system & base styles -->
   <link rel="stylesheet" href="./css/main.css">
+  <!-- system.css: System/status page styles (centered content, error icons) -->
   <link rel="stylesheet" href="./css/system.css">
 </head>
 <body>
-  <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
-  <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
-    <div class="modal">
-      <div class="modal-header"><h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button></div>
-      <div class="modal-body">Are you sure?</div>
-      <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button class="btn btn-primary confirm-modal-btn">Confirm</button></div>
-    </div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: TOAST NOTIFICATION CONTAINER       -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: CONFIRMATION MODAL                 -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal-header"><h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button></div>
+    <div class="modal-body">Are you sure?</div>
+    <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button class="btn btn-primary confirm-modal-btn">Confirm</button></div>
   </div>
-  <header id="navbar-container" class="navbar-wrapper"></header>
-  <main class="container system-page">
-    <svg class="system-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-    <h1 class="system-title">No Results Found</h1>
-    <p class="system-desc">We couldn't find any results matching your search. Try different keywords, adjust your filters, or browse our categories.</p>
-    <div class="system-actions">
-      <a href="./search.html" class="btn btn-primary">New Search</a>
-      <a href="./index.html" class="btn btn-secondary">Browse Trending</a>
-    </div>
-  </main>
-  <footer id="footer-container" style="margin-top: 100px;"></footer>
-  <script src="./js/mockData.js"></script>
-  <script src="./js/main.js"></script>
-  <script src="./js/components.js"></script>
-  <script src="./js/animations.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      window.Components.injectNavbar();
-      window.Components.injectFooter();
-      window.Animations.initScrollReveal();
-    });
-  </script>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: HEADER / NAVBAR                    -->
+<!-- ═══════════════════════════════════════════ -->
+<header id="navbar-container" class="navbar-wrapper"></header>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: MAIN CONTENT (system-page)         -->
+<!-- ═══════════════════════════════════════════ -->
+<main class="container system-page">
+  <!-- Search icon: magnifying glass (empty search visual) -->
+  <svg class="system-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+  <h1 class="system-title">No Results Found</h1>
+  <p class="system-desc">We couldn't find any results matching your search. Try different keywords, adjust your filters, or browse our categories.</p>
+  <div class="system-actions">
+    <a href="./search.html" class="btn btn-primary">New Search</a>
+    <a href="./index.html" class="btn btn-secondary">Browse Trending</a>
+  </div>
+</main>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: FOOTER                             -->
+<!-- ═══════════════════════════════════════════ -->
+<footer id="footer-container" style="margin-top: 100px;"></footer>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: SCRIPTS                            -->
+<!-- ═══════════════════════════════════════════ -->
+<script src="./js/mockData.js"></script>
+<script src="./js/main.js"></script>
+<script src="./js/components.js"></script>
+<script src="./js/animations.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    window.Components.injectNavbar();
+    window.Components.injectFooter();
+    window.Animations.initScrollReveal();
+  });
+</script>
 </body>
 </html>

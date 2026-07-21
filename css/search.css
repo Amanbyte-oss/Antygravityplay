@@ -1,151 +1,187 @@
-/* --- SEARCH CONTAINER --- */
+/* ═══════════════════════════════════════════════════════════════════════
+   SEARCH PAGE
+   Search layout with header, filter panel, and results grid.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Main search layout container: spacing and entrance animation */
 .search-layout {
-  margin-top: var(--space-3xl);
-  margin-bottom: var(--space-4xl);
-  animation: fadeIn 0.4s var(--ease-relax) forwards;
+  margin-top: var(--space-3xl);     /* 48px top spacing */
+  margin-bottom: var(--space-4xl);  /* 64px bottom spacing */
+  animation: fadeIn 0.4s var(--ease-relax) forwards;  /* Quick fade-in entrance */
 }
 
+/* Search header block: centred, max-width constrained */
 .search-header-box {
-  text-align: center;
-  max-width: 600px;
-  margin: 0 auto var(--space-3xl) auto;
+  text-align: center;                      /* Centre the title and description */
+  max-width: 600px;                        /* Don't stretch too wide */
+  margin: 0 auto var(--space-3xl) auto;    /* Centre horizontally, 48px below */
 }
 
+/* Search page main title */
 .search-page-title {
-  font-size: var(--text-3xl);
-  font-weight: 700;
-  letter-spacing: -1px;
-  margin-bottom: var(--space-md);
+  font-size: var(--text-3xl);      /* 32px */
+  font-weight: 700;                /* Bold */
+  letter-spacing: -1px;            /* Tight tracking for visual impact */
+  margin-bottom: var(--space-md);  /* 12px below */
 }
 
+/* Mobile: reduce title size, adjust grids and filter height */
 @media (max-width: 576px) {
   .search-page-title {
-    font-size: var(--text-xl);
+    font-size: var(--text-xl);     /* 20px on mobile */
   }
   .filter-grid {
-    grid-template-columns: 1fr;
-    gap: var(--space-md);
+    grid-template-columns: 1fr;    /* Single column filters */
+    gap: var(--space-md);          /* 12px gap */
   }
   .results-grid {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: var(--space-md);
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));  /* Smaller cards */
+    gap: var(--space-md);          /* 12px gap */
   }
   .filter-chips-list {
-    max-height: 140px;
+    max-height: 140px;             /* Taller chip area on mobile */
   }
 }
 
+/* Search page description: subtitle below the title */
 .search-page-desc {
-  font-size: var(--text-sm);
-  color: var(--text-secondary);
+  font-size: var(--text-sm);       /* 14px */
+  color: var(--text-secondary);    /* Grey text */
 }
 
-/* --- FILTER SECTION --- */
+/* ═══════════════════════════════════════════════════════════════════════
+   FILTER SECTION
+   Collapsible panel with dropdowns and chip buttons for narrowing results.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Filter panel card: elevated surface with hover shadow */
 .filter-panel {
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-xl);
-  margin-bottom: var(--space-2xl);
-  transition: background-color var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
+  background-color: var(--bg-secondary);         /* Card background */
+  border: 1px solid var(--border);               /* Subtle border */
+  border-radius: var(--radius-lg);               /* 12px rounded corners */
+  padding: var(--space-xl);                      /* 24px internal padding */
+  margin-bottom: var(--space-2xl);               /* 32px below */
+  transition: background-color var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);  /* Smooth hover */
 }
 
+/* Filter panel hover: subtle shadow lift for interactivity cue */
 .filter-panel:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);   /* Soft shadow on hover */
 }
 
+/* Filter grid: auto-fit columns, each filter group is a column */
 .filter-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--space-xl);
+  display: grid;                                 /* Grid layout for filter groups */
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));  /* Responsive columns, min 200px */
+  gap: var(--space-xl);                          /* 24px between columns */
 }
 
+/* Individual filter group: label + control stacked vertically */
 .filter-group {
-  display: flex;
+  display: flex;                  /* Vertical stack */
   flex-direction: column;
-  gap: var(--space-sm);
+  gap: var(--space-sm);           /* 8px between label and control */
 }
 
+/* Filter label: uppercase, small, muted */
 .filter-label {
-  font-size: var(--text-xs);
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  letter-spacing: 0.5px;
+  font-size: var(--text-xs);     /* 12px */
+  font-weight: 700;              /* Bold */
+  text-transform: uppercase;     /* ALL CAPS */
+  color: var(--text-muted);      /* Dim text */
+  letter-spacing: 0.5px;         /* Slight letter-spacing for readability */
 }
 
+/* Filter dropdown/select element */
 .filter-select {
-  width: 100%;
-  height: 38px;
-  padding: 0 var(--space-md);
-  background-color: var(--bg-elevated);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  font-size: var(--text-sm);
-  color: var(--text-primary);
-  cursor: pointer;
-  transition: border-color var(--transition-fast);
+  width: 100%;                          /* Full width */
+  height: 38px;                         /* Standard input height */
+  padding: 0 var(--space-md);           /* 12px horizontal padding */
+  background-color: var(--bg-elevated); /* Elevated background */
+  border: 1px solid var(--border);      /* Subtle border */
+  border-radius: var(--radius-md);      /* 8px rounded */
+  font-size: var(--text-sm);            /* 14px */
+  color: var(--text-primary);           /* White text */
+  cursor: pointer;                      /* Pointer cursor for select */
+  transition: border-color var(--transition-fast);  /* Smooth focus border */
 }
 
+/* Filter select focus: brighter border */
 .filter-select:focus {
-  border-color: var(--text-secondary);
+  border-color: var(--text-secondary);  /* Grey border on focus */
 }
 
+/* Filter chips list: wrapping row of toggleable pill buttons */
 .filter-chips-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-sm);
-  max-height: 100px;
-  overflow-y: auto;
+  display: flex;              /* Horizontal wrapping row */
+  flex-wrap: wrap;            /* Wrap to next line */
+  gap: var(--space-sm);       /* 8px between chips */
+  max-height: 100px;          /* Max height before scroll */
+  overflow-y: auto;           /* Scroll if too many chips */
 }
 
+/* Individual filter chip button: pill-shaped toggle */
 .filter-chip-btn {
-  font-size: var(--text-xs);
-  font-weight: 500;
-  padding: 4px 12px;
-  border-radius: var(--radius-full);
-  background-color: var(--bg-elevated);
-  border: 1px solid var(--border);
-  color: var(--text-secondary);
-  transition: color var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast);
+  font-size: var(--text-xs);         /* 12px */
+  font-weight: 500;                  /* Medium weight */
+  padding: 4px 12px;                 /* Compact padding */
+  border-radius: var(--radius-full); /* Fully pill-shaped */
+  background-color: var(--bg-elevated);  /* Elevated background */
+  border: 1px solid var(--border);       /* Subtle border */
+  color: var(--text-secondary);          /* Grey text when inactive */
+  transition: color var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast);  /* Smooth toggle */
 }
 
+/* Active filter chip: accent background with black text */
 .filter-chip-btn.active {
-  background-color: var(--accent);
-  color: #000000;
-  border-color: var(--accent);
+  background-color: var(--accent);  /* Green accent background */
+  color: #000000;                   /* Black text for contrast */
+  border-color: var(--accent);      /* Match border to background */
 }
 
+/* Light theme: active chip has white text for readability on accent */
 [data-theme="light"] .filter-chip-btn.active {
-  color: #ffffff;
+  color: #ffffff;                   /* White text in light mode */
 }
 
-/* --- RESULTS GRID --- */
+/* ═══════════════════════════════════════════════════════════════════════
+   RESULTS GRID
+   Responsive grid of video cards matching the search/filter criteria.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Results info bar: result count and any sort/filter indicators */
 .results-info {
-  font-size: var(--text-sm);
-  color: var(--text-secondary);
-  margin-bottom: var(--space-lg);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  font-size: var(--text-sm);       /* 14px */
+  color: var(--text-secondary);    /* Grey text */
+  margin-bottom: var(--space-lg);  /* 16px below */
+  display: flex;                   /* Horizontal layout */
+  justify-content: space-between;  /* Count left, controls right */
+  align-items: center;             /* Vertically centre */
 }
 
+/* Results grid: responsive auto-fill grid for video cards */
 .results-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: var(--space-xl);
+  display: grid;                                          /* Grid layout */
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));  /* Auto-fill columns, min 260px */
+  gap: var(--space-xl);                                   /* 24px between cards */
 }
 
-/* --- MATCH HIGHLIGHT --- */
+/* ═══════════════════════════════════════════════════════════════════════
+   MATCH HIGHLIGHT
+   Highlights matching text in search results (like YouTube's yellow highlight).
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Highlighted text in search results: accent background */
 .highlight-text {
-  background-color: rgba(30, 215, 96, 0.3);
-  color: #ffffff;
-  padding: 0 2px;
-  border-radius: 2px;
-  font-weight: 600;
+  background-color: rgba(30, 215, 96, 0.3);  /* Semi-transparent green background */
+  color: #ffffff;                             /* White text */
+  padding: 0 2px;                             /* 2px horizontal padding */
+  border-radius: 2px;                         /* Slightly rounded corners */
+  font-weight: 600;                           /* Semi-bold for emphasis */
 }
 
+/* Light theme highlight: blue-tinted instead of green */
 [data-theme="light"] .highlight-text {
-  background-color: rgba(0, 112, 243, 0.2);
-  color: var(--success);
+  background-color: rgba(0, 112, 243, 0.2);   /* Blue semi-transparent background */
+  color: var(--success);                       /* Blue text */
 }

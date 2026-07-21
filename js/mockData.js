@@ -1,23 +1,50 @@
-// Global mock datasets for offline-compatible local file loading (CORS bypass)
+// ─── Global Mock Datasets ───
+// These datasets provide offline-compatible seed data for local file loading (CORS bypass).
+// window.MOCK_TAGS: Array of tag objects used for categorizing videos
+// window.MOCK_USERS: Array of user credentials for login authentication
+// window.MOCK_VIDEOS: Array of video objects used as default seed data for the database
+
+// ─── MOCK TAGS ───
+// Each tag object has a unique id, display name, color for UI indicators,
+// usageCount for popularity tracking, and a createdDate.
 window.MOCK_TAGS = [
+  // Used in design system tutorial, framework comparison, game engine coding
   {"id": "programming", "name": "Programming", "color": "#0070f3", "usageCount": 3, "createdDate": "2026-06-01"},
+  // Used in framework comparison, travel guide, keyboard unboxing, quantum computing
   {"id": "review", "name": "Review", "color": "#7928ca", "usageCount": 4, "createdDate": "2026-06-02"},
+  // Used in lo-fi session, standup comedy, acoustic blues
   {"id": "live", "name": "Live", "color": "#ff0080", "usageCount": 3, "createdDate": "2026-06-03"},
+  // Used in speedrun, standup comedy, Iceland vlog, gym motivation
   {"id": "highlight", "name": "Highlight", "color": "#ffa42b", "usageCount": 3, "createdDate": "2026-06-04"},
+  // Used in design system, pizza making, HIIT, quantum computing, film BTS, guitar lesson, game engine
   {"id": "tutorial", "name": "Tutorial", "color": "#50e3c2", "usageCount": 6, "createdDate": "2026-06-05"},
+  // Used in Tokyo travel guide, Iceland road trip
   {"id": "vlogging", "name": "Vlogging", "color": "#539df5", "usageCount": 2, "createdDate": "2026-06-06"},
+  // Used in Hollow Knight speedrun, Slay the Spire
   {"id": "gameplay", "name": "Gameplay", "color": "#1db954", "usageCount": 2, "createdDate": "2026-06-07"},
+  // Used in Slay the Spire, indie game first impressions
   {"id": "indie", "name": "Indie", "color": "#f3727f", "usageCount": 2, "createdDate": "2026-06-08"},
+  // Used in lo-fi session, acoustic blues
   {"id": "pop", "name": "Pop", "color": "#e91e63", "usageCount": 2, "createdDate": "2026-06-09"},
+  // Used in lo-fi session, guitar tutorial
   {"id": "rock", "name": "Rock", "color": "#ff5722", "usageCount": 2, "createdDate": "2026-06-10"},
+  // Used in design system, desk setup, film BTS
   {"id": "design", "name": "Design", "color": "#9c27b0", "usageCount": 2, "createdDate": "2026-06-11"},
+  // Used in desk setup, keyboard unboxing
   {"id": "setup", "name": "Setup", "color": "#00bcd4", "usageCount": 2, "createdDate": "2026-06-12"},
+  // Used in Neapolitan pizza, crispy salmon
   {"id": "food", "name": "Food", "color": "#ff9800", "usageCount": 2, "createdDate": "2026-06-13"},
+  // Used in HIIT workout, gym motivation
   {"id": "workout", "name": "Workout", "color": "#4caf50", "usageCount": 2, "createdDate": "2026-06-14"},
+  // Used in Hollow Knight speedrun
   {"id": "speedrun", "name": "Speedrun", "color": "#f44336", "usageCount": 1, "createdDate": "2026-06-15"},
+  // Used in desk setup, keyboard unboxing, secret tech unboxing
   {"id": "unboxing", "name": "Unboxing", "color": "#3f51b5", "usageCount": 2, "createdDate": "2026-06-16"}
 ];
 
+// ─── MOCK USERS ───
+// Default admin credentials for login authentication.
+// Password is stored in plaintext for demo purposes only.
 window.MOCK_USERS = [
   {
     "email": "admin@videoshare.com",
@@ -27,7 +54,12 @@ window.MOCK_USERS = [
   }
 ];
 
+// ─── MOCK VIDEOS ───
+// Array of 21 video objects serving as the default seed data for the application.
+// Each video includes metadata like title, description, URLs, view/like counts,
+// tags, duration, publish date, status (published/draft), and creator name.
 window.MOCK_VIDEOS = [
+  // --- Video 1: Design System Tutorial ---
   {
     "id": "vid-01",
     "title": "Building a Modern Design System from Scratch",
@@ -42,6 +74,7 @@ window.MOCK_VIDEOS = [
     "status": "published",
     "creator": "DesignOps Weekly"
   },
+  // --- Video 2: Lo-Fi Music Session ---
   {
     "id": "vid-02",
     "title": "Midnight Chill Lo-Fi - Acoustic Session",
@@ -56,6 +89,7 @@ window.MOCK_VIDEOS = [
     "status": "published",
     "creator": "Lofi Labs"
   },
+  // --- Video 3: Hollow Knight Speedrun ---
   {
     "id": "vid-03",
     "title": "Hollow Knight Speedrun - World Record Attempt",
@@ -70,6 +104,7 @@ window.MOCK_VIDEOS = [
     "status": "published",
     "creator": "SpeedyBug"
   },
+  // --- Video 4: Framework Comparison ---
   {
     "id": "vid-04",
     "title": "React vs. Vue vs. Svelte: The 2026 Verdict",
@@ -84,6 +119,7 @@ window.MOCK_VIDEOS = [
     "status": "published",
     "creator": "WebDev Frontier"
   },
+  // --- Video 5: Tokyo Travel Guide ---
   {
     "id": "vid-05",
     "title": "Ultimate Tokyo Travel Guide - Hidden Alleyways",
@@ -98,6 +134,7 @@ window.MOCK_VIDEOS = [
     "status": "published",
     "creator": "Roam & Capture"
   },
+  // --- Video 6: Pizza Making Tutorial ---
   {
     "id": "vid-06",
     "title": "Making the Perfect Neapolitan Pizza at Home",
@@ -112,6 +149,7 @@ window.MOCK_VIDEOS = [
     "status": "published",
     "creator": "Kitchen Science"
   },
+  // --- Video 7: HIIT Workout ---
   {
     "id": "vid-07",
     "title": "20-Minute Full Body HIIT - No Equipment",
@@ -126,6 +164,7 @@ window.MOCK_VIDEOS = [
     "status": "published",
     "creator": "Pulse Cardio"
   },
+  // --- Video 8: Standup Comedy ---
   {
     "id": "vid-08",
     "title": "Standup Comedy - The Office Coffee Maker",
@@ -140,6 +179,7 @@ window.MOCK_VIDEOS = [
     "status": "published",
     "creator": "Giggle Factory"
   },
+  // --- Video 9: Quantum Computing Explained ---
   {
     "id": "vid-09",
     "title": "How Quantum Computers Actually Work",
@@ -154,6 +194,7 @@ window.MOCK_VIDEOS = [
     "status": "published",
     "creator": "Deep Dive Science"
   },
+  // --- Video 10: Desk Setup Makeover ---
   {
     "id": "vid-10",
     "title": "Retro Desk Setup Makeover - Minimalist Edition",
@@ -168,6 +209,7 @@ window.MOCK_VIDEOS = [
     "status": "published",
     "creator": "Desk Design Studio"
   },
+  // --- Video 11: Slay the Spire Gameplay ---
   {
     "id": "vid-11",
     "title": "Slay the Spire - A Perfect Silent Run",
@@ -182,6 +224,7 @@ window.MOCK_VIDEOS = [
     "status": "published",
     "creator": "SlayMaster"
   },
+  // --- Video 12: Sci-Fi Film BTS ---
   {
     "id": "vid-12",
     "title": "Behind the Scenes of a Sci-Fi Short Film",
@@ -196,6 +239,7 @@ window.MOCK_VIDEOS = [
     "status": "published",
     "creator": "VFX Lab"
   },
+  // --- Video 13: Guitar Tutorial ---
   {
     "id": "vid-13",
     "title": "Acoustic Fingerstyle Tutorial - Autumn Leaves",
@@ -210,6 +254,7 @@ window.MOCK_VIDEOS = [
     "status": "published",
     "creator": "Guitar Hub"
   },
+  // --- Video 14: Keyboard Unboxing ---
   {
     "id": "vid-14",
     "title": "Unboxing the Ultimate Mechanical Keyboard",
@@ -224,6 +269,7 @@ window.MOCK_VIDEOS = [
     "status": "published",
     "creator": "Switch Enthusiast"
   },
+  // --- Video 15: Iceland Road Trip Vlog ---
   {
     "id": "vid-15",
     "title": "Iceland Road Trip Vlog - 7 Days on the Ring Road",
@@ -238,6 +284,7 @@ window.MOCK_VIDEOS = [
     "status": "published",
     "creator": "Roam & Capture"
   },
+  // --- Video 16: Salmon Cooking Tutorial ---
   {
     "id": "vid-16",
     "title": "Crispy Skin Salmon - Pro Chef Technique",
@@ -252,6 +299,7 @@ window.MOCK_VIDEOS = [
     "status": "published",
     "creator": "Kitchen Science"
   },
+  // --- Video 17: Gym Motivation ---
   {
     "id": "vid-17",
     "title": "Gym Motivation - Breaking Plateaus",
@@ -266,6 +314,7 @@ window.MOCK_VIDEOS = [
     "status": "published",
     "creator": "Pulse Cardio"
   },
+  // --- Video 18: Game Engine Programming ---
   {
     "id": "vid-18",
     "title": "Programming a Game Engine from Scratch in C",
@@ -280,6 +329,7 @@ window.MOCK_VIDEOS = [
     "status": "published",
     "creator": "LowLevelDev"
   },
+  // --- Video 19: Draft - Secret Tech Unboxing ---
   {
     "id": "vid-19",
     "title": "[DRAFT] Secret Tech Unboxing Video",
@@ -294,6 +344,7 @@ window.MOCK_VIDEOS = [
     "status": "draft",
     "creator": "Desk Design Studio"
   },
+  // --- Video 20: Draft - Indie Game First Impressions ---
   {
     "id": "vid-20",
     "title": "[DRAFT] New Indie Game First Impressions",
@@ -308,6 +359,7 @@ window.MOCK_VIDEOS = [
     "status": "draft",
     "creator": "SlayMaster"
   },
+  // --- Video 21: Acoustic Blues Improvisation ---
   {
     "id": "vid-21",
     "title": "Acoustic Blues Improvisation in E",

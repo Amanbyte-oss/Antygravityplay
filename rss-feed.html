@@ -1,61 +1,99 @@
+<!-- ═══════════════════════════════════════════ -->
+<!-- FILE: rss-feed.html                         -->
+<!-- PURPOSE: RSS feed information page          -->
+<!--   explaining how to subscribe to platform   -->
+<!--   updates via RSS reader.                   -->
+<!-- ═══════════════════════════════════════════ -->
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: HEAD                               -->
+<!-- ═══════════════════════════════════════════ -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="RSS feed for Antigravity Play - stay updated with latest videos and content">
+
   <title>RSS Feed - Antigravity Play</title>
+
+  <!-- main.css: Global design system & base styles -->
   <link rel="stylesheet" href="./css/main.css">
+  <!-- legal.css: Legal/info page styles (header, content sections) -->
   <link rel="stylesheet" href="./css/legal.css">
 </head>
 <body>
-  <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
-  <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
-    <div class="modal">
-      <div class="modal-header"><h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button></div>
-      <div class="modal-body">Are you sure?</div>
-      <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button class="btn btn-primary confirm-modal-btn">Confirm</button></div>
-    </div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: TOAST NOTIFICATION CONTAINER       -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: CONFIRMATION MODAL                 -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal-header"><h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button></div>
+    <div class="modal-body">Are you sure?</div>
+    <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button class="btn btn-primary confirm-modal-btn">Confirm</button></div>
   </div>
-  <header id="navbar-container" class="navbar-wrapper"></header>
-  <main class="container legal-page">
-    <div class="legal-header">
-      <h1>RSS Feed</h1>
-      <p class="legal-date">XML Feed Available</p>
-    </div>
-    <div class="legal-content">
-      <section>
-        <h2>What is RSS?</h2>
-        <p>RSS (Really Simple Syndication) allows you to subscribe to Antigravity Play and receive updates when new videos are published. You can use any RSS reader application to stay informed without visiting the website manually.</p>
-      </section>
-      <section>
-        <h2>Our RSS Feed</h2>
-        <p>Subscribe to our RSS feed using the URL below:</p>
-        <p style="background:var(--bg-elevated);padding:var(--space-md);border-radius:var(--radius-md);font-family:var(--font-mono);font-size:var(--text-sm);word-break:break-all;border:1px solid var(--border);margin-top:var(--space-md);">
-          <a href="./rss.xml" style="color:var(--accent);">https://antigravityplay.com/rss.xml</a>
-        </p>
-      </section>
-      <section>
-        <h2>How to Subscribe</h2>
-        <p><strong>1.</strong> Copy the RSS feed URL above.</p>
-        <p><strong>2.</strong> Open your RSS reader application (Feedly, Inoreader, etc.).</p>
-        <p><strong>3.</strong> Paste the URL and subscribe.</p>
-        <p><strong>4.</strong> You will receive automatic updates whenever new content is published.</p>
-      </section>
-    </div>
-  </main>
-  <footer id="footer-container" style="margin-top: 100px;"></footer>
-  <script src="./js/mockData.js"></script>
-  <script src="./js/main.js"></script>
-  <script src="./js/components.js"></script>
-  <script src="./js/animations.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      window.Components.injectNavbar();
-      window.Components.injectFooter();
-      window.Animations.initScrollReveal();
-    });
-  </script>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: HEADER / NAVBAR                    -->
+<!-- ═══════════════════════════════════════════ -->
+<header id="navbar-container" class="navbar-wrapper"></header>
+
+<main class="container legal-page">
+  <div class="legal-header">
+    <h1>RSS Feed</h1>
+    <p class="legal-date">XML Feed Available</p>
+  </div>
+  <div class="legal-content">
+    <section>
+      <h2>What is RSS?</h2>
+      <p>RSS (Really Simple Syndication) allows you to subscribe to Antigravity Play and receive updates when new videos are published. You can use any RSS reader application to stay informed without visiting the website manually.</p>
+    </section>
+    <section>
+      <h2>Our RSS Feed</h2>
+      <p>Subscribe to our RSS feed using the URL below:</p>
+      <p style="background:var(--bg-elevated);padding:var(--space-md);border-radius:var(--radius-md);font-family:var(--font-mono);font-size:var(--text-sm);word-break:break-all;border:1px solid var(--border);margin-top:var(--space-md);">
+        <a href="./rss.xml" style="color:var(--accent);">https://antigravityplay.com/rss.xml</a>
+      </p>
+    </section>
+    <section>
+      <h2>How to Subscribe</h2>
+      <p><strong>1.</strong> Copy the RSS feed URL above.</p>
+      <p><strong>2.</strong> Open your RSS reader application (Feedly, Inoreader, etc.).</p>
+      <p><strong>3.</strong> Paste the URL and subscribe.</p>
+      <p><strong>4.</strong> You will receive automatic updates whenever new content is published.</p>
+    </section>
+  </div>
+</main>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: FOOTER                             -->
+<!-- ═══════════════════════════════════════════ -->
+<footer id="footer-container" style="margin-top: 100px;"></footer>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: SCRIPTS                            -->
+<!-- ═══════════════════════════════════════════ -->
+<script src="./js/mockData.js"></script>
+<script src="./js/main.js"></script>
+<script src="./js/components.js"></script>
+<script src="./js/animations.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    window.Components.injectNavbar();
+    window.Components.injectFooter();
+    window.Animations.initScrollReveal();
+  });
+</script>
 </body>
 </html>

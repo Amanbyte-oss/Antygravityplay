@@ -1,4 +1,13 @@
+<!-- ═══════════════════════════════════════════ -->
+<!-- FILE: video-card.html                      -->
+<!-- PURPOSE: Video card template with lazy-    -->
+<!--   loaded thumbnail, duration badge, play   -->
+<!--   overlay, title, creator, views & date.   -->
+<!-- ═══════════════════════════════════════════ -->
+
+<!-- ─── Individual video card — data populated via template ─── -->
 <article class="video-card reveal-on-scroll" data-video-id="{{video.id}}">
+  <!-- Thumbnail with lazy loading, duration badge, hover play button -->
   <div class="thumbnail-container">
     <img class="lazy" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9'%3E%3Crect width='100%25' height='100%25' fill='%231f1f1f'/%3E%3C/svg%3E" data-src="{{video.thumbnail}}" alt="{{video.title}} Preview">
     <span class="duration-badge">{{video.duration}}</span>
@@ -8,6 +17,7 @@
       </svg>
     </button>
   </div>
+  <!-- Video metadata: title, creator, view count, publish date -->
   <div class="video-info">
     <h3 class="video-title">{{video.title}}</h3>
     <div class="video-meta">

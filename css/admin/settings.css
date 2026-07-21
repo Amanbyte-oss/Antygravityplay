@@ -1,3 +1,4 @@
+/* --- SETTINGS CARD: wrapper for each settings section (Profile, Appearance, etc.) --- */
 .settings-card {
   background-color: var(--bg-secondary);
   border: 1px solid var(--border);
@@ -8,11 +9,13 @@
   transition: box-shadow 0.2s, border-color 0.2s;
 }
 
+/* --- HOVER: subtle elevation on settings card --- */
 .settings-card:hover {
   box-shadow: var(--shadow-md);
   border-color: var(--text-muted);
 }
 
+/* --- SECTION TITLE: heading with accent left bar for each settings group --- */
 .settings-section-title {
   font-size: var(--text-lg);
   font-weight: 600;
@@ -24,6 +27,7 @@
   gap: var(--space-sm);
 }
 
+/* --- ACCENT BAR: 3px colored line before section title --- */
 .settings-section-title::before {
   content: '';
   display: inline-block;
@@ -34,6 +38,7 @@
   flex-shrink: 0;
 }
 
+/* --- SETTINGS ROW: individual setting with label on left, control on right --- */
 .settings-row {
   display: flex;
   align-items: center;
@@ -48,10 +53,12 @@
   margin: 0 calc(-1 * var(--space-sm));
 }
 
+/* --- HOVER: subtle background highlight on row --- */
 .settings-row:hover {
   background-color: var(--bg-elevated);
 }
 
+/* --- MOBILE: stack label and control vertically --- */
 @media (max-width: 576px) {
   .settings-row {
     flex-direction: column;
@@ -61,34 +68,41 @@
   }
 }
 
+/* --- REMOVE border from last row to avoid double line --- */
 .settings-row:last-child {
   border-bottom: none;
 }
 
+/* --- LABEL GROUP: title + description stacked vertically --- */
 .settings-row-label {
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
 
+/* --- SETTING TITLE: name of the setting --- */
 .settings-row-title {
   font-size: var(--text-sm);
   font-weight: 500;
 }
 
+/* --- SETTING DESCRIPTION: helper text explaining the option --- */
 .settings-row-desc {
   font-size: var(--text-xs);
   color: var(--text-muted);
 }
 
+/* --- CONTROL WRAPPER: the input/switch/button side --- */
 .settings-row-control {
   flex-shrink: 0;
 }
 
+/* --- FORM GROUP: spacing wrapper around label + input --- */
 .form-group {
   margin-bottom: var(--space-lg);
 }
 
+/* --- FORM LABEL: block label above input fields --- */
 .form-label {
   display: block;
   font-size: var(--text-sm);
@@ -97,6 +111,7 @@
   color: var(--text-primary);
 }
 
+/* --- TEXT INPUT: standard admin form text field --- */
 .form-input-field {
   width: 100%;
   height: 42px;
@@ -110,12 +125,14 @@
   box-sizing: border-box;
 }
 
+/* --- FOCUS: accent ring on text input --- */
 .form-input-field:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
   outline: none;
 }
 
+/* --- TEXTAREA: multi-line input for bio, description, etc. --- */
 .textarea-field {
   width: 100%;
   min-height: 80px;
@@ -131,12 +148,14 @@
   font-family: var(--font-sans);
 }
 
+/* --- FOCUS: accent ring on textarea --- */
 .textarea-field:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
   outline: none;
 }
 
+/* --- AVATAR UPLOAD ROW: preview circle + upload button side by side --- */
 .avatar-upload {
   display: flex;
   align-items: center;
@@ -144,6 +163,7 @@
   margin-bottom: var(--space-xl);
 }
 
+/* --- AVATAR CIRCLE: round preview container for profile photo --- */
 .avatar-circle {
   width: 80px;
   height: 80px;
@@ -159,22 +179,26 @@
   transition: border-color var(--transition-fast);
 }
 
+/* --- HOVER: accent border on avatar --- */
 .avatar-circle:hover {
   border-color: var(--accent);
 }
 
+/* --- AVATAR IMAGE: fills the circle container --- */
 .avatar-circle img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
+/* --- PLACEHOLDER: initials or icon when no image is set --- */
 .avatar-circle .avatar-placeholder {
   font-size: var(--text-2xl);
   font-weight: 600;
   color: var(--text-muted);
 }
 
+/* --- OVERLAY: dark semi-transparent "Change Photo" label on hover --- */
 .avatar-circle .avatar-overlay {
   position: absolute;
   inset: 0;
@@ -188,10 +212,12 @@
   transition: opacity var(--transition-fast);
 }
 
+/* --- SHOW OVERLAY on avatar hover --- */
 .avatar-circle:hover .avatar-overlay {
   opacity: 1;
 }
 
+/* --- PASSWORD STRENGTH METER: bar + label below password field --- */
 .password-strength {
   display: flex;
   gap: var(--space-xs);
@@ -199,6 +225,7 @@
   align-items: center;
 }
 
+/* --- BACKGROUND TRACK: gray bar behind fill --- */
 .strength-bar {
   flex: 1;
   height: 4px;
@@ -207,27 +234,32 @@
   overflow: hidden;
 }
 
+/* --- FILL: animated colored segment indicating strength level --- */
 .strength-bar-fill {
   height: 100%;
   border-radius: var(--radius-full);
   transition: width 0.3s, background-color 0.3s;
 }
 
+/* --- WEAK: red, 33% wide --- */
 .strength-bar-fill.weak {
   width: 33%;
   background-color: var(--error);
 }
 
+/* --- MEDIUM: amber, 66% wide --- */
 .strength-bar-fill.medium {
   width: 66%;
   background-color: var(--warning);
 }
 
+/* --- STRONG: green, full width --- */
 .strength-bar-fill.strong {
   width: 100%;
   background-color: var(--success);
 }
 
+/* --- TEXT LABEL next to the strength bar --- */
 .strength-label {
   font-size: var(--text-xs);
   font-weight: 500;
@@ -235,10 +267,12 @@
   text-align: right;
 }
 
+/* --- COLOR-CODED TEXT for each strength level --- */
 .strength-label.weak { color: var(--error); }
 .strength-label.medium { color: var(--warning); }
 .strength-label.strong { color: var(--success); }
 
+/* --- THEME RADIO GROUP: row of selectable theme preview cards --- */
 .theme-radio-group {
   display: flex;
   gap: var(--space-lg);
@@ -246,6 +280,7 @@
   justify-content: center;
 }
 
+/* --- MOBILE: smaller theme cards on narrow screens --- */
 @media (max-width: 480px) {
   .theme-radio-card {
     min-width: 80px;
@@ -253,6 +288,7 @@
   }
 }
 
+/* --- THEME CARD: visual preview + label for Dark/Light/System --- */
 .theme-radio-card {
   display: flex;
   flex-direction: column;
@@ -266,18 +302,22 @@
   min-width: 100px;
 }
 
+/* --- HOVER: slightly lighter border --- */
 .theme-radio-card:hover {
   border-color: var(--text-muted);
 }
 
+/* --- SELECTED: accent border for chosen theme --- */
 .theme-radio-card.selected {
   border-color: var(--accent);
 }
 
+/* --- HIDE native radio input; card acts as label --- */
 .theme-radio-card input[type="radio"] {
   display: none;
 }
 
+/* --- THEME PREVIEW: small visual mockup of the theme colors --- */
 .theme-preview {
   width: 60px;
   height: 40px;
@@ -286,24 +326,29 @@
   overflow: hidden;
 }
 
+/* --- DARK MODE preview: two dark gray tones --- */
 .theme-preview-dark {
   background: linear-gradient(135deg, #121212 50%, #1f1f1f 50%);
 }
 
+/* --- LIGHT MODE preview: two light tones --- */
 .theme-preview-light {
   background: linear-gradient(135deg, #fafafa 50%, #ffffff 50%);
 }
 
+/* --- SYSTEM preview: dark/light split showing both --- */
 .theme-preview-system {
   background: linear-gradient(135deg, #121212 25%, #1f1f1f 25%, #fafafa 75%, #ffffff 75%);
 }
 
+/* --- ACCENT COLOR SWATCHES: row of color circles --- */
 .accent-swatches {
   display: flex;
   gap: var(--space-sm);
   flex-wrap: wrap;
 }
 
+/* --- INDIVIDUAL SWATCH: clickable color circle --- */
 .accent-swatch {
   width: 32px;
   height: 32px;
@@ -313,20 +358,24 @@
   transition: border-color var(--transition-fast), transform var(--transition-fast);
 }
 
+/* --- HOVER: enlarge swatch slightly --- */
 .accent-swatch:hover {
   transform: scale(1.2);
 }
 
+/* --- SELECTED: primary border + scale to indicate active state --- */
 .accent-swatch.selected {
   border-color: var(--text-primary);
   transform: scale(1.2);
 }
 
+/* --- FONT SIZE SLIDER: range input for text scaling --- */
 .font-size-slider {
   width: 200px;
   accent-color: var(--accent);
 }
 
+/* --- DANGER ZONE: red-bordered section for destructive actions --- */
 .danger-zone {
   border: 1px solid var(--error);
   border-radius: var(--radius-xl);
@@ -334,11 +383,13 @@
   background-color: rgba(238, 0, 0, 0.03);
 }
 
+/* --- DANGER ZONE TITLE: override accent bar to red --- */
 .danger-zone .settings-section-title {
   color: var(--error);
   border-bottom-color: var(--error);
 }
 
+/* --- CONFIRM DELETE INPUT: text field requiring typed confirmation --- */
 .confirm-delete-input {
   width: 100%;
   height: 42px;
@@ -351,20 +402,22 @@
   margin-top: var(--space-md);
 }
 
+/* --- FOCUS: red ring for confirmation input to signal danger --- */
 .confirm-delete-input:focus {
   border-color: var(--error);
 }
 
-/* Override tabs for settings */
+/* --- SETTINGS TABS OVERRIDE: extra spacing below settings tabs nav --- */
 .settings-tabs .tabs-nav {
   margin-bottom: var(--space-2xl);
 }
 
-/* Tabs Component */
+/* --- TABS CONTAINER: base wrapper for tab navigation and panels --- */
 .tabs-container {
   width: 100%;
 }
 
+/* --- TAB NAV: horizontal row of clickable tab labels --- */
 .tabs-nav {
   display: flex;
   gap: var(--space-xs);
@@ -373,6 +426,7 @@
   overflow-x: auto;
 }
 
+/* --- SINGLE TAB: clickable tab label with bottom-border transition --- */
 .tabs-tab {
   padding: var(--space-sm) var(--space-xl);
   font-size: var(--text-sm);
@@ -385,20 +439,24 @@
   cursor: pointer;
 }
 
+/* --- HOVER: brighter text color --- */
 .tabs-tab:hover {
   color: var(--text-primary);
 }
 
+/* --- ACTIVE: accent bottom border + bold weight --- */
 .tabs-tab.active {
   color: var(--accent);
   border-bottom-color: var(--accent);
   font-weight: 600;
 }
 
+/* --- PANELS WRAPPER: container for all tab content sections --- */
 .tabs-panels {
   margin-top: var(--space-xl);
 }
 
+/* --- INDIVIDUAL PANEL: hidden by default, shown when active --- */
 .tabs-panel {
   display: none;
   animation: fadeIn var(--transition-base) forwards;
@@ -408,30 +466,36 @@
   display: block;
 }
 
+/* --- UTILITY BUTTONS: import/export/clear — small size --- */
 #import-btn, #clear-all-btn, .import-btn, .export-all-btn {
   padding: var(--space-xs) var(--space-md) !important;
   font-size: var(--text-xs) !important;
 }
 
+/* --- CLEAR ALL: danger-styled button --- */
 #clear-all-btn {
   color: var(--error) !important;
   border-color: var(--error) !important;
 }
 
+/* --- IMPORT: ensure pointer cursor for file input labe --- */
 .import-btn {
   cursor: pointer !important;
 }
 
+/* --- DANGER PROCEED: destructive action button (red) --- */
 #danger-proceed-btn {
   background-color: var(--error) !important;
   color: #fff !important;
 }
 
+/* --- DISABLED: dimmed state when confirmation text doesn't match --- */
 #danger-proceed-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
+/* --- TOGGLE SWITCH: on/off slider for binary settings --- */
 .toggle-switch {
   position: relative;
   display: inline-block;
@@ -439,12 +503,14 @@
   height: 24px;
 }
 
+/* --- HIDE native checkbox; toggle-slider acts as visual --- */
 .toggle-switch input {
   opacity: 0;
   width: 0;
   height: 0;
 }
 
+/* --- SLIDER BACKGROUND: gray track with rounded ends --- */
 .toggle-slider {
   position: absolute;
   cursor: pointer;
@@ -458,6 +524,7 @@
   border-radius: var(--radius-full);
 }
 
+/* --- SLIDER KNOB: circular handle that slides left/right --- */
 .toggle-slider:before {
   position: absolute;
   content: "";
@@ -470,16 +537,19 @@
   border-radius: 50%;
 }
 
+/* --- CHECKED: accent background when toggle is on --- */
 .toggle-switch input:checked + .toggle-slider {
   background-color: var(--accent);
   border-color: var(--accent);
 }
 
+/* --- KNOB SLIDE: move knob to right when checked --- */
 .toggle-switch input:checked + .toggle-slider:before {
   transform: translateX(20px);
   background-color: #000;
 }
 
+/* --- LIGHT THEME: white knob on accent background --- */
 [data-theme="light"] .toggle-switch input:checked + .toggle-slider:before {
   background-color: #fff;
 }

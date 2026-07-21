@@ -1,319 +1,377 @@
+<!-- ═══════════════════════════════════════════ -->
+<!-- FILE: watch.html                            -->
+<!-- PURPOSE: Video watch page — custom video    -->
+<!--   player with glassmorphism controls,       -->
+<!--   emoji reactions, video details, related   -->
+<!--   videos sidebar, and sticky now-playing    -->
+<!--   mini player bar.                          -->
+<!-- ═══════════════════════════════════════════ -->
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: HEAD                               -->
+<!-- ═══════════════════════════════════════════ -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Watch high-quality streaming videos, view descriptions, and explore related suggestions on Antigravity Play.">
+
   <title>Watch Video - Antigravity Play</title>
+
+  <!-- main.css: Global design system & base styles -->
   <link rel="stylesheet" href="./css/main.css">
+  <!-- watch.css: Watch page styles — player layout, controls overlay,
+       sidebar, now-playing bar, emoji reactions, progress bars -->
   <link rel="stylesheet" href="./css/watch.css">
 </head>
 <body>
 
-  <!-- Toast Notification Container -->
-  <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: TOAST NOTIFICATION CONTAINER       -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
 
-  <!-- Reusable Confirmation Modal Container -->
-  <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
-    <div class="modal">
-      <div class="modal-header">
-        <h3 class="modal-title">Confirm Action</h3>
-        <button class="modal-close" aria-label="Close dialog">&times;</button>
-      </div>
-      <div class="modal-body">Are you sure?</div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary cancel-modal-btn">Cancel</button>
-        <button class="btn btn-primary confirm-modal-btn">Confirm</button>
-      </div>
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: CONFIRMATION MODAL                 -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">Confirm Action</h3>
+      <button class="modal-close" aria-label="Close dialog">&times;</button>
+    </div>
+    <div class="modal-body">Are you sure?</div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary cancel-modal-btn">Cancel</button>
+      <button class="btn btn-primary confirm-modal-btn">Confirm</button>
     </div>
   </div>
+</div>
 
-  <!-- Navbar injected here -->
-  <header id="navbar-container" class="navbar-wrapper"></header>
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: HEADER / NAVBAR                    -->
+<!-- ═══════════════════════════════════════════ -->
+<header id="navbar-container" class="navbar-wrapper"></header>
 
-  <main class="container">
-    <div style="padding-top: var(--space-xl); margin-bottom: var(--space-lg);">
-      <a href="#" onclick="history.back(); return false;" style="display:inline-flex; align-items:center; gap:4px; font-size:var(--text-xs); color:var(--text-muted);">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
-        Back
-      </a>
-    </div>
-    <div class="watch-grid">
-      
-      <!-- Left Column: Video Player & Details -->
-      <section aria-label="Video Player Area">
-        <div class="player-container" id="player-container">
-          <div id="player-embed-placeholder" style="display:none; width:100%; height:100%;"></div>
-          <video id="main-video-player" preload="metadata" crossorigin="anonymous" style="display:none;">
-            Your browser does not support HTML5 video streaming.
-          </video>
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: MAIN CONTENT                       -->
+<!-- ═══════════════════════════════════════════ -->
+<main class="container">
+  <!-- Back navigation link -->
+  <div style="padding-top: var(--space-xl); margin-bottom: var(--space-lg);">
+    <a href="#" onclick="history.back(); return false;" style="display:inline-flex; align-items:center; gap:4px; font-size:var(--text-xs); color:var(--text-muted);">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      Back
+    </a>
+  </div>
 
-          <!-- Custom Player Overlay (hidden by default, shown by JS for native video) -->
-          <div class="player-overlay" id="player-overlay" style="display:none;">
-            <div class="player-gradient-top"></div>
-            <div class="player-gradient-bottom"></div>
+  <!-- Two-column grid: left = player + details, right = sidebar -->
+  <div class="watch-grid">
 
-            <!-- Center big play button -->
-            <button class="player-center-play" id="player-center-play" aria-label="Play">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor"><polygon points="8,5 19,12 8,19"></polygon></svg>
-            </button>
+    <!-- ═══════════════════════════════════════ -->
+    <!-- LEFT COLUMN: VIDEO PLAYER & DETAILS     -->
+    <!-- ═══════════════════════════════════════ -->
+    <section aria-label="Video Player Area">
+      <!-- Main player container: holds native video, embed placeholder,
+           custom overlay, and loading state -->
+      <div class="player-container" id="player-container">
+        <!-- Embed placeholder for YouTube/Vimeo iframes -->
+        <div id="player-embed-placeholder" style="display:none; width:100%; height:100%;"></div>
+        <!-- Native HTML5 video element (hidden initially, shown for local videos) -->
+        <video id="main-video-player" preload="metadata" crossorigin="anonymous" style="display:none;">
+          Your browser does not support HTML5 video streaming.
+        </video>
 
-            <!-- Double-tap seek zones (mobile) -->
-            <div class="player-dtap-left" id="player-dtap-left"></div>
-            <div class="player-dtap-right" id="player-dtap-right"></div>
+        <!-- Custom Player Overlay (glassmorphism controls) — shown by JS for native video -->
+        <div class="player-overlay" id="player-overlay" style="display:none;">
+          <div class="player-gradient-top"></div>
+          <div class="player-gradient-bottom"></div>
 
-            <!-- Seek indicator animations -->
-            <div class="player-seek-indicator" id="player-seek-indicator" style="display:none;">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <polyline points="15 18 9 12 15 6"></polyline>
-              </svg>
-              <span id="player-seek-text">10s</span>
-            </div>
+          <!-- Center big play button (shown when paused) -->
+          <button class="player-center-play" id="player-center-play" aria-label="Play">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor"><polygon points="8,5 19,12 8,19"></polygon></svg>
+          </button>
 
-            <!-- Emoji Reactions Bar -->
-            <div class="player-emoji-bar" id="player-emoji-bar">
-              <button class="emoji-btn" data-emoji="🔥">🔥<span class="emoji-count">0</span></button>
-              <button class="emoji-btn" data-emoji="❤️">❤️<span class="emoji-count">0</span></button>
-              <button class="emoji-btn" data-emoji="😂">😂<span class="emoji-count">0</span></button>
-              <button class="emoji-btn" data-emoji="😲">😲<span class="emoji-count">0</span></button>
-              <button class="emoji-btn" data-emoji="🎉">🎉<span class="emoji-count">0</span></button>
-              <button class="emoji-btn" data-emoji="👍">👍<span class="emoji-count">0</span></button>
-            </div>
+          <!-- Double-tap seek zones (left = rewind, right = forward) on mobile -->
+          <div class="player-dtap-left" id="player-dtap-left"></div>
+          <div class="player-dtap-right" id="player-dtap-right"></div>
 
-            <!-- Bottom Controls -->
-            <div class="player-bottom" id="player-bottom">
-              <div class="player-progress" id="player-progress">
-                <div class="player-progress-track" id="player-progress-track">
-                  <div class="player-progress-buffered" id="player-progress-buffered"></div>
-                  <div class="player-progress-fill" id="player-progress-fill"></div>
-                  <div class="player-progress-thumb" id="player-progress-thumb"></div>
-                </div>
-                <div class="player-preview" id="player-preview" style="display:none;">
-                  <span class="player-preview-time" id="player-preview-time">0:00</span>
-                </div>
+          <!-- Seek indicator animation overlay -->
+          <div class="player-seek-indicator" id="player-seek-indicator" style="display:none;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+            <span id="player-seek-text">10s</span>
+          </div>
+
+          <!-- Emoji Reactions Bar: floating reaction buttons -->
+          <div class="player-emoji-bar" id="player-emoji-bar">
+            <button class="emoji-btn" data-emoji="🔥">🔥<span class="emoji-count">0</span></button>
+            <button class="emoji-btn" data-emoji="❤️">❤️<span class="emoji-count">0</span></button>
+            <button class="emoji-btn" data-emoji="😂">😂<span class="emoji-count">0</span></button>
+            <button class="emoji-btn" data-emoji="😲">😲<span class="emoji-count">0</span></button>
+            <button class="emoji-btn" data-emoji="🎉">🎉<span class="emoji-count">0</span></button>
+            <button class="emoji-btn" data-emoji="👍">👍<span class="emoji-count">0</span></button>
+          </div>
+
+          <!-- Bottom Controls: progress bar + control buttons -->
+          <div class="player-bottom" id="player-bottom">
+            <!-- Progress/scrub bar with buffered indicator -->
+            <div class="player-progress" id="player-progress">
+              <div class="player-progress-track" id="player-progress-track">
+                <div class="player-progress-buffered" id="player-progress-buffered"></div>
+                <div class="player-progress-fill" id="player-progress-fill"></div>
+                <div class="player-progress-thumb" id="player-progress-thumb"></div>
               </div>
-
-              <div class="player-controls">
-                <div class="player-controls-left">
-                  <button class="player-btn" id="player-play-btn" aria-label="Play">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="8,5 19,12 8,19"></polygon></svg>
-                  </button>
-                  <button class="player-btn" id="player-rewind-btn" aria-label="Rewind 10s">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                      <polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
-                    </svg>
-                  </button>
-                  <button class="player-btn" id="player-forward-btn" aria-label="Forward 10s">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                      <polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
-                    </svg>
-                  </button>
-                  <span class="player-time" id="player-time-current">0:00</span>
-                  <span class="player-time-sep">/</span>
-                  <span class="player-time" id="player-time-total">0:00</span>
-                </div>
-
-                <div class="player-controls-right">
-                  <div class="player-volume-wrap" id="player-volume-wrap">
-                    <button class="player-btn" id="player-mute-btn" aria-label="Mute">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                      </svg>
-                    </button>
-                    <div class="player-volume-slider" id="player-volume-slider">
-                      <div class="player-volume-track" id="player-volume-track">
-                        <div class="player-volume-fill" id="player-volume-fill"></div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="player-speed-wrap">
-                    <button class="player-btn player-speed-btn" id="player-speed-btn">1x</button>
-                    <div class="player-speed-menu" id="player-speed-menu" style="display:none;">
-                      <button data-speed="0.25">0.25x</button>
-                      <button data-speed="0.5">0.5x</button>
-                      <button data-speed="0.75">0.75x</button>
-                      <button data-speed="1" class="active">Normal</button>
-                      <button data-speed="1.25">1.25x</button>
-                      <button data-speed="1.5">1.5x</button>
-                      <button data-speed="2">2x</button>
-                    </div>
-                  </div>
-
-                  <button class="player-btn" id="player-theater-btn" aria-label="Theater mode">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line>
-                    </svg>
-                  </button>
-
-                  <button class="player-btn" id="player-pip-btn" aria-label="Picture in Picture">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><rect x="11" y="9" width="8" height="5" rx="1"></rect>
-                    </svg>
-                  </button>
-
-                  <button class="player-btn" id="player-fullscreen-btn" aria-label="Fullscreen">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
-                    </svg>
-                  </button>
-                </div>
+              <!-- Hover preview tooltip for time scrubbing -->
+              <div class="player-preview" id="player-preview" style="display:none;">
+                <span class="player-preview-time" id="player-preview-time">0:00</span>
               </div>
             </div>
 
-            <!-- Error overlay -->
-            <div class="player-error" id="player-error" style="display:none;">
-              <div class="player-error-content">
-                <div class="player-error-icon">
-                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line>
+            <div class="player-controls">
+              <!-- Left controls: play/pause, rewind, forward, time display -->
+              <div class="player-controls-left">
+                <button class="player-btn" id="player-play-btn" aria-label="Play">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="8,5 19,12 8,19"></polygon></svg>
+                </button>
+                <button class="player-btn" id="player-rewind-btn" aria-label="Rewind 10s">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
                   </svg>
+                </button>
+                <button class="player-btn" id="player-forward-btn" aria-label="Forward 10s">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                  </svg>
+                </button>
+                <span class="player-time" id="player-time-current">0:00</span>
+                <span class="player-time-sep">/</span>
+                <span class="player-time" id="player-time-total">0:00</span>
+              </div>
+
+              <!-- Right controls: volume, speed, theater, PiP, fullscreen -->
+              <div class="player-controls-right">
+                <!-- Volume slider with mute toggle -->
+                <div class="player-volume-wrap" id="player-volume-wrap">
+                  <button class="player-btn" id="player-mute-btn" aria-label="Mute">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                    </svg>
+                  </button>
+                  <div class="player-volume-slider" id="player-volume-slider">
+                    <div class="player-volume-track" id="player-volume-track">
+                      <div class="player-volume-fill" id="player-volume-fill"></div>
+                    </div>
+                  </div>
                 </div>
-                <h3 class="player-error-title">Playback Error</h3>
-                <p class="player-error-msg">The video failed to load. This might be due to a network issue or an unsupported format.</p>
-                <button class="player-error-retry" id="player-error-retry">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
-                  Retry
-                </button>
-              </div>
-            </div>
 
-            <!-- End Screen (Discovery) -->
-            <div class="player-endscreen" id="player-endscreen" style="display:none;">
-              <div class="player-endscreen-content">
-                <h3 class="endscreen-title">Up Next</h3>
-                <div id="player-end-related"></div>
-                <button class="player-replay-btn" id="player-replay-btn">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
-                  Replay
+                <!-- Playback speed selector dropdown -->
+                <div class="player-speed-wrap">
+                  <button class="player-btn player-speed-btn" id="player-speed-btn">1x</button>
+                  <div class="player-speed-menu" id="player-speed-menu" style="display:none;">
+                    <button data-speed="0.25">0.25x</button>
+                    <button data-speed="0.5">0.5x</button>
+                    <button data-speed="0.75">0.75x</button>
+                    <button data-speed="1" class="active">Normal</button>
+                    <button data-speed="1.25">1.25x</button>
+                    <button data-speed="1.5">1.5x</button>
+                    <button data-speed="2">2x</button>
+                  </div>
+                </div>
+
+                <button class="player-btn" id="player-theater-btn" aria-label="Theater mode">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line>
+                  </svg>
+                </button>
+
+                <button class="player-btn" id="player-pip-btn" aria-label="Picture in Picture">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><rect x="11" y="9" width="8" height="5" rx="1"></rect>
+                  </svg>
+                </button>
+
+                <button class="player-btn" id="player-fullscreen-btn" aria-label="Fullscreen">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+                  </svg>
                 </button>
               </div>
             </div>
           </div>
 
-          <div id="player-loading" class="player-loading" style="display:none;">
-            <div class="loader-spinner"></div>
-            <span>Loading video...</span>
-          </div>
-        </div>
-
-        <div class="video-watch-details">
-          <h1 id="watch-title" class="watch-title">Video Title Loading...</h1>
-          
-          <div class="watch-actions-row">
-            <div class="watch-meta-text">
-              <span id="watch-views-count">0</span> views &bull; 
-              Uploaded on <span id="watch-publish-date">YYYY-MM-DD</span>
-            </div>
-            
-            <div class="watch-actions">
-              <button class="like-btn" id="watch-like-btn" aria-label="Like this video">
-                <svg width="18" height="18" viewBox="0 0 24 24">
-                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
+          <!-- Error overlay (hidden by default, shown on playback failure) -->
+          <div class="player-error" id="player-error" style="display:none;">
+            <div class="player-error-content">
+              <div class="player-error-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line>
                 </svg>
-                <span id="watch-like-count">0</span>
+              </div>
+              <h3 class="player-error-title">Playback Error</h3>
+              <p class="player-error-msg">The video failed to load. This might be due to a network issue or an unsupported format.</p>
+              <button class="player-error-retry" id="player-error-retry">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+                Retry
+              </button>
+            </div>
+          </div>
+
+          <!-- End screen (shown after video ends): up next suggestions + replay -->
+          <div class="player-endscreen" id="player-endscreen" style="display:none;">
+            <div class="player-endscreen-content">
+              <h3 class="endscreen-title">Up Next</h3>
+              <div id="player-end-related"></div>
+              <button class="player-replay-btn" id="player-replay-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+                Replay
               </button>
             </div>
           </div>
         </div>
 
-        <div class="video-description-box">
-          <div class="creator-profile">
-            <div class="creator-avatar" id="creator-avatar-letter">A</div>
-            <div class="creator-info">
-              <h3 id="creator-name">Creator Studio</h3>
-              <p>Verified Creator</p>
-            </div>
+        <!-- Loading spinner shown while video is buffering -->
+        <div id="player-loading" class="player-loading" style="display:none;">
+          <div class="loader-spinner"></div>
+          <span>Loading video...</span>
+        </div>
+      </div>
+
+      <!-- Video metadata: title, views, publish date, like button -->
+      <div class="video-watch-details">
+        <h1 id="watch-title" class="watch-title">Video Title Loading...</h1>
+
+        <div class="watch-actions-row">
+          <div class="watch-meta-text">
+            <span id="watch-views-count">0</span> views &bull;
+            Uploaded on <span id="watch-publish-date">YYYY-MM-DD</span>
           </div>
-          <p id="watch-description" class="description-text">Description Loading...</p>
-          <div id="watch-tags-row" class="tags-row"></div>
-        </div>
-      </section>
 
-      <!-- Right Column: Related Videos -->
-      <aside class="watch-sidebar" aria-labelledby="sidebar-heading">
-        <h2 id="sidebar-heading" class="sidebar-title">Up Next</h2>
-        <div id="related-videos-container" style="display:flex; flex-direction:column; gap: var(--space-lg);">
-          <!-- Related video items injected here -->
+          <div class="watch-actions">
+            <button class="like-btn" id="watch-like-btn" aria-label="Like this video">
+              <svg width="18" height="18" viewBox="0 0 24 24">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
+              </svg>
+              <span id="watch-like-count">0</span>
+            </button>
+          </div>
         </div>
-      </aside>
+      </div>
 
+      <!-- Video description box with creator profile and tags -->
+      <div class="video-description-box">
+        <div class="creator-profile">
+          <div class="creator-avatar" id="creator-avatar-letter">A</div>
+          <div class="creator-info">
+            <h3 id="creator-name">Creator Studio</h3>
+            <p>Verified Creator</p>
+          </div>
+        </div>
+        <p id="watch-description" class="description-text">Description Loading...</p>
+        <div id="watch-tags-row" class="tags-row"></div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- RIGHT COLUMN: RELATED VIDEOS SIDEBAR   -->
+    <!-- ═══════════════════════════════════════ -->
+    <aside class="watch-sidebar" aria-labelledby="sidebar-heading">
+      <h2 id="sidebar-heading" class="sidebar-title">Up Next</h2>
+      <div id="related-videos-container" style="display:flex; flex-direction:column; gap: var(--space-lg);">
+        <!-- Related video items injected here via watch.js -->
+      </div>
+    </aside>
+
+  </div>
+</main>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: NOW PLAYING BAR (mini player)      -->
+<!-- ═══════════════════════════════════════════ -->
+<!-- Sticky bottom mini-player (Spotify-style) shown when navigating
+     away from the watch page while video continues playing -->
+<section class="now-playing-bar-wrapper" id="now-playing-bar" aria-label="Now Playing Mini Controller">
+
+  <!-- Left: thumbnail, title, creator, like -->
+  <div class="now-playing-left">
+    <div class="now-playing-thumb">
+      <img id="np-thumb" src="" alt="Thumbnail">
     </div>
-  </main>
+    <div class="now-playing-info">
+      <span class="now-playing-title" id="np-title">Title</span>
+      <span class="now-playing-creator" id="np-creator">Creator</span>
+    </div>
+    <button class="like-btn" id="np-heart" aria-label="Like video" style="background:none; border:none; padding:4px;">
+      <svg width="18" height="18" viewBox="0 0 24 24">
+        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
+      </svg>
+    </button>
+  </div>
 
-  <!-- Sticky Bottom Now Playing Drawer (Spotify style) -->
-  <section class="now-playing-bar-wrapper" id="now-playing-bar" aria-label="Now Playing Mini Controller">
-    
-    <!-- Mini Player details -->
-    <div class="now-playing-left">
-      <div class="now-playing-thumb">
-        <img id="np-thumb" src="" alt="Thumbnail">
-      </div>
-      <div class="now-playing-info">
-        <span class="now-playing-title" id="np-title">Title</span>
-        <span class="now-playing-creator" id="np-creator">Creator</span>
-      </div>
-      <button class="like-btn" id="np-heart" aria-label="Like video" style="background:none; border:none; padding:4px;">
-        <svg width="18" height="18" viewBox="0 0 24 24">
-          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
+  <!-- Center: prev/play/next buttons + progress bar -->
+  <div class="now-playing-center">
+    <div class="player-controls" id="np-player-controls">
+      <button class="control-btn" id="np-prev-btn" aria-label="Previous (Not implemented)" style="opacity: 0.5;">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+          <polygon points="19,20 9,12 19,4"></polygon><line x1="5" y1="4" x2="5" y2="20" stroke="currentColor" stroke-width="2"></line>
+        </svg>
+      </button>
+      <button class="control-btn control-btn-play" id="np-play-btn" aria-label="Toggle Play/Pause">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+          <polygon points="8,5 19,12 8,19"></polygon>
+        </svg>
+      </button>
+      <button class="control-btn" id="np-next-btn" aria-label="Next (Not implemented)" style="opacity: 0.5;">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+          <polygon points="5,4 15,12 5,20"></polygon><line x1="19" y1="4" x2="19" y2="20" stroke="currentColor" stroke-width="2"></line>
         </svg>
       </button>
     </div>
-
-    <!-- Mini Player controls -->
-    <div class="now-playing-center">
-      <div class="player-controls" id="np-player-controls">
-        <button class="control-btn" id="np-prev-btn" aria-label="Previous (Not implemented)" style="opacity: 0.5;">
-          <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-            <polygon points="19,20 9,12 19,4"></polygon><line x1="5" y1="4" x2="5" y2="20" stroke="currentColor" stroke-width="2"></line>
-          </svg>
-        </button>
-        <button class="control-btn control-btn-play" id="np-play-btn" aria-label="Toggle Play/Pause">
-          <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-            <polygon points="8,5 19,12 8,19"></polygon>
-          </svg>
-        </button>
-        <button class="control-btn" id="np-next-btn" aria-label="Next (Not implemented)" style="opacity: 0.5;">
-          <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-            <polygon points="5,4 15,12 5,20"></polygon><line x1="19" y1="4" x2="19" y2="20" stroke="currentColor" stroke-width="2"></line>
-          </svg>
-        </button>
+    <div class="progress-bar-container" id="np-progress-container">
+      <span class="progress-time" id="np-time-current">0:00</span>
+      <div class="progress-slider-bg" id="np-progress-track">
+        <div class="progress-slider-fill" id="np-progress-fill"></div>
       </div>
-      <div class="progress-bar-container" id="np-progress-container">
-        <span class="progress-time" id="np-time-current">0:00</span>
-        <div class="progress-slider-bg" id="np-progress-track">
-          <div class="progress-slider-fill" id="np-progress-fill"></div>
-        </div>
-        <span class="progress-time" id="np-time-total">0:00</span>
+      <span class="progress-time" id="np-time-total">0:00</span>
+    </div>
+  </div>
+
+  <!-- Right: mute + volume slider -->
+  <div class="now-playing-right" id="np-volume-container">
+    <button class="control-btn" id="np-mute-btn" aria-label="Mute volume">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+      </svg>
+    </button>
+    <div class="volume-bar-container">
+      <div class="volume-slider-bg" id="np-volume-track">
+        <div class="volume-slider-fill" id="np-volume-fill"></div>
       </div>
     </div>
+  </div>
 
-    <!-- Mini Player volume -->
-    <div class="now-playing-right" id="np-volume-container">
-      <button class="control-btn" id="np-mute-btn" aria-label="Mute volume">
-        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-          <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-        </svg>
-      </button>
-      <div class="volume-bar-container">
-        <div class="volume-slider-bg" id="np-volume-track">
-          <div class="volume-slider-fill" id="np-volume-fill"></div>
-        </div>
-      </div>
-    </div>
+</section>
 
-  </section>
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: FOOTER                             -->
+<!-- ═══════════════════════════════════════════ -->
+<footer id="footer-container" style="margin-top: 100px;"></footer>
 
-  <!-- Footer injected here -->
-  <footer id="footer-container" style="margin-top: 100px;"></footer>
-
-  <!-- Scripts -->
-  <script src="./js/mockData.js"></script>
-  <script src="./js/main.js"></script>
-  <script src="./js/components.js"></script>
-  <script src="./js/animations.js"></script>
-  <script src="./js/watch.js"></script>
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: SCRIPTS                            -->
+<!-- ═══════════════════════════════════════════ -->
+<script src="./js/mockData.js"></script>
+<script src="./js/main.js"></script>
+<script src="./js/components.js"></script>
+<script src="./js/animations.js"></script>
+<!-- watch.js: Watch page logic — video player controller, emoji reactions,
+     playlist management, metadata display, related videos, now-playing bar -->
+<script src="./js/watch.js"></script>
 </body>
 </html>

@@ -1,3 +1,4 @@
+/* --- TOOLBAR: action buttons row at top of notifications page --- */
 .notifications-toolbar {
   display: flex;
   justify-content: space-between;
@@ -7,11 +8,13 @@
   gap: var(--space-md);
 }
 
+/* --- ACTION BUTTON GROUP: Mark Read / Delete selected --- */
 .notifications-actions {
   display: flex;
   gap: var(--space-sm);
 }
 
+/* --- FILTER ROW: All / Unread / Success / Error / Warning / Info --- */
 .notification-filters {
   display: flex;
   gap: var(--space-sm);
@@ -19,17 +22,20 @@
   margin-bottom: var(--space-xl);
 }
 
+/* --- SMALL ACTION BUTTON inside notifications toolbar --- */
 .notif-action-btn {
   padding: var(--space-xs) var(--space-md) !important;
   font-size: var(--text-xs) !important;
 }
 
+/* --- DANGER-COLORED CLEAR ALL button in notifications --- */
 #notifications-list #clear-all-btn,
 .notifications-toolbar #clear-all-btn {
   color: var(--error) !important;
   border-color: var(--error) !important;
 }
 
+/* --- INDIVIDUAL FILTER BUTTON: clickable pill for each category --- */
 .notification-filter-btn {
   padding: var(--space-xs) var(--space-lg);
   border: 1px solid var(--border);
@@ -41,27 +47,32 @@
   transition: all var(--transition-fast);
 }
 
+/* --- HOVER: lighten border/text on filter button --- */
 .notification-filter-btn:hover {
   border-color: var(--text-muted);
   color: var(--text-primary);
 }
 
+/* --- ACTIVE: highlight selected filter with accent color --- */
 .notification-filter-btn.active {
   background-color: var(--accent);
   color: #000;
   border-color: var(--accent);
 }
 
+/* --- LIGHT THEME override for active filter text --- */
 [data-theme="light"] .notification-filter-btn.active {
   color: #fff;
 }
 
+/* --- NOTIFICATIONS LIST: vertical stack of notification cards --- */
 .notifications-list {
   display: flex;
   flex-direction: column;
   gap: var(--space-xs);
 }
 
+/* --- SINGLE NOTIFICATION ITEM: clickable card with icon + content + delete --- */
 .notification-item {
   display: flex;
   align-items: flex-start;
@@ -75,12 +86,14 @@
   position: relative;
 }
 
+/* --- HOVER: slight right shift + elevated background --- */
 .notification-item:hover {
   background-color: var(--bg-elevated);
   transform: translateX(3px);
   border-color: var(--text-muted);
 }
 
+/* --- UNREAD STATE: accent left border + bold title --- */
 .notification-item.unread {
   border-left: 3px solid var(--accent);
 }
@@ -89,6 +102,7 @@
   font-weight: 600;
 }
 
+/* --- NOTIFICATION TYPE ICON: colored circle with emoji/icon inside --- */
 .notification-icon {
   width: 36px;
   height: 36px;
@@ -99,31 +113,37 @@
   flex-shrink: 0;
 }
 
+/* --- UPLOAD SUCCESS: green-tinted icon background --- */
 .notification-icon.upload_success {
   background-color: rgba(30, 215, 96, 0.15);
   color: var(--success);
 }
 
+/* --- VIDEO DELETED: red-tinted icon background --- */
 .notification-icon.video_deleted {
   background-color: rgba(238, 0, 0, 0.1);
   color: var(--error);
 }
 
+/* --- ERROR TYPE: red-tinted icon background --- */
 .notification-icon.error {
   background-color: rgba(238, 0, 0, 0.1);
   color: var(--error);
 }
 
+/* --- WARNING TYPE: amber-tinted icon background --- */
 .notification-icon.warning {
   background-color: rgba(245, 166, 35, 0.15);
   color: var(--warning);
 }
 
+/* --- INFO TYPE: blue-tinted icon background --- */
 .notification-icon.info {
   background-color: rgba(0, 112, 243, 0.1);
   color: #0070f3;
 }
 
+/* --- DARK THEME: slightly adjusted info icon opacity --- */
 [data-theme="dark"] .notification-icon.upload_success {
   background-color: rgba(30, 215, 96, 0.15);
 }
@@ -133,11 +153,13 @@
   color: #539df5;
 }
 
+/* --- NOTIFICATION TEXT CONTENT: title + timestamp + message body --- */
 .notification-content {
   flex: 1;
   min-width: 0;
 }
 
+/* --- HEADER ROW: title on left, timestamp on right --- */
 .notification-header {
   display: flex;
   justify-content: space-between;
@@ -145,11 +167,13 @@
   gap: var(--space-md);
 }
 
+/* --- NOTIFICATION TITLE: bold-ish summary line --- */
 .notification-title {
   font-size: var(--text-sm);
   font-weight: 500;
 }
 
+/* --- TIMESTAMP: muted text showing relative or absolute time --- */
 .notification-time {
   font-size: var(--text-xs);
   color: var(--text-muted);
@@ -157,6 +181,7 @@
   flex-shrink: 0;
 }
 
+/* --- MESSAGE BODY: secondary text with details --- */
 .notification-message {
   font-size: var(--text-xs);
   color: var(--text-secondary);
@@ -164,6 +189,7 @@
   line-height: 1.4;
 }
 
+/* --- DELETE BUTTON: hidden until hover, positioned top-right --- */
 .notification-delete-btn {
   position: absolute;
   top: var(--space-md);
@@ -179,15 +205,18 @@
   border: 1px solid var(--border);
 }
 
+/* --- SHOW DELETE on item hover --- */
 .notification-item:hover .notification-delete-btn {
   display: flex;
 }
 
+/* --- DELETE HOVER: turn red on hover for danger indication --- */
 .notification-delete-btn:hover {
   color: var(--error);
   border-color: var(--error);
 }
 
+/* --- UNREAD DOT: small accent circle indicating unread status --- */
 .notification-unread-dot {
   width: 8px;
   height: 8px;
@@ -197,6 +226,7 @@
   margin-top: 4px;
 }
 
+/* --- READ STATE: hide the unread dot (transparent) --- */
 .notification-item.read .notification-unread-dot {
   background-color: transparent;
 }

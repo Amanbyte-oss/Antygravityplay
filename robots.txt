@@ -1,12 +1,24 @@
+# ============================================================================
+# robots.txt - Antigravity Play
+# Controls crawler access to the site. Blocks admin and auth pages from
+# indexing while allowing all public-facing pages.
+# ============================================================================
+
+# ======== GLOBAL RULES (applies to all crawlers) ========
 User-agent: *
+# Allow crawling of the entire site as default
 Allow: /
+# Reference to the XML sitemap for crawlers to discover all public URLs
 Sitemap: https://antigravityplay.com/sitemap.xml
 
+# ======== BLOCKED SECTIONS (admin and auth pages) ========
 # Disallow admin pages from indexing
 Disallow: /admin/
+# Disallow login and password recovery pages (no SEO value)
 Disallow: /login.html
 Disallow: /forgot-password.html
 
+# ======== ALLOWED PUBLIC PAGES ========
 # Allow public pages
 Allow: /index.html
 Allow: /search.html

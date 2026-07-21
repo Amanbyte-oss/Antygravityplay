@@ -1,945 +1,1160 @@
+/* ─── GOOGLE FONTS IMPORT ───────────────────────────────────────────── */
+/* Loads Inter (sans-serif) and JetBrains Mono (monospace) font families
+   from Google Fonts with specific weights used throughout the design system */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
-/* --- DESIGN TOKENS --- */
+/* ═══════════════════════════════════════════════════════════════════════
+   DESIGN TOKENS (CSS Custom Properties)
+   All colors, spacing, typography, radii, and shadows are defined here
+   as custom properties so they can be reused throughout the stylesheet
+   and switched via the [data-theme] attribute.
+   ═══════════════════════════════════════════════════════════════════════ */
 :root {
-  /* --- TYPOGRAPHY --- */
+  /* ─── TYPOGRAPHY ─── */
+  /* Primary sans-serif font stack: Inter with system font fallbacks */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  /* Monospace font stack used for code, timestamps, and data displays */
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
   
-  --text-xs: 0.75rem;     /* 12px */
-  --text-sm: 0.875rem;    /* 14px */
-  --text-md: 1rem;        /* 16px */
-  --text-lg: 1.125rem;    /* 18px */
-  --text-xl: 1.25rem;     /* 20px */
-  --text-2xl: 1.5rem;     /* 24px */
-  --text-3xl: 2rem;       /* 32px */
-  --text-4xl: 2.5rem;     /* 40px */
-  --text-5xl: 3rem;       /* 48px */
+  /* Font size scale: from extra-small (12px) up to 5xl (48px) */
+  --text-xs: 0.75rem;     /* 12px - Used for labels, timestamps, secondary metadata */
+  --text-sm: 0.875rem;    /* 14px - Default body text in cards, sidebars */
+  --text-md: 1rem;        /* 16px - Standard paragraph text, base size */
+  --text-lg: 1.125rem;    /* 18px - Section subheadings, emphasized text */
+  --text-xl: 1.25rem;     /* 20px - Card titles, modal titles */
+  --text-2xl: 1.5rem;     /* 24px - Page section headings */
+  --text-3xl: 2rem;       /* 32px - Major page headings (hero, search results) */
+  --text-4xl: 2.5rem;     /* 40px - Hero banner titles, blog page header */
+  --text-5xl: 3rem;       /* 48px - Reserved for very large display text */
 
-  /* --- SPACING --- */
-  --space-xs: 0.25rem;    /* 4px */
-  --space-sm: 0.5rem;     /* 8px */
-  --space-md: 0.75rem;    /* 12px */
-  --space-lg: 1rem;       /* 16px */
-  --space-xl: 1.5rem;     /* 24px */
-  --space-2xl: 2rem;      /* 32px */
-  --space-3xl: 3rem;      /* 48px */
-  --space-4xl: 4rem;      /* 64px */
-  --space-5xl: 6rem;      /* 96px */
+  /* ─── SPACING ─── */
+  /* Consistent spacing scale: 4px through 96px for margins, padding, gaps */
+  --space-xs: 0.25rem;    /* 4px  - Tiny gaps between tightly packed elements */
+  --space-sm: 0.5rem;     /* 8px  - Small gaps, icon-to-text spacing */
+  --space-md: 0.75rem;    /* 12px - Default gap between related elements */
+  --space-lg: 1rem;       /* 16px - Standard padding for containers */
+  --space-xl: 1.5rem;     /* 24px - Section padding, card internal spacing */
+  --space-2xl: 2rem;      /* 32px - Large section spacing, modal padding */
+  --space-3xl: 3rem;      /* 48px - Page section separation */
+  --space-4xl: 4rem;      /* 64px - Major content block spacing */
+  --space-5xl: 6rem;      /* 96px - Extreme margins (e.g., bottom of watch page) */
   
-  /* --- RADIUS --- */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
-  --radius-full: 9999px;
+  /* ─── BORDER RADIUS ─── */
+  /* Rounded corner scale from subtle (4px) to fully pill-shaped (9999px) */
+  --radius-sm: 4px;      /* Input fields, subtle content containers */
+  --radius-md: 8px;       /* Cards, modals, filter panels */
+  --radius-lg: 12px;      /* Large containers, hero banners */
+  --radius-xl: 16px;      /* Extra-large containers (reserved) */
+  --radius-full: 9999px;  /* Pill/button shapes, avatars, tags */
   
-  /* --- TRANSITIONS --- */
+  /* ─── TRANSITION EASING ─── */
+  /* Relaxed easing: starts fast, decelerates smoothly for natural-feeling motion */
   --ease-relax: cubic-bezier(0.4, 0, 0.2, 1);
+  /* Spring-like easing: overshoots slightly for playful, bouncy animations */
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --transition-fast: 0.35s var(--ease-relax);
-  --transition-base: 0.5s var(--ease-relax);
-  --transition-slow: 0.7s var(--ease-relax);
+  /* Duration presets using the relax easing curve */
+  --transition-fast: 0.35s var(--ease-relax);   /* Hover states, small UI interactions */
+  --transition-base: 0.5s var(--ease-relax);    /* Most transitions (theme, visibility) */
+  --transition-slow: 0.7s var(--ease-relax);    /* Large movements (now-playing bar, modals) */
 
-  /* --- DEFAULT THEME: DARK (Spotify-style) --- */
-  --bg-primary: #121212;
-  --bg-secondary: #181818;
-  --bg-elevated: #1f1f1f;
+  /* ─── DEFAULT THEME: DARK (Spotify-style) ─── */
+  /* Background hierarchy: primary = page bg, secondary = elevated surfaces,
+     elevated = highest foreground surfaces */
+  --bg-primary: #121212;      /* Near-black: main page background */
+  --bg-secondary: #181818;    /* Slightly lighter: navbar, cards, modals */
+  --bg-elevated: #1f1f1f;    /* Mid-grey: inputs, hover states, top surfaces */
   
-  --text-primary: #ffffff;
-  --text-secondary: #b3b3b3;
-  --text-muted: #7c7c7c;
+  /* Text color hierarchy for readability against dark backgrounds */
+  --text-primary: #ffffff;    /* Pure white for headings and primary content */
+  --text-secondary: #b3b3b3;  /* Light grey for body text, descriptions */
+  --text-muted: #7c7c7c;      /* Dim grey for hints, timestamps, less important info */
   
-  --accent: #1ed760; /* Spotify Green */
-  --accent-hover: #1db954;
-  --border: #2e2e2e;
+  --accent: #1ed760;          /* Spotify Green: primary brand color, used for CTAs, active states */
+  --accent-hover: #1db954;    /* Slightly darker green for hover/focus states */
+  --border: #2e2e2e;          /* Dark grey for dividers, outlines, card borders */
   
-  --error: #f3727f;
-  --success: #1ed760;
-  --warning: #ffa42b;
+  /* Semantic colors for user feedback */
+  --error: #f3727f;           /* Soft red: error messages, validation failures */
+  --success: #1ed760;         /* Green: success confirmations (same as accent) */
+  --warning: #ffa42b;         /* Amber: warnings, degraded status indicators */
   
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5), 0 4px 6px rgba(0, 0, 0, 0.5);
-  --shadow-glow: 0 0 15px rgba(30, 215, 96, 0.35);
+  /* Box-shadow presets for depth: subtle to prominent */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);          /* Small elements like badges */
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);           /* Cards and hover states */
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5), 0 4px 6px rgba(0, 0, 0, 0.5);  /* Modals, dropdowns, overlays */
+  --shadow-glow: 0 0 15px rgba(30, 215, 96, 0.35);     /* Accent glow: highlights active accent elements */
   
+  /* Mesh gradient: two soft radial gradients layered for a subtle background texture */
   --mesh-gradient: radial-gradient(at 0% 0%, rgba(30, 215, 96, 0.15) 0px, transparent 50%),
                     radial-gradient(at 50% 0%, rgba(83, 157, 245, 0.1) 0px, transparent 50%);
+  /* Body overlay: additional accent layer over the entire page background (none in dark theme) */
   --body-accent-overlay: none;
 }
 
-/* --- LIGHT THEME (grey-wash, inspired by Linear/Notion) --- */
+/* ═══════════════════════════════════════════════════════════════════════
+   LIGHT THEME OVERRIDES (grey-wash, inspired by Linear/Notion)
+   Applied when parent element has data-theme="light".
+   Swaps all dark theme colours for lighter alternatives.
+   ═══════════════════════════════════════════════════════════════════════ */
 [data-theme="light"] {
-  --bg-primary: #ebebeb;
-  --bg-secondary: #fafafa;
-  --bg-elevated: #e0e0e0;
+  /* Light backgrounds: off-white primary, nearly white secondary, light grey elevated */
+  --bg-primary: #ebebeb;       /* Light grey page background */
+  --bg-secondary: #fafafa;     /* Almost white for card/nav surfaces */
+  --bg-elevated: #e0e0e0;     /* Slightly darker grey for inputs and hover states */
   
-  --text-primary: #171717;
-  --text-secondary: #4d4d4d;
-  --text-muted: #888888;
+  /* Dark text for readability on light backgrounds */
+  --text-primary: #171717;     /* Near-black for headings */
+  --text-secondary: #4d4d4d;  /* Dark grey for body text */
+  --text-muted: #888888;       /* Mid-grey for secondary info */
   
-  --accent: #171717;
-  --accent-hover: #333333;
-  --border: #dcdcdc;
+  --accent: #171717;           /* Near-black accent for consistency */
+  --accent-hover: #333333;     /* Dark grey hover state */
+  --border: #dcdcdc;           /* Light grey dividers and outlines */
   
-  --error: #ee0000;
-  --success: #0070f3;
-  --warning: #f5a623;
+  /* Brighter semantic colours for contrast on light backgrounds */
+  --error: #ee0000;            /* Red for errors */
+  --success: #0070f3;          /* Blue for success (different from dark theme green) */
+  --warning: #f5a623;          /* Amber for warnings */
   
+  /* Softer shadows appropriate for light mode */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
   --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.06), 0 4px 8px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 8px 16px -4px rgba(0, 0, 0, 0.08), 0 24px 32px -8px rgba(0, 0, 0, 0.08);
-  --shadow-glow: 0 0 20px rgba(0, 0, 0, 0.04);
+  --shadow-glow: 0 0 20px rgba(0, 0, 0, 0.04);  /* Subtle glow for light mode */
   
+  /* Three-tone pastel radial gradient for the light theme background texture */
   --mesh-gradient: radial-gradient(at 0% 0%, rgba(0, 112, 243, 0.08) 0px, transparent 50%),
                     radial-gradient(at 50% 0%, rgba(121, 40, 202, 0.05) 0px, transparent 50%),
                     radial-gradient(at 100% 0%, rgba(255, 0, 128, 0.05) 0px, transparent 50%);
+  /* Full-body accent overlay for light theme: subtle blue/purple/pink gradient */
   --body-accent-overlay: radial-gradient(at 0% 0%, rgba(0, 112, 243, 0.06) 0px, transparent 50%),
                           radial-gradient(at 50% 0%, rgba(121, 40, 202, 0.04) 0px, transparent 50%),
                           radial-gradient(at 100% 0%, rgba(255, 0, 128, 0.04) 0px, transparent 50%);
 }
 
+/* Light theme override: video cards get a lighter background to stand out */
 [data-theme="light"] .video-card {
   background-color: #f5f5f5;
 }
 
-/* --- BASE STYLES --- */
+/* ═══════════════════════════════════════════════════════════════════════
+   BASE / RESET STYLES
+   Normalise browser defaults to ensure consistent rendering across
+   all browsers.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Universal reset: remove default margins/padding and use border-box so
+   padding and borders are included in element dimensions */
 * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+  box-sizing: border-box;  /* Include padding+border in element width/height calculations */
+  margin: 0;               /* Remove all default margins */
+  padding: 0;              /* Remove all default padding */
 }
 
+/* Ensure consistent scrollbar space so content doesn't shift when scrollbar appears/disappears */
 html {
-  scrollbar-gutter: stable;
-  overflow-y: scroll;
+  scrollbar-gutter: stable;  /* Reserve space for the scrollbar to prevent layout shift */
+  overflow-y: scroll;        /* Always show vertical scrollbar to avoid page-width jumps */
 }
 
+/* Root body styles: font, background, text colour, smooth scrolling, full viewport height */
 html, body {
-  font-family: var(--font-sans);
-  background-color: var(--bg-primary);
-  background-image: var(--body-accent-overlay);
-  color: var(--text-primary);
-  scroll-behavior: smooth;
-  min-height: 100vh;
-  transition: background-color var(--transition-base), color var(--transition-base), background-image var(--transition-base);
+  font-family: var(--font-sans);                    /* Use Inter/system sans-serif throughout */
+  background-color: var(--bg-primary);              /* Dynamic background colour (theme-aware) */
+  background-image: var(--body-accent-overlay);     /* Optional accent gradient overlay on body */
+  color: var(--text-primary);                       /* Dynamic text colour (theme-aware) */
+  scroll-behavior: smooth;                          /* Smooth anchor-link scrolling */
+  min-height: 100vh;                                /* Ensure body fills at least the viewport height */
+  transition: background-color var(--transition-base), color var(--transition-base), background-image var(--transition-base);  /* Smooth theme switching */
 }
 
+/* Links: inherit colour from parent, remove underline, animate colour/opacity changes */
 a {
-  color: inherit;
-  text-decoration: none;
-  transition: color var(--transition-fast), opacity var(--transition-fast);
+  color: inherit;            /* Don't apply default blue link colour; use surrounding text colour */
+  text-decoration: none;     /* Remove default underline from links */
+  transition: color var(--transition-fast), opacity var(--transition-fast);  /* Smooth hover transitions */
 }
 
+/* Links on hover: slightly fade to indicate interactivity */
 a:hover {
-  opacity: 0.85;
+  opacity: 0.85;             /* Reduce opacity to 85% as a hover cue */
 }
 
+/* Form elements: inherit typography from parent, remove default styling, animate interactions */
 button, input, select, textarea {
-  font-family: inherit;
-  font-size: inherit;
-  color: inherit;
-  background: none;
-  border: none;
-  outline: none;
-  transition: transform var(--transition-fast), opacity var(--transition-fast);
+  font-family: inherit;      /* Use the page font, not browser default */
+  font-size: inherit;        /* Use the parent font size */
+  color: inherit;            /* Use the parent text colour */
+  background: none;          /* Remove default background */
+  border: none;              /* Remove default border */
+  outline: none;             /* Remove default focus outline (we'll add custom :focus-visible) */
+  transition: transform var(--transition-fast), opacity var(--transition-fast);  /* Smooth press/hover effects */
 }
 
+/* Press feedback: slightly scale down when a button is clicked */
 button:active {
-  transform: scale(0.97);
+  transform: scale(0.97);    /* Shrink to 97% for a "pressed in" feel */
 }
 
+/* Default cursor for buttons: show pointer hand on hover */
 button {
   cursor: pointer;
 }
 
-/* --- ACCESSIBILITY --- */
+/* ═══════════════════════════════════════════════════════════════════════
+   ACCESSIBILITY UTILITIES
+   Screen-reader-only, focus indicators, and reduced-motion preferences.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* .sr-only: visually hidden but accessible to screen readers.
+   Used for labels, icons without text, and skip-to-content links. */
 .sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  border: 0;
+  position: absolute;   /* Remove from normal document flow */
+  width: 1px;           /* Collapse to a single pixel */
+  height: 1px;          /* Collapse to a single pixel */
+  padding: 0;           /* Remove any padding */
+  margin: -1px;         /* Pull out of view to avoid visible box */
+  overflow: hidden;     /* Clip any overflowing content */
+  clip: rect(0, 0, 0, 0);  /* Legacy clip method for older browsers */
+  border: 0;            /* Remove any border */
 }
 
+/* Custom focus ring for keyboard navigation (not mouse clicks) */
 :focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 4px;
+  outline: 2px solid var(--accent);  /* Use accent colour for the focus ring */
+  outline-offset: 4px;               /* Push the ring 4px away from the element edge */
 }
 
+/* Honour OS-level "reduce motion" accessibility setting */
 @media (prefers-reduced-motion: reduce) {
   * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;       /* Instantly complete all animations */
+    animation-iteration-count: 1 !important;     /* Only play animations once */
+    transition-duration: 0.01ms !important;      /* Instantly complete all transitions */
+    scroll-behavior: auto !important;            /* Disable smooth scrolling */
   }
 }
 
-/* --- GLOBAL LAYOUTS & CONTAINERS --- */
+/* ═══════════════════════════════════════════════════════════════════════
+   GLOBAL LAYOUTS & CONTAINERS
+   Shared structural elements used across all pages.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Ensure the <main> content area has a minimum height so footer stays
+   at bottom on short pages */
 main {
-  min-height: 80vh;
+  min-height: 80vh;    /* Fill at least 80% of the viewport height */
 }
 
+/* Main centred container: constrains content width and centres horizontally */
 .container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 var(--space-xl);
+  max-width: 1200px;            /* Maximum width for large screens */
+  margin: 0 auto;               /* Centre horizontally */
+  padding: 0 var(--space-xl);   /* 24px side padding on desktop */
 }
 
+/* Tablet and below: reduce container side padding */
 @media (max-width: 768px) {
   .container {
-    padding: 0 var(--space-lg);
+    padding: 0 var(--space-lg);   /* 16px side padding for tablets */
   }
 }
 
+/* Mobile: further reduce container padding and prevent horizontal overflow */
 @media (max-width: 480px) {
   .container {
-    padding: 0 var(--space-md);
+    padding: 0 var(--space-md);   /* 12px side padding for phones */
   }
   body {
-    overflow-x: hidden;
+    overflow-x: hidden;           /* Prevent any horizontal scrollbars */
   }
 }
 
-/* --- HEADER / NAVBAR --- */
+/* ═══════════════════════════════════════════════════════════════════════
+   HEADER / NAVBAR
+   Sticky top navigation with logo, search bar, and action buttons.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Outer navbar wrapper: sticks to top of viewport with glassmorphism effect */
 .navbar-wrapper {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background-color: var(--bg-secondary);
-  border-bottom: 1px solid var(--border);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  min-height: 65px;
-  transition: background-color var(--transition-base), border-color var(--transition-base);
+  position: sticky;                    /* Stick to the top of the viewport on scroll */
+  top: 0;                              /* Stick at the very top */
+  z-index: 100;                        /* Stay above most other content */
+  background-color: var(--bg-secondary);  /* Semi-transparent dark background */
+  border-bottom: 1px solid var(--border);  /* Subtle bottom border */
+  backdrop-filter: blur(10px);         /* Glassmorphism: blur background behind navbar */
+  -webkit-backdrop-filter: blur(10px); /* Safari prefix for backdrop blur */
+  min-height: 65px;                    /* Ensure minimum height before JS loads */
+  transition: background-color var(--transition-base), border-color var(--transition-base);  /* Smooth theme switch */
 }
 
+/* Inner flex container: logo left, search centre, actions right */
 .navbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 64px;
-  padding: 0 var(--space-xl);
+  display: flex;           /* Horizontal layout for nav sections */
+  align-items: center;     /* Vertically centre all items */
+  justify-content: space-between;  /* Spread left/centre/right sections */
+  height: 64px;            /* Fixed height for consistent alignment */
+  padding: 0 var(--space-xl);  /* 24px side padding */
 }
 
+/* Left section: logo and navigation links */
 .nav-left {
-  display: flex;
-  align-items: center;
-  gap: var(--space-xl);
+  display: flex;           /* Horizontal row of items */
+  align-items: center;     /* Vertically centre children */
+  gap: var(--space-xl);    /* 24px spacing between logo and links */
 }
 
+/* Brand logo: icon + text side by side */
 .logo {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  font-weight: 700;
-  font-size: var(--text-xl);
-  letter-spacing: -0.5px;
+  display: flex;           /* Horizontal layout */
+  align-items: center;     /* Centre icon and text vertically */
+  gap: var(--space-sm);    /* 8px gap between icon and text */
+  font-weight: 700;        /* Bold site name */
+  font-size: var(--text-xl);  /* 20px font size */
+  letter-spacing: -0.5px;  /* Slightly tightened letter spacing for logo text */
 }
 
+/* Logo SVG icon: accent colour fills the icon */
 .logo-icon {
-  color: var(--accent);
-  fill: currentColor;
+  color: var(--accent);    /* Use accent green (or black in light mode) */
+  fill: currentColor;      /* SVG fill matches the text colour */
 }
 
+/* Nav menu: inline list of page links */
 .nav-menu {
-  display: flex;
-  align-items: center;
-  gap: var(--space-lg);
+  display: flex;           /* Horizontal row */
+  align-items: center;     /* Vertically centre */
+  gap: var(--space-lg);    /* 16px gap between links */
 }
 
+/* Individual nav link: pill-shaped interactive element */
 .nav-link {
-  font-size: var(--text-sm);
-  font-weight: 500;
-  color: var(--text-secondary);
-  padding: var(--space-sm) var(--space-md);
-  border-radius: var(--radius-full);
-  transition: color var(--transition-fast), background-color var(--transition-fast);
+  font-size: var(--text-sm);    /* 14px small text */
+  font-weight: 500;             /* Medium weight */
+  color: var(--text-secondary); /* Grey text by default */
+  padding: var(--space-sm) var(--space-md);  /* 8px vertical, 12px horizontal padding */
+  border-radius: var(--radius-full);  /* Fully pill-shaped on hover */
+  transition: color var(--transition-fast), background-color var(--transition-fast);  /* Smooth hover */
 }
 
+/* Nav link hover/active: light up with accent background */
 .nav-link:hover, .nav-link.active {
-  color: var(--text-primary);
-  background-color: var(--bg-elevated);
+  color: var(--text-primary);     /* White text on hover */
+  background-color: var(--bg-elevated);  /* Slightly lighter background */
 }
 
+/* Centre section: search bar, flexes to fill space between left and right */
 .nav-center {
-  flex: 1;
-  max-width: 480px;
-  margin: 0 var(--space-xl);
+  flex: 1;                   /* Take up all available space */
+  max-width: 480px;          /* Don't grow beyond 480px */
+  margin: 0 var(--space-xl); /* 24px horizontal margin */
 }
 
+/* Search bar container: relative positioning for the icon overlay */
 .search-bar-container {
-  position: relative;
-  width: 100%;
+  position: relative;   /* Anchor for absolutely-positioned search icon */
+  width: 100%;          /* Fill the nav-centre width */
 }
 
+/* Search input field: pill-shaped, dark elevated background */
 .search-bar-container input {
-  width: 100%;
-  height: 38px;
-  padding: 0 40px 0 var(--space-lg);
-  background-color: var(--bg-elevated);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-full);
-  font-size: var(--text-sm);
-  color: var(--text-primary);
-  transition: border-color var(--transition-fast), background-color var(--transition-fast);
+  width: 100%;                     /* Fill container width */
+  height: 38px;                    /* Compact height */
+  padding: 0 40px 0 var(--space-lg);  /* Space for the icon on the right */
+  background-color: var(--bg-elevated);  /* Slightly lighter than navbar */
+  border: 1px solid var(--border);      /* Subtle border */
+  border-radius: var(--radius-full);    /* Pill shape */
+  font-size: var(--text-sm);       /* 14px */
+  color: var(--text-primary);      /* White text */
+  transition: border-color var(--transition-fast), background-color var(--transition-fast);  /* Smooth focus */
 }
 
+/* Search input focus: lighter border and background */
 .search-bar-container input:focus {
-  border-color: var(--text-muted);
-  background-color: var(--bg-secondary);
+  border-color: var(--text-muted);     /* Grey border on focus */
+  background-color: var(--bg-secondary);  /* Match navbar background */
 }
 
+/* Search icon button: positioned over the right side of the input */
 .search-icon-btn {
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--text-secondary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: none;
-  border: none;
-  padding: 4px;
-  cursor: pointer;
-  border-radius: var(--radius-full);
-  transition: color var(--transition-fast), transform var(--transition-fast);
+  position: absolute;              /* Position within the search container */
+  right: 14px;                     /* 14px from the right edge */
+  top: 50%;                        /* Centre vertically */
+  transform: translateY(-50%);     /* Precise vertical centering */
+  color: var(--text-secondary);    /* Grey icon */
+  display: flex;                   /* Flex for centring the SVG */
+  align-items: center;             /* Centre icon vertically */
+  justify-content: center;         /* Centre icon horizontally */
+  background: none;                /* No background */
+  border: none;                    /* No border */
+  padding: 4px;                    /* Small clickable area */
+  cursor: pointer;                 /* Pointer cursor */
+  border-radius: var(--radius-full);  /* Round for hover effect */
+  transition: color var(--transition-fast), transform var(--transition-fast);  /* Smooth interactions */
 }
+/* Search icon hover: brighter colour and slightly enlarged */
 .search-icon-btn:hover {
-  color: var(--text-primary);
-  transform: translateY(-50%) scale(1.1);
+  color: var(--text-primary);       /* Brighter on hover */
+  transform: translateY(-50%) scale(1.1);  /* Scale up while keeping centred */
 }
+/* Search icon press: shrink slightly for feedback */
 .search-icon-btn:active {
-  transform: translateY(-50%) scale(0.95);
+  transform: translateY(-50%) scale(0.95);  /* Scale down while keeping centred */
 }
 
+/* Right section: theme toggle, auth buttons, user menu */
 .nav-right {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
+  display: flex;           /* Horizontal row */
+  align-items: center;     /* Vertically centre */
+  gap: var(--space-md);    /* 12px gap between buttons */
 }
 
-/* --- THEME TOGGLE BUTTON --- */
+/* ─── THEME TOGGLE BUTTON ─── */
+/* Circular button that toggles between light and dark colour schemes */
 .theme-toggle {
-  width: 36px;
+  width: 36px;                          /* Small square size */
   height: 36px;
-  border-radius: var(--radius-full);
-  display: flex;
+  border-radius: var(--radius-full);    /* Perfect circle */
+  display: flex;                        /* Centre the icon */
   align-items: center;
   justify-content: center;
-  background-color: var(--bg-elevated);
-  color: var(--text-secondary);
-  border: 1px solid var(--border);
-  transition: color var(--transition-fast), background-color var(--transition-fast);
+  background-color: var(--bg-elevated); /* Elevated surface */
+  color: var(--text-secondary);         /* Grey icon */
+  border: 1px solid var(--border);      /* Subtle border */
+  transition: color var(--transition-fast), background-color var(--transition-fast);  /* Smooth theme switch */
 }
 
+/* Theme toggle hover: brighter icon and lighter background */
 .theme-toggle:hover {
-  color: var(--text-primary);
-  background-color: var(--bg-secondary);
+  color: var(--text-primary);           /* Bright icon */
+  background-color: var(--bg-secondary);  /* Lighter background */
 }
 
-/* --- BUTTONS --- */
+/* ═══════════════════════════════════════════════════════════════════════
+   BUTTONS
+   Shared button system: base .btn class with variant modifiers.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Base button: pill-shaped, inline-flex for icon+text, animated */
 .btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-sm);
-  padding: var(--space-sm) var(--space-xl);
-  border-radius: var(--radius-full);
-  font-size: var(--text-sm);
-  font-weight: 600;
-  transition: transform var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
-  cursor: pointer;
+  display: inline-flex;              /* Inline but allows flexbox alignment */
+  align-items: center;               /* Centre content vertically */
+  justify-content: center;           /* Centre content horizontally */
+  gap: var(--space-sm);              /* 8px gap between icon and text */
+  padding: var(--space-sm) var(--space-xl);  /* 8px vertical, 24px horizontal */
+  border-radius: var(--radius-full); /* Pill shape */
+  font-size: var(--text-sm);         /* 14px text */
+  font-weight: 600;                  /* Semi-bold */
+  transition: transform var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);  /* Smooth all interactions */
+  cursor: pointer;                   /* Pointer cursor */
 }
 
+/* Button hover: subtle lift effect with shadow */
 .btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);           /* Lift up 1px */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);  /* Drop shadow for depth */
 }
 
+/* Button press: scale down for tactile feedback */
 .btn:active {
-  transform: scale(0.97);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transform: scale(0.97);               /* Shrink to 97% */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);  /* Smaller shadow when pressed */
 }
 
+/* Primary button: accent green background with black text */
 .btn-primary {
-  background-color: var(--accent);
-  color: #000000;
+  background-color: var(--accent);   /* Spotify green by default */
+  color: #000000;                    /* Black text for contrast on green */
 }
 
+/* Primary button hover: slightly different green */
 .btn-primary:hover {
-  background-color: var(--accent-hover);
+  background-color: var(--accent-hover);  /* Darker green on hover */
 }
 
+/* Light theme: primary button text matches secondary bg for contrast */
 [data-theme="light"] .btn-primary {
-  color: var(--bg-secondary);
+  color: var(--bg-secondary);        /* Light grey text in light mode */
 }
 
+/* Secondary button: elevated background with border, less prominent */
 .btn-secondary {
-  background-color: var(--bg-elevated);
-  color: var(--text-primary);
-  border: 1px solid var(--border);
+  background-color: var(--bg-elevated);  /* Darker grey background */
+  color: var(--text-primary);            /* White text */
+  border: 1px solid var(--border);       /* Visible border */
 }
 
+/* Secondary hover: match navbar background */
 .btn-secondary:hover {
-  background-color: var(--bg-secondary);
+  background-color: var(--bg-secondary);  /* Lighter on hover */
 }
 
-/* --- FOOTER --- */
+/* ═══════════════════════════════════════════════════════════════════════
+   FOOTER
+   Site-wide footer with link columns, brand section, and bottom bar.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Footer wrapper: spans full width, pushes to bottom via margin-top: auto */
 .footer-wrapper {
-  background-color: var(--bg-secondary);
-  border-top: 1px solid var(--border);
-  padding: var(--space-3xl) 0 var(--space-xl) 0;
-  margin-top: auto;
-  transition: background-color var(--transition-base), border-color var(--transition-base);
+  background-color: var(--bg-secondary);   /* Match navbar background */
+  border-top: 1px solid var(--border);     /* Top separator line */
+  padding: var(--space-3xl) 0 var(--space-xl) 0;  /* 48px top, 16px bottom padding */
+  margin-top: auto;                        /* Push footer to bottom in flex layouts */
+  transition: background-color var(--transition-base), border-color var(--transition-base);  /* Smooth theme switch */
 }
 
+/* Footer grid: 2-column brand area + 4 link columns on desktop */
 .footer {
-  display: grid;
-  grid-template-columns: 2fr repeat(4, 1fr);
-  gap: var(--space-2xl);
-  margin-bottom: var(--space-3xl);
+  display: grid;                               /* Grid layout for columns */
+  grid-template-columns: 2fr repeat(4, 1fr);   /* Brand column twice as wide as link columns */
+  gap: var(--space-2xl);                       /* 32px between columns */
+  margin-bottom: var(--space-3xl);             /* 48px before the bottom bar */
 }
 
+/* Tablet/mobile: stack all columns vertically with centred text */
 @media (max-width: 768px) {
   .footer {
-    grid-template-columns: 1fr;
-    gap: var(--space-2xl);
-    text-align: center;
+    grid-template-columns: 1fr;    /* Single column */
+    gap: var(--space-2xl);         /* 32px between stacked sections */
+    text-align: center;            /* Centre all text */
   }
   .footer-col {
-    align-items: center;
+    align-items: center;           /* Centre column contents */
   }
   .footer-col .logo {
-    justify-content: center;
+    justify-content: center;       /* Centre the logo */
   }
   .footer-brand p {
-    max-width: 100%;
-    margin-left: auto;
+    max-width: 100%;               /* Full width on mobile */
+    margin-left: auto;             /* Centre the paragraph */
     margin-right: auto;
   }
   .footer-col ul {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    display: flex;                 /* Flex for centering list items */
+    flex-direction: column;        /* Vertical list */
+    align-items: center;           /* Centre list items */
   }
   .footer-bottom {
-    justify-content: center;
+    justify-content: center;       /* Centre bottom content */
     text-align: center;
   }
 }
 
+/* Column heading: uppercase, letter-spaced, distinct from links */
 .footer-col h4 {
-  font-size: var(--text-sm);
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: var(--space-lg);
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  font-size: var(--text-sm);       /* 14px */
+  font-weight: 600;                /* Semi-bold */
+  color: var(--text-primary);      /* White heading */
+  margin-bottom: var(--space-lg);  /* 16px below heading */
+  text-transform: uppercase;       /* ALL CAPS */
+  letter-spacing: 1px;             /* Spaced out for style */
 }
 
+/* Remove default list bullets from footer lists */
 .footer-col ul {
-  list-style: none;
+  list-style: none;                /* No bullets */
 }
 
+/* List item spacing */
 .footer-col ul li {
-  margin-bottom: var(--space-md);
+  margin-bottom: var(--space-md);  /* 12px between links */
 }
 
+/* Footer link: secondary colour by default */
 .footer-col ul li a {
-  font-size: var(--text-sm);
-  color: var(--text-secondary);
+  font-size: var(--text-sm);       /* 14px */
+  color: var(--text-secondary);    /* Grey text */
 }
 
+/* Footer link hover: accent colour for interactivity */
 .footer-col ul li a:hover {
-  color: var(--accent);
+  color: var(--accent);            /* Green accent on hover */
 }
 
+/* Brand description paragraph: constrained width, secondary colour */
 .footer-brand p {
-  font-size: var(--text-sm);
-  color: var(--text-secondary);
-  line-height: 1.6;
-  margin-top: var(--space-md);
-  max-width: 300px;
+  font-size: var(--text-sm);       /* 14px */
+  color: var(--text-secondary);    /* Grey text */
+  line-height: 1.6;                /* Comfortable reading */
+  margin-top: var(--space-md);     /* 12px above */
+  max-width: 300px;                /* Keep text from stretching too wide */
 }
 
+/* Bottom bar: copyright, links, social icons in a horizontal flex row */
 .footer-bottom {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: var(--space-md);
-  border-top: 1px solid var(--border);
-  padding-top: var(--space-xl);
-  font-size: var(--text-xs);
-  color: var(--text-muted);
+  display: flex;                   /* Horizontal row */
+  justify-content: space-between;  /* Copyright left, links right */
+  align-items: center;             /* Centre vertically */
+  flex-wrap: wrap;                 /* Wrap on small screens */
+  gap: var(--space-md);            /* 12px gap when wrapping */
+  border-top: 1px solid var(--border);  /* Top separator */
+  padding-top: var(--space-xl);    /* 24px top padding */
+  font-size: var(--text-xs);       /* 12px small text */
+  color: var(--text-muted);        /* Muted grey */
 }
 
-/* --- TOAST NOTIFICATIONS --- */
+/* ═══════════════════════════════════════════════════════════════════════
+   TOAST NOTIFICATIONS
+   Fixed-position notification drawer for success/error/info messages.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Toast container: fixed to bottom-right, stacks toasts vertically */
 .toast-container {
-  position: fixed;
-  bottom: var(--space-2xl);
-  right: var(--space-2xl);
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
+  position: fixed;               /* Stays in viewport regardless of scroll */
+  bottom: var(--space-2xl);      /* 32px from bottom */
+  right: var(--space-2xl);       /* 32px from right */
+  z-index: 1000;                 /* On top of everything including modals */
+  display: flex;                 /* Stack toasts vertically */
+  flex-direction: column;        /* Newest at bottom, oldest at top */
+  gap: var(--space-md);          /* 12px between toasts */
 }
 
+/* Mobile: toast spans full width from edge to edge, above bottom nav */
 @media (max-width: 576px) {
   .toast-container {
-    bottom: 80px;
-    right: var(--space-md);
-    left: var(--space-md);
+    bottom: 80px;                /* Above mobile bottom controls */
+    right: var(--space-md);      /* 12px from right */
+    left: var(--space-md);       /* 12px from left (full width minus margins) */
   }
   .toast {
-    min-width: 0;
+    min-width: 0;                /* Allow toasts to shrink to mobile width */
   }
 }
 
+/* Individual toast: horizontal bar with accent left border and slide-in animation */
 .toast {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-  padding: var(--space-md) var(--space-xl);
-  background-color: var(--bg-secondary);
-  border-left: 4px solid var(--accent);
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-lg);
-  color: var(--text-primary);
-  animation: slideInRight var(--transition-base) forwards;
-  min-width: 280px;
+  display: flex;                 /* Horizontal layout: icon + message + close */
+  align-items: center;           /* Centre everything vertically */
+  gap: var(--space-md);          /* 12px between elements */
+  padding: var(--space-md) var(--space-xl);  /* 12px vertical, 24px horizontal */
+  background-color: var(--bg-secondary);     /* Dark card background */
+  border-left: 4px solid var(--accent);      /* Accent colour left border as status indicator */
+  border-radius: var(--radius-sm);           /* 4px rounded corners */
+  box-shadow: var(--shadow-lg);              /* Prominent shadow for elevation */
+  color: var(--text-primary);                /* White text */
+  animation: slideInRight var(--transition-base) forwards;  /* Slide in from right */
+  min-width: 280px;                          /* Minimum width to prevent squishing */
 }
 
+/* Error toast: red left border instead of accent */
 .toast.toast-error {
-  border-left-color: var(--error);
+  border-left-color: var(--error);  /* Red left border for errors */
 }
 
+/* Success toast: green left border */
 .toast.toast-success {
-  border-left-color: var(--success);
+  border-left-color: var(--success);  /* Green left border for success */
 }
 
+/* Close button on toast: pushed to far right via margin-left: auto */
 .toast-close {
-  margin-left: auto;
-  color: var(--text-muted);
-  cursor: pointer;
+  margin-left: auto;             /* Push to the right end of the flex row */
+  color: var(--text-muted);      /* Dim icon */
+  cursor: pointer;               /* Clickable */
 }
 
+/* Close button hover: brighter for visibility */
 .toast-close:hover {
-  color: var(--text-primary);
+  color: var(--text-primary);    /* White on hover */
 }
 
-/* --- MODAL DIALOGS --- */
+/* ═══════════════════════════════════════════════════════════════════════
+   MODAL DIALOGS
+   Overlay-based modal windows for confirmations, forms, and detail views.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Modal overlay: full-screen backdrop that captures clicks outside */
 .modal-overlay {
-  position: fixed;
+  position: fixed;                    /* Cover the entire viewport */
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
-  z-index: 999;
-  display: flex;
+  background-color: rgba(0, 0, 0, 0.7);  /* Semi-transparent dark backdrop */
+  z-index: 999;                       /* Below toast container (1000), above everything else */
+  display: flex;                      /* Centre the modal card */
   align-items: center;
   justify-content: center;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity var(--transition-base);
+  opacity: 0;                         /* Hidden by default */
+  pointer-events: none;               /* Cannot interact when hidden */
+  transition: opacity var(--transition-base);  /* Fade in/out */
 }
 
+/* Active overlay: visible and interactive */
 .modal-overlay.active {
-  opacity: 1;
-  pointer-events: all;
+  opacity: 1;                 /* Fully visible */
+  pointer-events: all;        /* Clicks pass through to modal */
 }
 
+/* Modal card: centred dialog with scale animation */
 .modal {
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  width: 100%;
-  max-width: 500px;
-  box-shadow: var(--shadow-lg);
-  overflow: hidden;
-  transform: scale(0.9);
-  transition: transform var(--transition-base);
-  max-height: 90vh;
-  overflow-y: auto;
+  background-color: var(--bg-secondary);   /* Card background */
+  border: 1px solid var(--border);         /* Subtle border */
+  border-radius: var(--radius-lg);         /* 12px rounded corners */
+  width: 100%;                             /* Full width up to max */
+  max-width: 500px;                        /* Max width on desktop */
+  box-shadow: var(--shadow-lg);            /* Prominent shadow */
+  overflow: hidden;                        /* Clip content to rounded corners */
+  transform: scale(0.9);                   /* Start slightly smaller for entrance animation */
+  transition: transform var(--transition-base);  /* Scale up smoothly */
+  max-height: 90vh;                        /* Don't exceed viewport height */
+  overflow-y: auto;                        /* Scroll if content is too tall */
 }
 
+/* Mobile: modal has margin, no max-width constraint */
 @media (max-width: 540px) {
   .modal {
-    margin: var(--space-md);
-    max-width: none;
+    margin: var(--space-md);    /* 12px margin on all sides */
+    max-width: none;            /* Remove max-width so it fills remaining space */
   }
 }
 
+/* When overlay is active, scale modal to full size */
 .modal-overlay.active .modal {
-  transform: scale(1);
+  transform: scale(1);    /* Scale to normal size */
 }
 
+/* Modal header: title and close button row with bottom border */
 .modal-header {
-  padding: var(--space-xl);
-  border-bottom: 1px solid var(--border);
-  display: flex;
+  padding: var(--space-xl);               /* 24px padding */
+  border-bottom: 1px solid var(--border); /* Separator below header */
+  display: flex;                          /* Title left, close right */
   align-items: center;
   justify-content: space-between;
 }
 
+/* Modal title text */
 .modal-title {
-  font-size: var(--text-lg);
-  font-weight: 600;
+  font-size: var(--text-lg);   /* 18px */
+  font-weight: 600;            /* Semi-bold */
 }
 
+/* Close button in modal header */
 .modal-close {
-  color: var(--text-secondary);
+  color: var(--text-secondary);  /* Grey icon */
 }
 
+/* Close button hover: brighter */
 .modal-close:hover {
-  color: var(--text-primary);
+  color: var(--text-primary);    /* White on hover */
 }
 
+/* Modal body: main content area with secondary text */
 .modal-body {
-  padding: var(--space-xl);
-  font-size: var(--text-sm);
-  color: var(--text-secondary);
-  line-height: 1.5;
+  padding: var(--space-xl);          /* 24px padding */
+  font-size: var(--text-sm);         /* 14px */
+  color: var(--text-secondary);      /* Grey text for content */
+  line-height: 1.5;                  /* Comfortable reading */
 }
 
+/* Modal footer: action buttons aligned right with elevated background */
 .modal-footer {
-  padding: var(--space-lg) var(--space-xl);
-  border-top: 1px solid var(--border);
-  background-color: var(--bg-elevated);
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--space-md);
+  padding: var(--space-lg) var(--space-xl);   /* 16px vertical, 24px horizontal */
+  border-top: 1px solid var(--border);         /* Separator above footer */
+  background-color: var(--bg-elevated);         /* Slightly different background to distinguish */
+  display: flex;                                /* Row of buttons */
+  justify-content: flex-end;                    /* Align buttons to the right */
+  gap: var(--space-md);                         /* 12px between buttons */
 }
 
-/* --- TAG PILLS --- */
+/* ═══════════════════════════════════════════════════════════════════════
+   TAG PILLS
+   Small inline badges representing video categories/topics.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Base tag pill: compact inline badge with hover animation */
 .tag-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 2px 10px;
-  border-radius: 9999px;
-  font-size: var(--text-xs);
-  font-weight: 500;
-  white-space: nowrap;
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast);
+  display: inline-flex;          /* Inline but flexible for icon+text */
+  align-items: center;           /* Centre content vertically */
+  gap: 4px;                      /* Small gap between icon and label */
+  padding: 2px 10px;             /* Compact padding */
+  border-radius: 9999px;         /* Fully rounded pill shape */
+  font-size: var(--text-xs);     /* 12px small text */
+  font-weight: 500;              /* Medium weight */
+  white-space: nowrap;           /* Prevent text from wrapping */
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast);  /* Smooth hover */
 }
 
+/* Tag pill hover: lift and scale up slightly */
 .tag-pill:hover {
-  transform: translateY(-2px) scale(1.03);
-  box-shadow: var(--shadow-md);
-  border-color: var(--text-muted);
+  transform: translateY(-2px) scale(1.03);  /* Float up and grow */
+  box-shadow: var(--shadow-md);             /* Add shadow for depth */
+  border-color: var(--text-muted);          /* Darker border */
 }
 
+/* Large tag pill variant: more padding, bigger font for featured tags */
 .tag-pill-lg {
-  padding: 6px 16px;
-  font-size: var(--text-sm);
+  padding: 6px 16px;             /* More generous padding */
+  font-size: var(--text-sm);     /* 14px */
 }
 
+/* Large pill hover: force elevated background for consistency */
 .tag-pill-lg:hover {
-  background-color: var(--bg-elevated) !important;
-  border-color: var(--text-muted);
+  background-color: var(--bg-elevated) !important;  /* Force lighter background */
+  border-color: var(--text-muted);                    /* Darker border */
 }
 
+/* Container for tag pills on video cards: wrap-able flex row */
 .video-tag-pills {
-  display: flex;
-  gap: 4px;
-  flex-wrap: wrap;
-  margin-top: var(--space-sm);
+  display: flex;        /* Horizontal row */
+  gap: 4px;             /* Tiny gap between pills */
+  flex-wrap: wrap;      /* Allow wrapping for many tags */
+  margin-top: var(--space-sm);  /* 8px above the tags */
 }
 
+/* "+N more" indicator when there are more tags than displayed */
 .tag-more-indicator {
-  font-size: var(--text-xs);
-  color: var(--text-muted);
-  padding: 2px 6px;
+  font-size: var(--text-xs);    /* 12px */
+  color: var(--text-muted);     /* Dim text */
+  padding: 2px 6px;             /* Small hit area */
 }
 
-/* --- PAGE ENTER ANIMATION --- */
+/* ═══════════════════════════════════════════════════════════════════════
+   PAGE ENTER ANIMATION
+   Fades in each page when it loads for a polished transition.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* pageEnter: simple fade-in used as the default entrance for pages */
 @keyframes pageEnter {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from { opacity: 0; }   /* Start fully transparent */
+  to   { opacity: 1; }   /* End fully opaque */
 }
 
+/* Apply pageEnter to the <main> element on every page */
 main {
-  animation: pageEnter 0.6s var(--ease-relax) forwards;
+  animation: pageEnter 0.6s var(--ease-relax) forwards;  /* 0.6s fade-in using relaxed easing, retain final state */
 }
 
-/* --- KEYFRAME ANIMATIONS --- */
+/* ═══════════════════════════════════════════════════════════════════════
+   KEYFRAME ANIMATIONS
+   Reusable animation definitions used across the site.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* slideInRight: slides element in from the right with a fade - used for toast notifications */
 @keyframes slideInRight {
-  from { transform: translateX(100%); opacity: 0; }
-  to   { transform: translateX(0); opacity: 1; }
+  from { transform: translateX(100%); opacity: 0; }  /* Start off-screen to the right, invisible */
+  to   { transform: translateX(0); opacity: 1; }     /* End at natural position, fully visible */
 }
 
+/* fadeIn: simple opacity transition from 0 to 1 */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from { opacity: 0; }   /* Start invisible */
+  to   { opacity: 1; }   /* End fully visible */
 }
 
+/* fadeInUp: fade in while moving upward - used for login card entrance */
 @keyframes fadeInUp {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from { opacity: 0; }                          /* Start invisible */
+  to   { opacity: 1; }                          /* End fully visible (transform handled separately) */
 }
 
+/* slideUp: fade in while sliding up from 12px below */
 @keyframes slideUp {
-  from { transform: translateY(12px); opacity: 0; }
-  to   { transform: translateY(0); opacity: 1; }
+  from { transform: translateY(12px); opacity: 0; }  /* Start 12px below and invisible */
+  to   { transform: translateY(0); opacity: 1; }     /* End at natural position, visible */
 }
 
+/* heartBeat: bounce-like scale animation for like/favourite actions */
 @keyframes heartBeat {
-  0%   { transform: scale(1); }
-  30%  { transform: scale(1.15); }
-  60%  { transform: scale(0.95); }
-  80%  { transform: scale(1.08); }
-  100% { transform: scale(1); }
+  0%   { transform: scale(1); }       /* Normal size */
+  30%  { transform: scale(1.15); }    /* Grow larger (the "thump") */
+  60%  { transform: scale(0.95); }    /* Overshoot smaller */
+  80%  { transform: scale(1.08); }    /* Slightly overshoot larger */
+  100% { transform: scale(1); }       /* Settle back to normal */
 }
 
+/* shimmer: moving gradient effect for skeleton loading states */
 @keyframes shimmer {
-  0%   { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0%   { background-position: -200% 0; }   /* Start gradient off-screen to the left */
+  100% { background-position: 200% 0; }    /* Move gradient off-screen to the right */
 }
 
+/* floatUp: gentle floating motion, bobbing up and down */
 @keyframes floatUp {
-  0%   { transform: translateY(0); }
-  50%  { transform: translateY(-4px); }
-  100% { transform: translateY(0); }
+  0%   { transform: translateY(0); }    /* Start at rest */
+  50%  { transform: translateY(-4px); } /* Rise up 4px */
+  100% { transform: translateY(0); }    /* Return to rest */
 }
 
-/* --- UTILITY ANIMATION CLASSES --- */
+/* ═══════════════════════════════════════════════════════════════════════
+   UTILITY ANIMATION CLASSES
+   Reusable CSS classes that apply the keyframe animations above.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Simple fade-in: useful for any element that should appear gradually */
 .animate-fade {
-  animation: fadeIn var(--transition-base) forwards;
+  animation: fadeIn var(--transition-base) forwards;  /* 0.5s fade with relaxed easing, retain final opacity */
 }
 
+/* Slide up entrance: content slides in from below */
 .animate-slide-up {
-  animation: slideUp var(--transition-base) var(--ease-spring);
+  animation: slideUp var(--transition-base) var(--ease-spring);  /* 0.5s with spring easing for bouncy feel */
 }
 
+/* Fade in and up: slower, springy entrance for more prominent elements */
 .animate-fade-in-up {
-  animation: fadeInUp var(--transition-slow) var(--ease-spring) forwards;
+  animation: fadeInUp var(--transition-slow) var(--ease-spring) forwards;  /* 0.7s with spring, retain final state */
 }
 
+/* reveal-on-scroll: element hidden initially, revealed when scrolled into view (via JS) */
 .reveal-on-scroll {
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.6s var(--ease-relax), transform 0.6s var(--ease-relax);
+  opacity: 0;                          /* Hidden by default */
+  transform: translateY(20px);         /* Shifted down 20px */
+  transition: opacity 0.6s var(--ease-relax), transform 0.6s var(--ease-relax);  /* Smooth reveal */
 }
 
+/* When JS adds .revealed class, element fades in and moves up */
 .reveal-on-scroll.revealed {
-  opacity: 1;
-  transform: translateY(0);
+  opacity: 1;                          /* Fully visible */
+  transform: translateY(0);            /* Back to natural position */
 }
 
+/* Heart-beat pulse: triggers on like/favourite actions (typically via JS class toggle) */
 .heart-beat {
-  animation: heartBeat 0.5s var(--ease-relax);
+  animation: heartBeat 0.5s var(--ease-relax);  /* 0.5s heartbeat animation */
 }
 
-/* --- VIDEO CARDS (shared across pages) --- */
+/* ═══════════════════════════════════════════════════════════════════════
+   VIDEO CARDS (shared across pages)
+   Reusable card component used in search results, tag pages, home rows, etc.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Base video card: fixed-width flex item with thumbnail, title, and metadata */
 .video-card {
-  flex: 0 0 240px;
-  background-color: var(--bg-secondary);
-  border-radius: var(--radius-md);
-  padding: var(--space-md);
-  transition: background-color var(--transition-base), transform var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
-  scroll-snap-align: start;
-  cursor: pointer;
-  border: 1px solid transparent;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+  flex: 0 0 240px;                     /* Fixed 240px width, don't grow or shrink */
+  background-color: var(--bg-secondary);  /* Card background */
+  border-radius: var(--radius-md);     /* 8px rounded corners */
+  padding: var(--space-md);            /* 12px internal padding */
+  transition: background-color var(--transition-base), transform var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);  /* Smooth hover */
+  scroll-snap-align: start;            /* Snap target for horizontal scroll containers */
+  cursor: pointer;                     /* Clickable */
+  border: 1px solid transparent;       /* Invisible border to prevent layout shift on hover */
+  display: flex;                       /* Vertical layout */
+  flex-direction: column;              /* Thumbnail top, info bottom */
+  height: 100%;                        /* Fill parent height in grid */
 }
 
+/* Video card hover: lift, add border, elevate background */
 .video-card:hover {
-  background-color: var(--bg-elevated);
-  transform: translateY(-4px);
-  border-color: var(--border);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  background-color: var(--bg-elevated);                     /* Lighter background */
+  transform: translateY(-4px);                               /* Float up 4px */
+  border-color: var(--border);                               /* Show border */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);               /* Depth shadow */
 }
 
+/* Thumbnail wrapper: maintains 16:9 aspect ratio */
 .thumbnail-container {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-  background-color: var(--bg-primary);
-  margin-bottom: var(--space-md);
+  position: relative;                   /* Anchor for overlay elements (badge, play btn) */
+  width: 100%;                          /* Full card width */
+  aspect-ratio: 16 / 9;                 /* 16:9 aspect ratio (modern CSS) */
+  border-radius: var(--radius-sm);      /* 4px rounded corners */
+  overflow: hidden;                     /* Clip image to rounded corners */
+  background-color: var(--bg-primary);  /* Placeholder background while image loads */
+  margin-bottom: var(--space-md);       /* 12px below thumbnail */
 }
 
+/* Thumbnail image: cover the container */
 .thumbnail-container img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform var(--transition-slow);
+  width: 100%;                          /* Fill width */
+  height: 100%;                         /* Fill height */
+  object-fit: cover;                    /* Crop to cover without distortion */
+  transition: transform var(--transition-slow);  /* Smooth zoom on card hover */
 }
 
+/* Zoom thumbnail on card hover for a subtle "preview" effect */
 .video-card:hover .thumbnail-container img {
-  transform: scale(1.05);
+  transform: scale(1.05);               /* Slight zoom (105%) */
 }
 
+/* Duration badge: overlay in bottom-right of thumbnail */
 .duration-badge {
-  position: absolute;
-  bottom: var(--space-sm);
-  right: var(--space-sm);
-  background-color: rgba(0, 0, 0, 0.85);
-  color: #ffffff;
-  font-size: var(--text-xs);
-  font-family: var(--font-mono);
-  padding: 2px 6px;
-  border-radius: var(--radius-sm);
-  font-weight: 500;
+  position: absolute;                    /* Overlaid on thumbnail */
+  bottom: var(--space-sm);               /* 8px from bottom */
+  right: var(--space-sm);                /* 8px from right */
+  background-color: rgba(0, 0, 0, 0.85); /* Dark semi-transparent background */
+  color: #ffffff;                        /* White text */
+  font-size: var(--text-xs);            /* 12px */
+  font-family: var(--font-mono);        /* Monospace for consistent width numbers */
+  padding: 2px 6px;                     /* Compact */
+  border-radius: var(--radius-sm);      /* 4px rounded */
+  font-weight: 500;                     /* Medium weight */
 }
 
+/* Play button overlay: fades in on card hover */
 .play-hover-btn {
-  position: absolute;
-  bottom: var(--space-md);
-  right: var(--space-md);
-  background-color: var(--accent);
-  color: #000000;
-  width: 44px;
+  position: absolute;                    /* Overlaid on thumbnail */
+  bottom: var(--space-md);               /* 12px from bottom */
+  right: var(--space-md);                /* 12px from right */
+  background-color: var(--accent);       /* Green accent background */
+  color: #000000;                        /* Black play icon */
+  width: 44px;                           /* Fixed size circle */
   height: 44px;
-  border-radius: var(--radius-full);
-  display: flex;
+  border-radius: var(--radius-full);      /* Perfect circle */
+  display: flex;                         /* Centre the play icon */
   align-items: center;
   justify-content: center;
-  box-shadow: var(--shadow-md);
-  opacity: 0;
-  transform: translateY(8px);
-  transition: opacity var(--transition-base), transform var(--transition-base), background-color var(--transition-fast);
+  box-shadow: var(--shadow-md);           /* Shadow for depth */
+  opacity: 0;                            /* Hidden by default */
+  transform: translateY(8px);             /* Start 8px below final position */
+  transition: opacity var(--transition-base), transform var(--transition-base), background-color var(--transition-fast);  /* Smooth reveal */
 }
 
+/* Play button SVG: shift right slightly to optically centre the triangle */
 .play-hover-btn svg {
-  margin-left: 2px;
+  margin-left: 2px;                      /* Shift play triangle right for optical alignment */
 }
 
+/* Reveal play button on card hover */
 .video-card:hover .play-hover-btn {
-  opacity: 1;
-  transform: translateY(0);
+  opacity: 1;                            /* Fully visible */
+  transform: translateY(0);              /* Move to natural position */
 }
 
+/* Play button hover: darker green and slightly larger */
 .play-hover-btn:hover {
-  background-color: var(--accent-hover);
-  transform: scale(1.05) !important;
+  background-color: var(--accent-hover);  /* Darker green */
+  transform: scale(1.05) !important;      /* Grow slightly (override card hover transform) */
 }
 
+/* Info section: title and metadata stacked below thumbnail */
 .video-info {
-  display: flex;
+  display: flex;                         /* Vertical stack */
   flex-direction: column;
-  flex: 1;
+  flex: 1;                               /* Fill remaining card height */
 }
 
+/* Video title: clamped to 2 lines with ellipsis overflow */
 .video-title {
-  font-size: var(--text-sm);
-  font-weight: 600;
-  line-height: 1.4;
-  margin-bottom: var(--space-xs);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  height: 38px;
+  font-size: var(--text-sm);             /* 14px */
+  font-weight: 600;                      /* Semi-bold */
+  line-height: 1.4;                      /* Comfortable line height */
+  margin-bottom: var(--space-xs);        /* 4px below title */
+  display: -webkit-box;                  /* Line clamp container (WebKit) */
+  -webkit-line-clamp: 2;                 /* Show max 2 lines */
+  -webkit-box-orient: vertical;          /* Vertical clamping */
+  overflow: hidden;                      /* Hide overflow text */
+  height: 38px;                          /* Fixed height for 2 lines × 14px × 1.4 line-height */
 }
 
+/* Video metadata: views, date, etc. in small secondary text */
 .video-meta {
-  font-size: var(--text-xs);
-  color: var(--text-secondary);
-  margin-top: auto;
-  line-height: 1.4;
+  font-size: var(--text-xs);             /* 12px */
+  color: var(--text-secondary);          /* Grey text */
+  margin-top: auto;                      /* Push to bottom of card */
+  line-height: 1.4;                      /* Consistent line height */
 }
 
+/* Creator name: slightly more prominent than other meta */
 .video-creator {
-  font-weight: 500;
-  color: var(--text-primary);
-  margin-bottom: 2px;
+  font-weight: 500;                      /* Medium weight */
+  color: var(--text-primary);            /* White text */
+  margin-bottom: 2px;                    /* Small gap below creator */
 }
 
+/* Mobile: narrower video cards */
 @media (max-width: 576px) {
   .video-card {
-    flex: 0 0 200px;
+    flex: 0 0 200px;                     /* 200px wide on small screens */
   }
 }
 
-/* --- SKELETON LOADERS --- */
+/* ═══════════════════════════════════════════════════════════════════════
+   SKELETON LOADERS
+   Placeholder shimmer effect while content is loading.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* .skeleton: animated placeholder that mimics card/text layout */
 .skeleton {
-  background: linear-gradient(90deg, var(--bg-elevated) 25%, var(--border) 50%, var(--bg-elevated) 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite linear;
-  border-radius: var(--radius-sm);
+  background: linear-gradient(90deg, var(--bg-elevated) 25%, var(--border) 50%, var(--bg-elevated) 75%);  /* Three-tone gradient for shimmer */
+  background-size: 200% 100%;              /* Double width so the gradient can sweep */
+  animation: shimmer 1.5s infinite linear;  /* Continuous shimmer sweep */
+  border-radius: var(--radius-sm);          /* 4px rounded to match content */
 }
 
-/* --- HAMBURGER MENU FOR MOBILE --- */
+/* ═══════════════════════════════════════════════════════════════════════
+   HAMBURGER MENU FOR MOBILE
+   Three-line icon that toggles a full-screen navigation drawer.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Hamburger button: 3 stacked lines, hidden on desktop */
 .hamburger {
-  display: none;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  width: 36px;
+  display: none;                         /* Hidden on desktop */
+  flex-direction: column;                /* Stack lines vertically */
+  justify-content: space-between;        /* Evenly space the 3 lines */
+  align-items: center;                   /* Centre lines horizontally */
+  width: 36px;                           /* Fixed square size */
   height: 36px;
-  padding: 8px 6px;
-  cursor: pointer;
-  background: none;
-  border: 1px solid transparent;
-  border-radius: var(--radius-sm);
-  transition: border-color var(--transition-fast), background-color var(--transition-fast);
+  padding: 8px 6px;                      /* Internal spacing for lines */
+  cursor: pointer;                       /* Clickable */
+  background: none;                      /* No background */
+  border: 1px solid transparent;         /* Invisible border, visible on hover */
+  border-radius: var(--radius-sm);       /* 4px rounded */
+  transition: border-color var(--transition-fast), background-color var(--transition-fast);  /* Smooth hover */
 }
 
+/* Hamburger hover: show border and subtle background */
 .hamburger:hover {
-  border-color: var(--border);
-  background-color: var(--bg-elevated);
+  border-color: var(--border);           /* Visible border */
+  background-color: var(--bg-elevated);  /* Lighter background */
 }
 
+/* Each line of the hamburger icon */
 .hamburger span {
-  display: block;
-  height: 2px;
-  width: 100%;
-  background-color: var(--text-primary);
-  border-radius: var(--radius-full);
-  transition: transform var(--transition-fast), opacity var(--transition-fast);
+  display: block;                        /* Each line is a block element */
+  height: 2px;                           /* Thin line */
+  width: 100%;                           /* Full button width */
+  background-color: var(--text-primary); /* White line */
+  border-radius: var(--radius-full);     /* Rounded ends */
+  transition: transform var(--transition-fast), opacity var(--transition-fast);  /* Smooth animation for menu open/close */
 }
 
+/* Mobile breakpoint: 896px (slightly above tablet to catch small laptops) */
 @media (max-width: 896px) {
+  /* Show hamburger button */
   .hamburger {
-    display: flex;
+    display: flex;                       /* Visible on mobile */
   }
+
+  /* Transform nav-menu into a full-screen slide-in drawer */
   .nav-menu {
-    position: fixed;
-    top: 64px;
+    position: fixed;                     /* Overlay on top of content */
+    top: 64px;                           /* Below navbar */
     left: 0;
-    width: 100%;
-    height: calc(100vh - 64px);
-    background-color: var(--bg-secondary);
-    flex-direction: column;
-    padding: var(--space-3xl) var(--space-xl);
-    gap: var(--space-xl);
-    transform: translateX(100%);
-    transition: transform var(--transition-base);
-    z-index: 90;
-    align-items: stretch;
-    visibility: hidden;
-    pointer-events: none;
+    width: 100%;                         /* Full width */
+    height: calc(100vh - 64px);          /* Full height minus navbar */
+    background-color: var(--bg-secondary);  /* Match navbar background */
+    flex-direction: column;              /* Vertical layout for links */
+    padding: var(--space-3xl) var(--space-xl);  /* 48px top/bottom, 24px sides */
+    gap: var(--space-xl);                /* 24px between links */
+    transform: translateX(100%);         /* Start off-screen to the right */
+    transition: transform var(--transition-base);  /* Slide in/out */
+    z-index: 90;                         /* Below navbar (100) but above content */
+    align-items: stretch;                /* Full-width links */
+    visibility: hidden;                  /* Hide from screen readers when closed */
+    pointer-events: none;                /* Can't interact when closed */
   }
   
+  /* Open nav menu: slide into view */
   .nav-menu.active {
-    transform: translateX(0);
-    visibility: visible;
-    pointer-events: all;
+    transform: translateX(0);            /* Slide in from right */
+    visibility: visible;                 /* Screen reader accessible */
+    pointer-events: all;                 /* Interactive */
   }
   
+  /* Nav links in mobile menu: larger text, centred, with rounded corners */
   .nav-link {
-    font-size: var(--text-lg);
-    text-align: center;
-    border-radius: var(--radius-md);
+    font-size: var(--text-lg);           /* 18px for easier tapping */
+    text-align: center;                  /* Centre text */
+    border-radius: var(--radius-md);     /* 8px rounded for block-style links */
   }
 
+  /* Search bar: tighter margins on mobile */
   .nav-center {
-    margin: 0 var(--space-md);
+    margin: 0 var(--space-md);           /* 12px side margins */
   }
 
+  /* Hide text-based nav links in the right section on mobile (show icons only) */
   .nav-right .nav-link {
-    display: none;
+    display: none;                       /* Hidden on mobile */
   }
 }

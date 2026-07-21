@@ -1,15 +1,58 @@
 <!DOCTYPE html>
+<!-- ═══════════════════════════════════════════ -->
+<!-- FILE: login-logs.html                      -->
+<!-- PURPOSE: Authentication attempt tracker    -->
+<!--          (success/failed/lockout) with     -->
+<!--          timestamps, IPs, user-agents.     -->
+<!-- ═══════════════════════════════════════════ -->
+<!--
+  ============================================================================
+  FILE: login-logs.html
+  SECTION: Admin / Security
+  DESCRIPTION: Tracks authentication attempts (successful/failed logins,
+  account lockouts) with timestamps, usernames, IPs, and user-agent info.
+  Data is generated client-side via mock data for prototyping.
+  DEPENDENCIES: main.js, components.js, mockData.js
+  ============================================================================
+-->
 <html lang="en">
 <head>
+  <!-- ==================== HEAD ==================== -->
+  <!--
+    THEME INIT SCRIPT:
+    Reads "site-theme" from localStorage and sets data-theme on <html>
+    before rendering to prevent FOUC. Defaults to "dark".
+  -->
   <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+  <!-- META: UTF-8 encoding declaration for proper Unicode character handling -->
   <meta charset="UTF-8">
+  <!-- META: Viewport settings for responsive mobile layout -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- META: Page description for search engine result snippets -->
   <meta name="description" content="Login logs - track authentication attempts">
+  <!-- TITLE: Browser tab and search engine title for this page -->
   <title>Login Logs - Antigravity Play</title>
+  <!--
+    STYLESHEET: main.css
+    Global design system with CSS variables, base resets, component styles
+    (buttons, badges, modals, toasts, tables, cards), admin layout, and
+    responsive breakpoints for mobile/desktop views.
+  -->
   <link rel="stylesheet" href="../css/main.css">
 </head>
+<!-- ==================== BODY ==================== -->
 <body>
+  <!--
+    TOAST CONTAINER: Fixed notification area (top-right). Toast messages
+    are dynamically inserted by window.App.showToast(). Uses ARIA live
+    region for screen reader announcements.
+  -->
   <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+  <!--
+    CONFIRMATION MODAL OVERLAY: Reusable dialog for confirming actions.
+    role="dialog" + aria-modal="true" for accessibility. Shown/hidden
+    by toggling .visible class via JS.
+  -->
   <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
     <div class="modal">
       <div class="modal-header"><h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button></div>
@@ -17,22 +60,39 @@
       <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button class="btn btn-primary confirm-modal-btn">Confirm</button></div>
     </div>
   </div>
+  <!-- ─── SECTION: ADMIN LAYOUT ──────────────── -->
+  <!-- ==================== ADMIN LAYOUT ==================== -->
   <div class="admin-layout">
+    <!--
+      SIDEBAR CONTAINER: Populated by Components.injectAdminSidebar()
+      with the admin navigation links. Active page highlighted based
+      on the 'login-logs' argument.
+    -->
     <div id="sidebar-container"></div>
+    <!-- ==================== MAIN CONTENT ==================== -->
     <main class="admin-main">
+      <!-- ─── SECTION: MOBILE HEADER ──────────── -->
+      <!--
+        ADMIN HEADER: Mobile top bar with hamburger menu, page title, spacer.
+      -->
       <div class="admin-header">
         <button class="admin-menu-btn" aria-label="Open menu">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         </button>
+        <!-- PAGE TITLE: Displayed in the mobile header bar -->
         <h1>Login Logs</h1>
+        <!-- SPACER: Fills remaining flex space in header row -->
         <div style="flex:1;"></div>
       </div>
+      <!-- ─── SECTION: ADMIN CONTENT ──────────── -->
       <div class="admin-content">
         <div class="admin-card">
+          <!-- ─── CARD HEADER ───────────────────── -->
           <div class="admin-card-header">
             <h2>Login Logs</h2>
             <span class="badge badge-info" id="log-count">0 entries</span>
           </div>
+          <!-- ─── CARD BODY ─────────────────────── -->
           <div class="admin-card-body">
             <div id="log-container">
               <div class="empty-state-container" style="text-align:center;padding:var(--space-4xl);">
@@ -46,10 +106,23 @@
       </div>
     </main>
   </div>
+  <!-- ─── SECTION: SCRIPTS ──────────────────── -->
+  <!-- ==================== SCRIPTS ==================== -->
+  <!-- mockData.js: Provides mock data generation functions for prototyping -->
   <script src="../js/mockData.js"></script>
+  <!-- main.js: Core app - theme toggling, toast API, utility functions -->
   <script src="../js/main.js"></script>
+  <!-- components.js: Dynamic UI component injection (sidebar, navbar, footer, pagination) -->
   <script src="../js/components.js"></script>
+  <!-- animations.js: Scroll-reveal and page transition animations -->
   <script src="../js/animations.js"></script>
+  <!--
+    INLINE SCRIPT - Login Logs page logic:
+    1. Injects admin sidebar via Components.injectAdminSidebar().
+    2. Generates sample login log entries via generateLogEntries().
+    3. Renders entries in an HTML table (Timestamp, Username, Status, Details).
+    4. Updates #log-count with total entries; shows empty state if none.
+  -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       window.Components.injectAdminSidebar('login-logs');

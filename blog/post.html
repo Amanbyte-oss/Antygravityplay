@@ -1,16 +1,44 @@
 <!DOCTYPE html>
+<!-- ═══════════════════════════════════════════ -->
+<!-- FILE: post.html                            -->
+<!-- PURPOSE: Individual blog post page         -->
+<!-- ═══════════════════════════════════════════ -->
+<!--
+  ============================================================================
+  FILE: blog/post.html
+  SECTION: Public / Blog
+  DESCRIPTION: Individual blog post page. Loads post content dynamically
+  from an inline JS data store based on the "id" query parameter. Supports
+  multiple posts (welcome, player, theming) with title, date, author, tag,
+  read time, and full HTML content.
+  DEPENDENCIES: main.js, components.js
+  ============================================================================
+-->
 <html lang="en">
+<!-- ─── HTML ──────────────────────────────────── -->
 <head>
+  <!-- ==================== HEAD ==================== -->
+  <!-- THEME INIT: Sets data-theme from localStorage before render to prevent FOUC -->
   <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+  <!-- META: UTF-8 encoding declaration -->
   <meta charset="UTF-8">
+  <!-- META: Responsive viewport for mobile scaling -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- META: SEO description (generic, dynamically updated by JS on post load) -->
   <meta name="description" content="Blog post - Antigravity Play">
+  <!-- TITLE: Browser tab title (dynamically updated by JS to show post title) -->
   <title>Blog Post - Antigravity Play</title>
+  <!-- STYLESHEET: main.css - Global design system with CSS variables and base styles -->
   <link rel="stylesheet" href="../css/main.css">
+  <!-- STYLESHEET: blog.css - Blog post styles (layout, typography, featured image, content, navigation) -->
   <link rel="stylesheet" href="../css/blog.css">
 </head>
+<!-- ==================== BODY ==================== -->
 <body>
+  <!-- ─── SECTION: SHARED COMPONENTS ──────────── -->
+  <!-- TOAST CONTAINER: Fixed notification area for feedback messages -->
   <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+  <!-- CONFIRMATION MODAL OVERLAY: Standard reusable dialog -->
   <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
     <div class="modal">
       <div class="modal-header"><h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button></div>
@@ -18,19 +46,57 @@
       <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button class="btn btn-primary confirm-modal-btn">Confirm</button></div>
     </div>
   </div>
+  <!--
+    NAVBAR CONTAINER: Public site navigation injected by Components.injectNavbar().
+    Contains logo, search link, theme toggle, and navigation links.
+  -->
   <header id="navbar-container" class="navbar-wrapper"></header>
+  <!-- ==================== BLOG POST MAIN ==================== -->
   <main class="container blog-post" id="blog-post">
+    <!--
+      POST LOADING STATE: Shown while the JS determines which post to load.
+      Contains a spinner animation and "Loading post..." text.
+      Hidden once the post content is rendered.
+    -->
     <div id="post-loading" style="text-align:center;padding:var(--space-5xl);">
       <div class="system-spinner" style="margin:0 auto var(--space-xl);"></div>
       <p style="color:var(--text-muted);">Loading post...</p>
     </div>
+    <!--
+      POST CONTENT CONTAINER: Hidden by default. Populated dynamically by the
+      inline script with the full blog post HTML including featured image,
+      meta info (tag, date, read time), title, body content, and navigation
+      links (Back to Blog, All Posts).
+    -->
     <div id="post-content" style="display:none;"></div>
   </main>
+  <!-- ─── SECTION: FOOTER ──────────────────────── -->
+  <!--
+    FOOTER CONTAINER: Public site footer injected by Components.injectFooter().
+    Copyright, links, and site information.
+  -->
   <footer id="footer-container" style="margin-top: 100px;"></footer>
+  <!-- ==================== SCRIPTS ==================== -->
+  <!-- mockData.js: Mock data generation functions -->
   <script src="../js/mockData.js"></script>
+  <!-- main.js: Core app - theme toggling, toast API, getQueryParams utility -->
   <script src="../js/main.js"></script>
+  <!-- components.js: UI injectors - navbar, footer, sidebar, pagination -->
   <script src="../js/components.js"></script>
+  <!-- animations.js: Scroll-reveal and transition animation utilities -->
   <script src="../js/animations.js"></script>
+  <!--
+    INLINE SCRIPT: Blog post page logic.
+    On DOMContentLoaded:
+    1. Injects navbar and footer via Components.
+    2. Initializes scroll-reveal animations.
+    3. Reads the "id" query parameter to determine which post to show.
+    4. Looks up the post in the inline posts database (welcome, player, theming).
+    5. If found: renders the post HTML (featured image, meta, title, content),
+       updates the document title, and shows the content.
+    6. If not found: renders a "Post Not Found" message with a link back to
+       the blog index.
+  -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       window.Components.injectNavbar();
@@ -40,7 +106,7 @@
       const params = window.App.getQueryParams();
       const postId = params.id || 'welcome';
 
-      // Simple blog post database
+      // Simple static blog post database (3 posts: welcome, player, theming)
       const posts = {
         welcome: {
           title: 'Welcome to Antigravity Play',

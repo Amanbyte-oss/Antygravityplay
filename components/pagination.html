@@ -1,24 +1,43 @@
+<!-- ═══════════════════════════════════════════ -->
+<!-- FILE: pagination.html                      -->
+<!-- PURPOSE: Page navigation control — shows   -->
+<!--   result range, prev/next buttons, page    -->
+<!--   number buttons, and per-page selector.   -->
+<!-- ═══════════════════════════════════════════ -->
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: PAGINATION CONTAINER              -->
+<!-- ═══════════════════════════════════════════ -->
 <div class="pagination-container">
+
+  <!-- ─── Result Info ───────────────────────────── -->
   <div class="pagination-info">
     Showing <span class="pagination-range-start">1</span>-<span class="pagination-range-end">10</span> of <span class="pagination-total">0</span> results
   </div>
+
+  <!-- ─── Page Controls ─────────────────────────── -->
   <div class="pagination-controls">
+    <!-- Previous page button (disabled on first page) -->
     <button class="pagination-btn pagination-prev" aria-label="Previous page" disabled>
       <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
         <polyline points="15 18 9 12 15 6"></polyline>
       </svg>
     </button>
+    <!-- Page number buttons — dynamically active -->
     <div class="pagination-pages">
       <button class="pagination-btn active" data-page="1">1</button>
       <button class="pagination-btn" data-page="2">2</button>
       <button class="pagination-btn" data-page="3">3</button>
     </div>
+    <!-- Next page button -->
     <button class="pagination-btn pagination-next" aria-label="Next page">
       <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
         <polyline points="9 18 15 12 9 6"></polyline>
       </svg>
     </button>
   </div>
+
+  <!-- ─── Per-Page Selector ──────────────────────── -->
   <div class="pagination-per-page">
     <label>
       <span class="pagination-per-page-label">Per page</span>

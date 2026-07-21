@@ -1,88 +1,119 @@
+<!-- ═══════════════════════════════════════════ -->
+<!-- FILE: tag.html                              -->
+<!-- PURPOSE: Tag detail page showing a hero     -->
+<!--   banner for the selected tag, a grid of    -->
+<!--   matching videos, and related tags.        -->
+<!-- ═══════════════════════════════════════════ -->
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: HEAD                               -->
+<!-- ═══════════════════════════════════════════ -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Browse published video items matching selected tag references on Antigravity Play.">
+
   <title>Tag Videos - Antigravity Play</title>
+
+  <!-- main.css: Global design system & base styles -->
   <link rel="stylesheet" href="./css/main.css">
+  <!-- tag.css: Tag page styles — hero banner, results grid, related tags -->
   <link rel="stylesheet" href="./css/tag.css">
 </head>
 <body>
 
-  <!-- Toast Notification Container -->
-  <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: TOAST NOTIFICATION CONTAINER       -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
 
-  <!-- Reusable Confirmation Modal Container -->
-  <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
-    <div class="modal">
-      <div class="modal-header">
-        <h3 class="modal-title">Confirm Action</h3>
-        <button class="modal-close" aria-label="Close dialog">&times;</button>
-      </div>
-      <div class="modal-body">Are you sure?</div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary cancel-modal-btn">Cancel</button>
-        <button class="btn btn-primary confirm-modal-btn">Confirm</button>
-      </div>
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: CONFIRMATION MODAL                 -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">Confirm Action</h3>
+      <button class="modal-close" aria-label="Close dialog">&times;</button>
+    </div>
+    <div class="modal-body">Are you sure?</div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary cancel-modal-btn">Cancel</button>
+      <button class="btn btn-primary confirm-modal-btn">Confirm</button>
     </div>
   </div>
+</div>
 
-  <!-- Navbar injected here -->
-  <header id="navbar-container" class="navbar-wrapper"></header>
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: HEADER / NAVBAR                    -->
+<!-- ═══════════════════════════════════════════ -->
+<header id="navbar-container" class="navbar-wrapper"></header>
 
-  <main class="container" id="tag-page-container" style="min-height: 80vh;">
-    
-    <!-- Tag Hero Banner -->
-    <section class="tag-hero" id="tag-hero" style="border-radius: var(--radius-lg); overflow: hidden; margin: var(--space-2xl) 0; min-height: 180px; display: flex; align-items: center; border: 1px solid var(--border); box-shadow: var(--shadow-md);">
-      <div class="tag-hero-content" style="padding: var(--space-3xl); width: 100%;">
-        <div class="tag-title-row" style="display: flex; align-items: center; gap: var(--space-md);">
-          <span id="tag-hero-icon" class="tag-icon-badge" style="width: 48px; height: 48px; border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; font-size: var(--text-2xl); font-weight: 700; color: #fff;">#</span>
-          <div>
-            <h1 class="tag-page-title" id="tag-page-title" style="font-size: var(--text-3xl); font-weight: 700;">Tag Loading...</h1>
-            <p class="tag-page-desc" id="tag-page-desc" style="font-size: var(--text-sm); color: var(--text-secondary); margin-top: var(--space-xs);">Searching tag database...</p>
-          </div>
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: MAIN CONTENT                       -->
+<!-- ═══════════════════════════════════════════ -->
+<main class="container" id="tag-page-container" style="min-height: 80vh;">
+
+  <!-- Tag Hero Banner: dynamically styled based on tag color -->
+  <section class="tag-hero" id="tag-hero" style="border-radius: var(--radius-lg); overflow: hidden; margin: var(--space-2xl) 0; min-height: 180px; display: flex; align-items: center; border: 1px solid var(--border); box-shadow: var(--shadow-md);">
+    <div class="tag-hero-content" style="padding: var(--space-3xl); width: 100%;">
+      <div class="tag-title-row" style="display: flex; align-items: center; gap: var(--space-md);">
+        <span id="tag-hero-icon" class="tag-icon-badge" style="width: 48px; height: 48px; border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; font-size: var(--text-2xl); font-weight: 700; color: #fff;">#</span>
+        <div>
+          <h1 class="tag-page-title" id="tag-page-title" style="font-size: var(--text-3xl); font-weight: 700;">Tag Loading...</h1>
+          <p class="tag-page-desc" id="tag-page-desc" style="font-size: var(--text-sm); color: var(--text-secondary); margin-top: var(--space-xs);">Searching tag database...</p>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- Tag Video grid results -->
-    <section aria-labelledby="grid-heading">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: var(--space-lg);">
-        <h2 id="grid-heading" style="font-size: var(--text-md); font-weight:600; color:var(--text-primary);">Tag Playlist</h2>
-        <a href="./index.html" style="font-size: var(--text-sm); font-weight:600; color: var(--text-secondary);">&larr; Back to Browse</a>
-      </div>
-      <div id="tag-video-grid" class="tag-results-grid">
-        <!-- Videos injected here -->
-      </div>
-    </section>
+  <!-- Tag Video Grid: video cards filtered by current tag -->
+  <section aria-labelledby="grid-heading">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: var(--space-lg);">
+      <h2 id="grid-heading" style="font-size: var(--text-md); font-weight:600; color:var(--text-primary);">Tag Playlist</h2>
+      <a href="./index.html" style="font-size: var(--text-sm); font-weight:600; color: var(--text-secondary);">&larr; Back to Browse</a>
+    </div>
+    <div id="tag-video-grid" class="tag-results-grid">
+      <!-- Videos injected here via tag.js -->
+    </div>
+  </section>
 
-    <!-- Related Tags Section -->
-    <section class="related-tags-section" style="margin-top: var(--space-4xl); margin-bottom: var(--space-4xl); padding-top: var(--space-3xl); border-top: 1px solid var(--border);">
-      <div style="display:flex; align-items: center; gap: var(--space-md); margin-bottom: var(--space-xl);">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted); flex-shrink:0;">
-          <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
-          <line x1="7" y1="7" x2="7.01" y2="7"></line>
-        </svg>
-        <h3 style="font-size: var(--text-lg); font-weight: 600; color: var(--text-primary);">Related Tags</h3>
-      </div>
-      <p style="font-size: var(--text-sm); color: var(--text-muted); margin-bottom: var(--space-lg);" id="related-tags-desc">Tags commonly used together with this one</p>
-      <div id="related-tags-container" class="related-tags-grid">
-        <!-- Related tags injected via JS -->
-      </div>
-    </section>
+  <!-- Related Tags Section: tags commonly associated with this one -->
+  <section class="related-tags-section" style="margin-top: var(--space-4xl); margin-bottom: var(--space-4xl); padding-top: var(--space-3xl); border-top: 1px solid var(--border);">
+    <div style="display:flex; align-items: center; gap: var(--space-md); margin-bottom: var(--space-xl);">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted); flex-shrink:0;">
+        <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+        <line x1="7" y1="7" x2="7.01" y2="7"></line>
+      </svg>
+      <h3 style="font-size: var(--text-lg); font-weight: 600; color: var(--text-primary);">Related Tags</h3>
+    </div>
+    <p style="font-size: var(--text-sm); color: var(--text-muted); margin-bottom: var(--space-lg);" id="related-tags-desc">Tags commonly used together with this one</p>
+    <div id="related-tags-container" class="related-tags-grid">
+      <!-- Related tags injected via tag.js -->
+    </div>
+  </section>
 
-  </main>
+</main>
 
-  <!-- Footer injected here -->
-  <footer id="footer-container"></footer>
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: FOOTER                             -->
+<!-- ═══════════════════════════════════════════ -->
+<footer id="footer-container"></footer>
 
-  <!-- Scripts -->
-  <script src="./js/mockData.js"></script>
-  <script src="./js/main.js"></script>
-  <script src="./js/components.js"></script>
-  <script src="./js/animations.js"></script>
-  <script src="./js/tag.js"></script>
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: SCRIPTS                            -->
+<!-- ═══════════════════════════════════════════ -->
+<script src="./js/mockData.js"></script>
+<script src="./js/main.js"></script>
+<script src="./js/components.js"></script>
+<script src="./js/animations.js"></script>
+<!-- tag.js: Tag page logic — reads URL param, populates hero, video grid,
+     and related tags -->
+<script src="./js/tag.js"></script>
 </body>
 </html>

@@ -1,76 +1,119 @@
+<!-- ═══════════════════════════════════════════ -->
+<!-- FILE: terms.html                            -->
+<!-- PURPOSE: Terms of Use page — guidelines and -->
+<!--   legal terms for using the platform.       -->
+<!-- ═══════════════════════════════════════════ -->
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: HEAD                               -->
+<!-- ═══════════════════════════════════════════ -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Terms of Use for Antigravity Play — guidelines and rules for using the platform.">
+
   <title>Terms of Use - Antigravity Play</title>
+
+  <!-- main.css: Global design system & base styles -->
   <link rel="stylesheet" href="./css/main.css">
+  <!-- legal.css: Legal/info page-specific styles (headers, sections, date) -->
   <link rel="stylesheet" href="./css/legal.css">
 </head>
 <body>
-  <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
-  <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
-    <div class="modal">
-      <div class="modal-header"><h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button></div>
-      <div class="modal-body">Are you sure?</div>
-      <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button class="btn btn-primary confirm-modal-btn">Confirm</button></div>
-    </div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: TOAST NOTIFICATION CONTAINER       -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: CONFIRMATION MODAL                 -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal-header"><h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button></div>
+    <div class="modal-body">Are you sure?</div>
+    <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button class="btn btn-primary confirm-modal-btn">Confirm</button></div>
   </div>
-  <header id="navbar-container" class="navbar-wrapper"></header>
-  <main class="container legal-page">
-    <div class="legal-header">
-      <h1>Terms of Use</h1>
-      <p class="legal-date">Last updated: July 21, 2026</p>
-    </div>
-    <div class="legal-content">
-      <section>
-        <h2>1. Acceptance of Terms</h2>
-        <p>By accessing or using Antigravity Play, you agree to be bound by these Terms of Use. If you do not agree with any part of these terms, you must not use the platform.</p>
-      </section>
-      <section>
-        <h2>2. Use of Service</h2>
-        <p>You agree to use the Service only for lawful purposes and in a manner that does not infringe the rights of others or restrict their use and enjoyment of the platform. Prohibited activities include uploading harmful content, impersonating others, and attempting to disrupt the Service.</p>
-      </section>
-      <section>
-        <h2>3. User Content</h2>
-        <p>You retain full ownership of any content you upload to Antigravity Play. By uploading, you grant the platform a non-exclusive, royalty-free license to display and distribute your content within the Service.</p>
-        <p>You are solely responsible for the content you upload and must ensure it does not violate any applicable laws or third-party rights.</p>
-      </section>
-      <section>
-        <h2>4. Intellectual Property</h2>
-        <p>The Antigravity Play name, logo, and interface design are proprietary assets. You may not copy, modify, or redistribute the platform's code or design without explicit permission.</p>
-      </section>
-      <section>
-        <h2>5. Limitation of Liability</h2>
-        <p>Antigravity Play is provided &ldquo;as is&rdquo; without warranties of any kind. We are not liable for any damages arising from your use of the Service, including data loss or service interruption.</p>
-      </section>
-      <section>
-        <h2>6. Termination</h2>
-        <p>We reserve the right to suspend or terminate access to the Service at any time, without prior notice, for conduct that violates these Terms or is otherwise harmful to the platform or its users.</p>
-      </section>
-      <section>
-        <h2>7. Governing Law</h2>
-        <p>These Terms shall be governed by and construed in accordance with the applicable laws of the jurisdiction in which the platform operates, without regard to its conflict of law provisions.</p>
-      </section>
-      <section>
-        <h2>8. Changes to Terms</h2>
-        <p>We reserve the right to modify these Terms at any time. Continued use of the Service after changes constitutes acceptance of the new Terms. We will indicate the &ldquo;Last updated&rdquo; date at the top of this page.</p>
-      </section>
-    </div>
-  </main>
-  <footer id="footer-container" style="margin-top: 100px;"></footer>
-  <script src="./js/mockData.js"></script>
-  <script src="./js/main.js"></script>
-  <script src="./js/components.js"></script>
-  <script src="./js/animations.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      window.Components.injectNavbar();
-      window.Components.injectFooter();
-      window.Animations.initScrollReveal();
-    });
-  </script>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: HEADER / NAVBAR                    -->
+<!-- ═══════════════════════════════════════════ -->
+<header id="navbar-container" class="navbar-wrapper"></header>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: MAIN CONTENT (legal-page)          -->
+<!-- ═══════════════════════════════════════════ -->
+<!-- legal-page: standard layout for legal/info content
+     with a header section and content sections -->
+<main class="container legal-page">
+  <div class="legal-header">
+    <h1>Terms of Use</h1>
+    <p class="legal-date">Last updated: July 21, 2026</p>
+  </div>
+  <div class="legal-content">
+    <section>
+      <h2>1. Acceptance of Terms</h2>
+      <p>By accessing or using Antigravity Play, you agree to be bound by these Terms of Use. If you do not agree with any part of these terms, you must not use the platform.</p>
+    </section>
+    <section>
+      <h2>2. Use of Service</h2>
+      <p>You agree to use the Service only for lawful purposes and in a manner that does not infringe the rights of others or restrict their use and enjoyment of the platform. Prohibited activities include uploading harmful content, impersonating others, and attempting to disrupt the Service.</p>
+    </section>
+    <section>
+      <h2>3. User Content</h2>
+      <p>You retain full ownership of any content you upload to Antigravity Play. By uploading, you grant the platform a non-exclusive, royalty-free license to display and distribute your content within the Service.</p>
+      <p>You are solely responsible for the content you upload and must ensure it does not violate any applicable laws or third-party rights.</p>
+    </section>
+    <section>
+      <h2>4. Intellectual Property</h2>
+      <p>The Antigravity Play name, logo, and interface design are proprietary assets. You may not copy, modify, or redistribute the platform's code or design without explicit permission.</p>
+    </section>
+    <section>
+      <h2>5. Limitation of Liability</h2>
+      <p>Antigravity Play is provided &ldquo;as is&rdquo; without warranties of any kind. We are not liable for any damages arising from your use of the Service, including data loss or service interruption.</p>
+    </section>
+    <section>
+      <h2>6. Termination</h2>
+      <p>We reserve the right to suspend or terminate access to the Service at any time, without prior notice, for conduct that violates these Terms or is otherwise harmful to the platform or its users.</p>
+    </section>
+    <section>
+      <h2>7. Governing Law</h2>
+      <p>These Terms shall be governed by and construed in accordance with the applicable laws of the jurisdiction in which the platform operates, without regard to its conflict of law provisions.</p>
+    </section>
+    <section>
+      <h2>8. Changes to Terms</h2>
+      <p>We reserve the right to modify these Terms at any time. Continued use of the Service after changes constitutes acceptance of the new Terms. We will indicate the &ldquo;Last updated&rdquo; date at the top of this page.</p>
+    </section>
+  </div>
+</main>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: FOOTER                             -->
+<!-- ═══════════════════════════════════════════ -->
+<footer id="footer-container" style="margin-top: 100px;"></footer>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: SCRIPTS                            -->
+<!-- ═══════════════════════════════════════════ -->
+<script src="./js/mockData.js"></script>
+<script src="./js/main.js"></script>
+<script src="./js/components.js"></script>
+<script src="./js/animations.js"></script>
+
+  <!-- Init: inject shared navbar, footer, and scroll-reveal animations -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    window.Components.injectNavbar();
+    window.Components.injectFooter();
+    window.Animations.initScrollReveal();
+  });
+</script>
 </body>
 </html>

@@ -1,61 +1,101 @@
+<!-- ═══════════════════════════════════════════ -->
+<!-- FILE: about.html                            -->
+<!-- PURPOSE: "About" information page describing-->
+<!--   the platform's mission, tech, and design. -->
+<!-- ═══════════════════════════════════════════ -->
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: HEAD                               -->
+<!-- ═══════════════════════════════════════════ -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Learn more about Antigravity Play - a high-performance video sharing platform">
+
   <title>About - Antigravity Play</title>
+
   <link rel="stylesheet" href="./css/main.css">
   <link rel="stylesheet" href="./css/legal.css">
 </head>
 <body>
-  <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
-  <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
-    <div class="modal">
-      <div class="modal-header"><h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button></div>
-      <div class="modal-body">Are you sure?</div>
-      <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button class="btn btn-primary confirm-modal-btn">Confirm</button></div>
-    </div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: TOAST NOTIFICATION CONTAINER       -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: CONFIRMATION MODAL                 -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal-header"><h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button></div>
+    <div class="modal-body">Are you sure?</div>
+    <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button class="btn btn-primary confirm-modal-btn">Confirm</button></div>
   </div>
-  <header id="navbar-container" class="navbar-wrapper"></header>
-  <main class="container legal-page">
-    <div class="legal-header">
-      <h1>About Antigravity Play</h1>
-      <p class="legal-date">A high-performance cinematic video sharing network</p>
-    </div>
-    <div class="legal-content">
-      <section>
-        <h2>Our Mission</h2>
-        <p>Antigravity Play is a modern, lightweight video sharing platform built with vanilla JavaScript and a design system inspired by Spotify and Vercel. Our mission is to provide a fast, accessible, and beautiful video browsing experience without the bloat of modern JavaScript frameworks.</p>
-        <p>Every component is hand-crafted with attention to detail — from the glassmorphism video player to the seamless page transitions and responsive layout system.</p>
-      </section>
-      <section>
-        <h2>Technology</h2>
-        <p>Built entirely with vanilla JavaScript, HTML5, and CSS3. No frameworks, no build tools, no external dependencies for core functionality. The platform features a custom video player with emoji reactions, theater mode, picture-in-picture, and swipe-to-seek on mobile.</p>
-        <p>Data persistence is handled through localStorage with graceful fallbacks, and the UI is powered by CSS custom properties for complete theming support.</p>
-      </section>
-      <section>
-        <h2>Design Philosophy</h2>
-        <p>Every interaction on Antigravity Play is designed to feel responsive and intentional. Transitions use custom cubic-bezier easing curves, spacing follows a consistent 4px scale, and the color system adapts seamlessly between dark and light themes.</p>
-      </section>
-      <section>
-        <h2>Open Source</h2>
-        <p>Antigravity Play is an open-source project. The complete source code is available for review, contribution, and learning. We believe in transparent, community-driven development.</p>
-      </section>
-    </div>
-  </main>
-  <footer id="footer-container" style="margin-top: 100px;"></footer>
-  <script src="./js/mockData.js"></script>
-  <script src="./js/main.js"></script>
-  <script src="./js/components.js"></script>
-  <script src="./js/animations.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      window.Components.injectNavbar();
-      window.Components.injectFooter();
-      window.Animations.initScrollReveal();
-    });
-  </script>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: HEADER / NAVBAR                    -->
+<!-- ═══════════════════════════════════════════ -->
+<header id="navbar-container" class="navbar-wrapper"></header>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: MAIN CONTENT (legal-page)          -->
+<!-- ═══════════════════════════════════════════ -->
+<!-- legal-page: standard layout for legal/info content
+     with a header section and content sections -->
+<main class="container legal-page">
+  <div class="legal-header">
+    <h1>About Antigravity Play</h1>
+    <p class="legal-date">A high-performance cinematic video sharing network</p>
+  </div>
+  <div class="legal-content">
+    <section>
+      <h2>Our Mission</h2>
+      <p>Antigravity Play is a modern, lightweight video sharing platform built with vanilla JavaScript and a design system inspired by Spotify and Vercel. Our mission is to provide a fast, accessible, and beautiful video browsing experience without the bloat of modern JavaScript frameworks.</p>
+      <p>Every component is hand-crafted with attention to detail — from the glassmorphism video player to the seamless page transitions and responsive layout system.</p>
+    </section>
+    <section>
+      <h2>Technology</h2>
+      <p>Built entirely with vanilla JavaScript, HTML5, and CSS3. No frameworks, no build tools, no external dependencies for core functionality. The platform features a custom video player with emoji reactions, theater mode, picture-in-picture, and swipe-to-seek on mobile.</p>
+      <p>Data persistence is handled through localStorage with graceful fallbacks, and the UI is powered by CSS custom properties for complete theming support.</p>
+    </section>
+    <section>
+      <h2>Design Philosophy</h2>
+      <p>Every interaction on Antigravity Play is designed to feel responsive and intentional. Transitions use custom cubic-bezier easing curves, spacing follows a consistent 4px scale, and the color system adapts seamlessly between dark and light themes.</p>
+    </section>
+    <section>
+      <h2>Open Source</h2>
+      <p>Antigravity Play is an open-source project. The complete source code is available for review, contribution, and learning. We believe in transparent, community-driven development.</p>
+    </section>
+  </div>
+</main>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: FOOTER                             -->
+<!-- ═══════════════════════════════════════════ -->
+<footer id="footer-container" style="margin-top: 100px;"></footer>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: SCRIPTS                            -->
+<!-- ═══════════════════════════════════════════ -->
+<script src="./js/mockData.js"></script>
+<script src="./js/main.js"></script>
+<script src="./js/components.js"></script>
+<script src="./js/animations.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    window.Components.injectNavbar();
+    window.Components.injectFooter();
+    window.Animations.initScrollReveal();
+  });
+</script>
 </body>
 </html>

@@ -1,256 +1,304 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   FORMS PAGE
+   General-purpose form layout with validation states, checkboxes,
+   and success confirmation screen. Also includes sitemap styles.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Form page container: constrained width, centred, fade-in entrance */
 .form-page {
-  max-width: 640px;
-  margin: var(--space-3xl) auto;
-  padding: 0 var(--space-xl);
-  animation: pageEnter 0.6s var(--ease-relax) forwards;
+  max-width: 640px;                              /* Comfortable form width */
+  margin: var(--space-3xl) auto;                 /* 48px top, centred */
+  padding: 0 var(--space-xl);                    /* 24px side padding */
+  animation: pageEnter 0.6s var(--ease-relax) forwards;  /* Fade-in entrance */
 }
 
+/* Form page header: title + description with bottom border */
 .form-header {
-  margin-bottom: var(--space-3xl);
-  padding-bottom: var(--space-xl);
-  border-bottom: 1px solid var(--border);
+  margin-bottom: var(--space-3xl);               /* 48px below */
+  padding-bottom: var(--space-xl);               /* 24px padding below */
+  border-bottom: 1px solid var(--border);        /* Separator */
 }
 
+/* Form page title: gradient text */
 .form-header h1 {
-  font-size: var(--text-3xl);
-  font-weight: 800;
-  letter-spacing: -0.5px;
-  margin-bottom: var(--space-sm);
-  background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-size: var(--text-3xl);                     /* 32px */
+  font-weight: 800;                               /* Extra bold */
+  letter-spacing: -0.5px;                         /* Tight tracking */
+  margin-bottom: var(--space-sm);                 /* 8px below */
+  background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);  /* Gradient */
+  -webkit-background-clip: text;                  /* Clip to text (WebKit) */
+  -webkit-text-fill-color: transparent;           /* Transparent text (WebKit) */
+  background-clip: text;                          /* Clip to text (standard) */
 }
 
+/* Form description */
 .form-header p {
-  font-size: var(--text-sm);
-  color: var(--text-muted);
-  line-height: 1.7;
+  font-size: var(--text-sm);                      /* 14px */
+  color: var(--text-muted);                       /* Dim text */
+  line-height: 1.7;                               /* Comfortable reading */
 }
 
+/* Form card: elevated container for form fields */
 .form-card {
-  background: var(--bg-elevated);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-2xl);
+  background: var(--bg-elevated);                 /* Elevated background */
+  border: 1px solid var(--border);               /* Subtle border */
+  border-radius: var(--radius-lg);               /* 12px rounded */
+  padding: var(--space-2xl);                      /* 32px padding */
 }
 
+/* Form group: wraps a label + input, adds spacing */
 .form-group {
-  margin-bottom: var(--space-xl);
+  margin-bottom: var(--space-xl);                 /* 24px below each group */
 }
 
+/* Remove margin from the last group */
 .form-group:last-child {
   margin-bottom: 0;
 }
 
+/* Form label: block-level with bottom spacing */
 .form-label {
-  display: block;
-  font-size: var(--text-sm);
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: var(--space-sm);
+  display: block;                                 /* Full-width label */
+  font-size: var(--text-sm);                      /* 14px */
+  font-weight: 600;                               /* Semi-bold */
+  color: var(--text-primary);                     /* White text */
+  margin-bottom: var(--space-sm);                 /* 8px below */
 }
 
+/* Required field indicator (asterisk) */
 .form-label .required {
-  color: var(--error);
-  margin-left: 2px;
+  color: var(--error);                            /* Red asterisk */
+  margin-left: 2px;                               /* Small gap from label text */
 }
 
+/* Shared styles for inputs, textareas, and selects */
 .form-input,
 .form-textarea,
 .form-select {
-  width: 100%;
-  padding: 10px 14px;
-  font-size: var(--text-sm);
-  color: var(--text-primary);
-  background: var(--bg-primary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
-  outline: none;
-  font-family: inherit;
+  width: 100%;                                    /* Full width */
+  padding: 10px 14px;                             /* Comfortable padding */
+  font-size: var(--text-sm);                      /* 14px */
+  color: var(--text-primary);                     /* White text */
+  background: var(--bg-primary);                  /* Primary background */
+  border: 1px solid var(--border);               /* Subtle border */
+  border-radius: var(--radius-md);               /* 8px rounded */
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);  /* Smooth focus */
+  outline: none;                                  /* Remove default outline */
+  font-family: inherit;                           /* Use page font */
 }
 
+/* Focus state: accent border with green glow */
 .form-input:focus,
 .form-textarea:focus,
 .form-select:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(30, 215, 96, 0.1);
+  border-color: var(--accent);                    /* Green border */
+  box-shadow: 0 0 0 3px rgba(30, 215, 96, 0.1);  /* Subtle green glow ring */
 }
 
+/* Textarea: minimum height with vertical resize */
 .form-textarea {
-  min-height: 120px;
-  resize: vertical;
-  line-height: 1.6;
+  min-height: 120px;                              /* Start taller */
+  resize: vertical;                               /* Allow vertical resize only */
+  line-height: 1.6;                               /* Comfortable reading */
 }
 
+/* Hint text: small muted message below inputs */
 .form-hint {
-  font-size: var(--text-xs);
-  color: var(--text-muted);
-  margin-top: var(--space-xs);
+  font-size: var(--text-xs);                      /* 12px */
+  color: var(--text-muted);                       /* Dim text */
+  margin-top: var(--space-xs);                    /* 4px above */
 }
 
+/* Error message: red, hidden by default */
 .form-error {
-  font-size: var(--text-xs);
-  color: var(--error);
-  margin-top: var(--space-xs);
-  display: none;
+  font-size: var(--text-xs);                      /* 12px */
+  color: var(--error);                            /* Red text */
+  margin-top: var(--space-xs);                    /* 4px above */
+  display: none;                                  /* Hidden until validation fails */
 }
 
+/* Two-column row for form fields (e.g., first/last name) */
 .form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-xl);
+  display: grid;                                  /* Grid layout */
+  grid-template-columns: 1fr 1fr;                 /* Two equal columns */
+  gap: var(--space-xl);                           /* 24px between columns */
 }
 
+/* Checkbox row: flex layout with custom styled checkbox */
 .form-checkbox {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-md);
+  display: flex;                                  /* Row: checkbox + label */
+  align-items: flex-start;                        /* Align to top for multi-line labels */
+  gap: var(--space-sm);                           /* 8px between checkbox and label */
+  margin-bottom: var(--space-md);                 /* 12px below */
 }
 
+/* Checkbox input: custom accent colour */
 .form-checkbox input[type="checkbox"] {
-  margin-top: 3px;
-  width: 16px;
+  margin-top: 3px;                                /* Align with first line of label */
+  width: 16px;                                    /* Standard checkbox */
   height: 16px;
-  accent-color: var(--accent);
+  accent-color: var(--accent);                    /* Green accent for checkbox */
 }
 
+/* Checkbox label */
 .form-checkbox label {
-  font-size: var(--text-sm);
-  color: var(--text-secondary);
-  line-height: 1.5;
+  font-size: var(--text-sm);                      /* 14px */
+  color: var(--text-secondary);                   /* Grey text */
+  line-height: 1.5;                               /* Comfortable leading */
 }
 
+/* Link within checkbox label */
 .form-checkbox label a {
-  color: var(--accent);
-  text-decoration: underline;
+  color: var(--accent);                           /* Green link */
+  text-decoration: underline;                     /* Underlined */
 }
 
+/* Form action buttons: Submit, Cancel, etc. */
 .form-actions {
-  display: flex;
-  gap: var(--space-md);
-  margin-top: var(--space-2xl);
-  padding-top: var(--space-xl);
-  border-top: 1px solid var(--border);
+  display: flex;                                  /* Row of buttons */
+  gap: var(--space-md);                           /* 12px between buttons */
+  margin-top: var(--space-2xl);                   /* 32px above */
+  padding-top: var(--space-xl);                   /* 24px padding above */
+  border-top: 1px solid var(--border);           /* Separator above buttons */
 }
 
+/* ─── FORM SUCCESS STATE ─── */
+/* Shown after form is successfully submitted */
 .form-success {
-  text-align: center;
-  padding: var(--space-4xl) var(--space-xl);
-  display: none;
+  text-align: center;                             /* Centre all content */
+  padding: var(--space-4xl) var(--space-xl);      /* 64px vertical, 24px horizontal */
+  display: none;                                  /* Hidden by default */
 }
 
+/* Show success state with fade-in animation */
 .form-success.show {
-  display: block;
-  animation: pageEnter 0.6s var(--ease-relax) forwards;
+  display: block;                                 /* Make visible */
+  animation: pageEnter 0.6s var(--ease-relax) forwards;  /* Fade-in */
 }
 
+/* Success icon: large green checkmark or similar */
 .form-success-icon {
-  width: 56px;
+  width: 56px;                                    /* Fixed size */
   height: 56px;
-  color: var(--success);
-  margin: 0 auto var(--space-lg);
+  color: var(--success);                          /* Green */
+  margin: 0 auto var(--space-lg);                 /* Centre, 16px below */
 }
 
+/* Success heading */
 .form-success h2 {
-  font-size: var(--text-2xl);
-  font-weight: 700;
-  margin-bottom: var(--space-md);
-  color: var(--text-primary);
+  font-size: var(--text-2xl);                     /* 24px */
+  font-weight: 700;                               /* Bold */
+  margin-bottom: var(--space-md);                 /* 12px below */
+  color: var(--text-primary);                     /* White text */
 }
 
+/* Success message */
 .form-success p {
-  font-size: var(--text-sm);
-  color: var(--text-secondary);
-  line-height: 1.7;
-  max-width: 400px;
-  margin: 0 auto;
+  font-size: var(--text-sm);                      /* 14px */
+  color: var(--text-secondary);                   /* Grey text */
+  line-height: 1.7;                               /* Comfortable reading */
+  max-width: 400px;                               /* Constrain width */
+  margin: 0 auto;                                 /* Centre */
 }
 
-/* Sitemap specific */
+/* ═══════════════════════════════════════════════════════════════════════
+   SITEMAP PAGE
+   Visual site directory with grouped link categories.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Sitemap page container */
 .sitemap-page {
-  max-width: 860px;
-  margin: var(--space-3xl) auto;
-  padding: 0 var(--space-xl);
-  animation: pageEnter 0.6s var(--ease-relax) forwards;
+  max-width: 860px;                              /* Wide for grid layout */
+  margin: var(--space-3xl) auto;                 /* 48px top, centred */
+  padding: 0 var(--space-xl);                    /* 24px side padding */
+  animation: pageEnter 0.6s var(--ease-relax) forwards;  /* Fade-in entrance */
 }
 
+/* Sitemap header */
 .sitemap-header {
-  margin-bottom: var(--space-3xl);
-  padding-bottom: var(--space-xl);
-  border-bottom: 1px solid var(--border);
+  margin-bottom: var(--space-3xl);               /* 48px below */
+  padding-bottom: var(--space-xl);               /* 24px padding below */
+  border-bottom: 1px solid var(--border);        /* Separator */
 }
 
+/* Sitemap title: gradient text */
 .sitemap-header h1 {
-  font-size: var(--text-3xl);
-  font-weight: 800;
-  letter-spacing: -0.5px;
-  background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+  font-size: var(--text-3xl);                     /* 32px */
+  font-weight: 800;                               /* Extra bold */
+  letter-spacing: -0.5px;                         /* Tight tracking */
+  background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);  /* Gradient */
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin-bottom: var(--space-sm);
+  margin-bottom: var(--space-sm);                 /* 8px below */
 }
 
+/* Sitemap description */
 .sitemap-header p {
-  font-size: var(--text-sm);
-  color: var(--text-muted);
+  font-size: var(--text-sm);                      /* 14px */
+  color: var(--text-muted);                       /* Dim text */
 }
 
+/* Sitemap grid: responsive columns for link categories */
 .sitemap-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: var(--space-2xl);
+  display: grid;                                                    /* Grid layout */
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));     /* Auto-fill responsive columns */
+  gap: var(--space-2xl);                                            /* 32px between categories */
 }
 
+/* Category heading: with accent bottom border */
 .sitemap-category h2 {
-  font-size: var(--text-md);
-  font-weight: 700;
-  margin-bottom: var(--space-md);
-  color: var(--text-primary);
-  padding-bottom: var(--space-sm);
-  border-bottom: 2px solid var(--accent);
+  font-size: var(--text-md);                      /* 16px */
+  font-weight: 700;                               /* Bold */
+  margin-bottom: var(--space-md);                 /* 12px below */
+  color: var(--text-primary);                     /* White text */
+  padding-bottom: var(--space-sm);               /* 8px padding below */
+  border-bottom: 2px solid var(--accent);        /* Thick green bottom border */
 }
 
+/* Remove list bullets */
 .sitemap-category ul {
   list-style: none;
   padding: 0;
 }
 
+/* List item spacing */
 .sitemap-category li {
-  margin-bottom: var(--space-sm);
+  margin-bottom: var(--space-sm);               /* 8px between links */
 }
 
+/* Sitemap link: secondary colour with dot indicator */
 .sitemap-category a {
-  font-size: var(--text-sm);
-  color: var(--text-secondary);
-  text-decoration: none;
-  transition: color var(--transition-fast);
-  display: flex;
+  font-size: var(--text-sm);                      /* 14px */
+  color: var(--text-secondary);                   /* Grey text */
+  text-decoration: none;                          /* No underline */
+  transition: color var(--transition-fast);       /* Smooth hover */
+  display: flex;                                  /* Dot + text row */
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--space-sm);                           /* 8px between dot and text */
 }
 
+/* Link hover: accent colour */
 .sitemap-category a:hover {
-  color: var(--accent);
+  color: var(--accent);                           /* Green on hover */
 }
 
+/* Dot indicator before each link */
 .sitemap-category a::before {
-  content: '';
-  width: 4px;
+  content: '';                                    /* Empty dot */
+  width: 4px;                                     /* Small */
   height: 4px;
-  border-radius: 50%;
-  background: var(--text-muted);
-  flex-shrink: 0;
+  border-radius: 50%;                             /* Circle */
+  background: var(--text-muted);                  /* Grey dot */
+  flex-shrink: 0;                                 /* Don't shrink */
 }
 
+/* Mobile: tighter padding, single column form rows, smaller headings */
 @media (max-width: 576px) {
-  .form-page { padding: 0 var(--space-lg); }
-  .form-row { grid-template-columns: 1fr; }
-  .form-header h1 { font-size: var(--text-2xl); }
-  .form-card { padding: var(--space-xl); }
-  .sitemap-page { padding: 0 var(--space-lg); }
-  .sitemap-header h1 { font-size: var(--text-2xl); }
+  .form-page { padding: 0 var(--space-lg); }         /* 16px side padding */
+  .form-row { grid-template-columns: 1fr; }          /* Single column */
+  .form-header h1 { font-size: var(--text-2xl); }    /* 24px */
+  .form-card { padding: var(--space-xl); }            /* 24px padding */
+  .sitemap-page { padding: 0 var(--space-lg); }      /* 16px side padding */
+  .sitemap-header h1 { font-size: var(--text-2xl); } /* 24px */
 }

@@ -1,4 +1,16 @@
+<!-- ═══════════════════════════════════════════ -->
+<!-- FILE: sidebar.html                         -->
+<!-- PURPOSE: Admin panel sidebar navigation —  -->
+<!--   logo, nav links (Dashboard, Videos,      -->
+<!--   Upload), user info & logout button.      -->
+<!-- ═══════════════════════════════════════════ -->
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: ADMIN SIDEBAR                     -->
+<!-- ═══════════════════════════════════════════ -->
 <div class="admin-sidebar" aria-label="Admin Navigation">
+
+  <!-- ─── Sidebar Header: Logo ─────────────────── -->
   <div class="sidebar-header">
     <a href="../index.html" class="logo">
       <svg class="logo-icon" width="28" height="28" viewBox="0 0 24 24">
@@ -8,7 +20,10 @@
       <span>Antigravity Play</span>
     </a>
   </div>
+
+  <!-- ─── Navigation Menu ──────────────────────── -->
   <ul class="sidebar-menu">
+    <!-- Dashboard link (active by default) -->
     <li>
       <a href="./index.html" class="sidebar-link active">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -18,6 +33,7 @@
         Dashboard
       </a>
     </li>
+    <!-- Video management link -->
     <li>
       <a href="./videos.html" class="sidebar-link">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -27,6 +43,7 @@
         Videos
       </a>
     </li>
+    <!-- Video upload link -->
     <li>
       <a href="./upload.html" class="sidebar-link">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -38,7 +55,9 @@
     </li>
   </ul>
   
+  <!-- ─── Sidebar Footer: User + Logout ─────────── -->
   <div class="sidebar-footer">
+    <!-- Current admin user display -->
     <div class="sidebar-user">
       <div class="sidebar-user-avatar">AM</div>
       <div class="sidebar-user-info">
@@ -46,6 +65,7 @@
         <span class="sidebar-user-role">Administrator</span>
       </div>
     </div>
+    <!-- Log out action button -->
     <button id="logout-btn" class="btn btn-secondary" style="width: 100%; border-radius: var(--radius-sm); padding: var(--space-sm) var(--space-md); text-align: center;">
       Log Out
     </button>

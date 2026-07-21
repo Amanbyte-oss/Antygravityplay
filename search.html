@@ -1,122 +1,152 @@
+<!-- ═══════════════════════════════════════════ -->
+<!-- FILE: search.html                           -->
+<!-- PURPOSE: Search page with keyword input,    -->
+<!--   duration/date filters, tag multiselect,   -->
+<!--   and results grid.                         -->
+<!-- ═══════════════════════════════════════════ -->
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: HEAD                               -->
+<!-- ═══════════════════════════════════════════ -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Search videos by titles, tags, duration, and date on Antigravity Play.">
+
   <title>Search Videos - Antigravity Play</title>
+
+  <!-- main.css: Global design system & base styles -->
   <link rel="stylesheet" href="./css/main.css">
+  <!-- search.css: Search page layout — filter panel, results grid, chips -->
   <link rel="stylesheet" href="./css/search.css">
 </head>
 <body>
 
-  <!-- Toast Notification Container -->
-  <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: TOAST NOTIFICATION CONTAINER       -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
 
-  <!-- Reusable Confirmation Modal Container -->
-  <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
-    <div class="modal">
-      <div class="modal-header">
-        <h3 class="modal-title">Confirm Action</h3>
-        <button class="modal-close" aria-label="Close dialog">&times;</button>
-      </div>
-      <div class="modal-body">Are you sure?</div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary cancel-modal-btn">Cancel</button>
-        <button class="btn btn-primary confirm-modal-btn">Confirm</button>
-      </div>
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: CONFIRMATION MODAL                 -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">Confirm Action</h3>
+      <button class="modal-close" aria-label="Close dialog">&times;</button>
+    </div>
+    <div class="modal-body">Are you sure?</div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary cancel-modal-btn">Cancel</button>
+      <button class="btn btn-primary confirm-modal-btn">Confirm</button>
     </div>
   </div>
+</div>
 
-  <!-- Navbar injected here -->
-  <header id="navbar-container" class="navbar-wrapper"></header>
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: HEADER / NAVBAR                    -->
+<!-- ═══════════════════════════════════════════ -->
+<header id="navbar-container" class="navbar-wrapper"></header>
 
-  <main class="container search-layout">
-    
-    <!-- Search Title header -->
-    <div class="search-header-box">
-      <a href="#" onclick="history.back(); return false;" style="display:inline-flex; align-items:center; gap:4px; font-size:var(--text-xs); color:var(--text-muted); margin-bottom:var(--space-md);">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
-        Back
-      </a>
-      <h1 class="search-page-title">Search Sandbox</h1>
-      <p class="search-page-desc">Query titles, creators, and apply multiselect parameter filters in real-time.</p>
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: MAIN CONTENT (search-layout)       -->
+<!-- ═══════════════════════════════════════════ -->
+<main class="container search-layout">
+
+  <!-- Search header with back button -->
+  <div class="search-header-box">
+    <a href="#" onclick="history.back(); return false;" style="display:inline-flex; align-items:center; gap:4px; font-size:var(--text-xs); color:var(--text-muted); margin-bottom:var(--space-md);">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      Back
+    </a>
+    <h1 class="search-page-title">Search Sandbox</h1>
+    <p class="search-page-desc">Query titles, creators, and apply multiselect parameter filters in real-time.</p>
+  </div>
+
+  <!-- Filter Panel: keyword, duration, date, tags -->
+  <section class="filter-panel" aria-label="Search Filters">
+    <div class="filter-grid">
+
+      <!-- Text keyword input -->
+      <div class="filter-group">
+        <label class="filter-label" for="search-input">Keywords</label>
+        <input type="text" id="search-input" class="filter-select" placeholder="Type to search..." style="background-color: var(--bg-primary); padding: 0 var(--space-md);">
+      </div>
+
+      <!-- Duration filter dropdown -->
+      <div class="filter-group">
+        <label class="filter-label" for="filter-duration">Duration</label>
+        <select id="filter-duration" class="filter-select">
+          <option value="all">Any Duration</option>
+          <option value="short">Short (&lt; 5 mins)</option>
+          <option value="medium">Medium (5-15 mins)</option>
+          <option value="long">Long (&gt; 15 mins)</option>
+        </select>
+      </div>
+
+      <!-- Upload Date filter dropdown -->
+      <div class="filter-group">
+        <label class="filter-label" for="filter-date">Upload Date</label>
+        <select id="filter-date" class="filter-select">
+          <option value="all">Anytime</option>
+          <option value="today">Today</option>
+          <option value="week">This Week</option>
+          <option value="month">This Month</option>
+        </select>
+      </div>
+
     </div>
 
-    <!-- Filter Panel -->
-    <section class="filter-panel" aria-label="Search Filters">
-      <div class="filter-grid">
-        
-        <!-- Text query input -->
-        <div class="filter-group">
-          <label class="filter-label" for="search-input">Keywords</label>
-          <input type="text" id="search-input" class="filter-select" placeholder="Type to search..." style="background-color: var(--bg-primary); padding: 0 var(--space-md);">
-        </div>
-
-        <!-- Duration dropdown -->
-        <div class="filter-group">
-          <label class="filter-label" for="filter-duration">Duration</label>
-          <select id="filter-duration" class="filter-select">
-            <option value="all">Any Duration</option>
-            <option value="short">Short (&lt; 5 mins)</option>
-            <option value="medium">Medium (5-15 mins)</option>
-            <option value="long">Long (&gt; 15 mins)</option>
-          </select>
-        </div>
-
-        <!-- Upload Date dropdown -->
-        <div class="filter-group">
-          <label class="filter-label" for="filter-date">Upload Date</label>
-          <select id="filter-date" class="filter-select">
-            <option value="all">Anytime</option>
-            <option value="today">Today</option>
-            <option value="week">This Week</option>
-            <option value="month">This Month</option>
-          </select>
-        </div>
-
+    <!-- Tag multiselect chips (populated via JS) -->
+    <div class="filter-group" style="margin-top: var(--space-xl);">
+      <label class="filter-label">Tags</label>
+      <div id="filter-tags-list" class="filter-chips-list">
+        <!-- Dynamically populated chips -->
       </div>
+    </div>
 
-      <!-- Tag Multiselect Chips -->
-      <div class="filter-group" style="margin-top: var(--space-xl);">
-        <label class="filter-label">Tags</label>
-        <div id="filter-tags-list" class="filter-chips-list">
-          <!-- Dynamically populated chips -->
-        </div>
-      </div>
+    <!-- Reset filters button -->
+    <div style="display:flex; justify-content: flex-end; margin-top: var(--space-xl);">
+      <button id="clear-filters-btn" class="btn btn-secondary" style="border-radius: var(--radius-sm); padding: var(--space-sm) var(--space-xl);">
+        Reset Filters
+      </button>
+    </div>
 
-      <!-- Action buttons -->
-      <div style="display:flex; justify-content: flex-end; margin-top: var(--space-xl);">
-        <button id="clear-filters-btn" class="btn btn-secondary" style="border-radius: var(--radius-sm); padding: var(--space-sm) var(--space-xl);">
-          Reset Filters
-        </button>
-      </div>
+  </section>
 
-    </section>
+  <!-- Search results section: count and video grid -->
+  <section aria-labelledby="results-title">
+    <div class="results-info">
+      <h2 id="results-title" style="font-size: var(--text-md); font-weight:600; color: var(--text-primary);">Search Results</h2>
+      <span id="search-results-count">0 videos found</span>
+    </div>
 
-    <!-- Search results info and grid -->
-    <section aria-labelledby="results-title">
-      <div class="results-info">
-        <h2 id="results-title" style="font-size: var(--text-md); font-weight:600; color: var(--text-primary);">Search Results</h2>
-        <span id="search-results-count">0 videos found</span>
-      </div>
-      
-      <div id="search-results-grid" class="results-grid">
-        <!-- Results injected here -->
-      </div>
-    </section>
+    <div id="search-results-grid" class="results-grid">
+      <!-- Results injected here via search.js -->
+    </div>
+  </section>
 
-  </main>
+</main>
 
-  <!-- Footer injected here -->
-  <footer id="footer-container" style="margin-top: 100px;"></footer>
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: FOOTER                             -->
+<!-- ═══════════════════════════════════════════ -->
+<footer id="footer-container" style="margin-top: 100px;"></footer>
 
-  <!-- Scripts -->
-  <script src="./js/mockData.js"></script>
-  <script src="./js/main.js"></script>
-  <script src="./js/components.js"></script>
-  <script src="./js/animations.js"></script>
-  <script src="./js/search.js"></script>
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: SCRIPTS                            -->
+<!-- ═══════════════════════════════════════════ -->
+<script src="./js/mockData.js"></script>
+<script src="./js/main.js"></script>
+<script src="./js/components.js"></script>
+<script src="./js/animations.js"></script>
+<!-- search.js: Search page logic — filtering, tag chips, results rendering -->
+<script src="./js/search.js"></script>
 </body>
 </html>

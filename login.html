@@ -1,86 +1,111 @@
+<!-- ═══════════════════════════════════════════ -->
+<!-- FILE: login.html                            -->
+<!-- PURPOSE: Admin authentication page with     -->
+<!--   email/password form and forgot-password   -->
+<!--   link.                                     -->
+<!-- ═══════════════════════════════════════════ -->
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: HEAD                               -->
+<!-- ═══════════════════════════════════════════ -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Sign in to your administration dashboard on Antigravity Play.">
+
   <title>Admin Login - Antigravity Play</title>
+
+  <!-- main.css: Global design system & base styles -->
   <link rel="stylesheet" href="./css/main.css">
+  <!-- login.css: Login page styles — centered card layout, form inputs -->
   <link rel="stylesheet" href="./css/login.css">
 </head>
 <body>
 
-  <!-- Toast Notification Container -->
-  <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: TOAST NOTIFICATION CONTAINER       -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
 
-  <!-- Reusable Confirmation Modal Container -->
-  <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
-    <div class="modal">
-      <div class="modal-header">
-        <h3 class="modal-title">Confirm Action</h3>
-        <button class="modal-close" aria-label="Close dialog">&times;</button>
-      </div>
-      <div class="modal-body">Are you sure?</div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary cancel-modal-btn">Cancel</button>
-        <button class="btn btn-primary confirm-modal-btn">Confirm</button>
-      </div>
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: CONFIRMATION MODAL                 -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">Confirm Action</h3>
+      <button class="modal-close" aria-label="Close dialog">&times;</button>
+    </div>
+    <div class="modal-body">Are you sure?</div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary cancel-modal-btn">Cancel</button>
+      <button class="btn btn-primary confirm-modal-btn">Confirm</button>
     </div>
   </div>
+</div>
 
-  <!-- Public Navbar injected here -->
-  <header id="navbar-container" class="navbar-wrapper"></header>
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: HEADER / NAVBAR                    -->
+<!-- ═══════════════════════════════════════════ -->
+<header id="navbar-container" class="navbar-wrapper"></header>
 
-  <main class="container login-layout">
-    
-    <article class="login-card">
-      <div class="login-logo">
-        <svg class="logo-icon" width="40" height="40" viewBox="0 0 24 24">
-          <circle cx="12" cy="12" r="10" fill="var(--accent)"></circle>
-          <polygon points="10,8 16,12 10,16" fill="#000"></polygon>
-        </svg>
-        <h2>Admin Console</h2>
-        <p>Access analytics and manage video database catalog.</p>
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: MAIN CONTENT (login-layout)        -->
+<!-- ═══════════════════════════════════════════ -->
+<main class="container login-layout">
+
+  <article class="login-card">
+    <div class="login-logo">
+      <svg class="logo-icon" width="40" height="40" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="10" fill="var(--accent)"></circle>
+        <polygon points="10,8 16,12 10,16" fill="#000"></polygon>
+      </svg>
+      <h2>Admin Console</h2>
+      <p>Access analytics and manage video database catalog.</p>
+    </div>
+
+    <form id="login-form" class="login-form">
+
+      <div class="form-group">
+        <label class="form-label" for="email-input">Email Address</label>
+        <input type="email" id="email-input" class="form-input-field" placeholder="admin@videoshare.com" required autocomplete="username">
       </div>
 
-      <form id="login-form" class="login-form">
-        
-        <!-- Email field -->
-        <div class="form-group">
-          <label class="form-label" for="email-input">Email Address</label>
-          <input type="email" id="email-input" class="form-input-field" placeholder="admin@videoshare.com" required autocomplete="username">
-        </div>
+      <div class="form-group">
+        <label class="form-label" for="password-input">Password</label>
+        <input type="password" id="password-input" class="form-input-field" placeholder="••••••••" required autocomplete="current-password">
+        <div id="login-error-msg" class="login-error-msg" role="alert"></div>
+      </div>
 
-        <!-- Password field -->
-        <div class="form-group">
-          <label class="form-label" for="password-input">Password</label>
-          <input type="password" id="password-input" class="form-input-field" placeholder="••••••••" required autocomplete="current-password">
-          <div id="login-error-msg" class="login-error-msg" role="alert"></div>
-        </div>
+      <button type="submit" class="login-btn">Sign In</button>
 
-        <!-- Submit btn -->
-        <button type="submit" class="login-btn">
-          Sign In
-        </button>
+      <div class="forgot-link-wrap">
+        <a href="./forgot-password.html" class="forgot-link">Forgot Password?</a>
+      </div>
 
-        <div class="forgot-link-wrap">
-          <a href="./forgot-password.html" class="forgot-link">Forgot Password?</a>
-        </div>
+    </form>
+  </article>
 
-      </form>
-    </article>
+</main>
 
-  </main>
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: FOOTER                             -->
+<!-- ═══════════════════════════════════════════ -->
+<footer id="footer-container"></footer>
 
-  <!-- Footer injected here -->
-  <footer id="footer-container"></footer>
-
-  <!-- Scripts -->
-  <script src="./js/mockData.js"></script>
-  <script src="./js/main.js"></script>
-  <script src="./js/components.js"></script>
-  <script src="./js/animations.js"></script>
-  <script src="./js/login.js"></script>
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: SCRIPTS                            -->
+<!-- ═══════════════════════════════════════════ -->
+<script src="./js/mockData.js"></script>
+<script src="./js/main.js"></script>
+<script src="./js/components.js"></script>
+<script src="./js/animations.js"></script>
+<!-- login.js: Admin login form validation and authentication logic -->
+<script src="./js/login.js"></script>
 </body>
 </html>

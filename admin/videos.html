@@ -1,21 +1,49 @@
 <!DOCTYPE html>
+<!-- ═══════════════════════════════════════════ -->
+<!-- FILE: videos.html                          -->
+<!-- PURPOSE: Video management page with grid,  -->
+<!--          search, sort, bulk delete, inline -->
+<!--          editing, and pagination.          -->
+<!-- ═══════════════════════════════════════════ -->
+<!--
+  ============================================================================
+  FILE: videos.html
+  SECTION: Admin / Content
+  DESCRIPTION: Video repository management page with search, sort, pagination,
+  inline editing, bulk delete, and video card grid view.
+  DEPENDENCIES: main.js, components.js, admin/videos.js
+  ============================================================================
+-->
 <html lang="en">
 <head>
+  <!-- ==================== HEAD ==================== -->
+  <!-- THEME INIT: Sets data-theme from localStorage before render to avoid FOUC -->
   <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+  <!-- META: UTF-8 encoding declaration -->
   <meta charset="UTF-8">
+  <!-- META: Responsive viewport configuration for mobile layout -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- META: SEO description for search engine result snippets -->
   <meta name="description" content="View, search, filter, inline edit, and bulk delete video database assets.">
+  <!-- TITLE: Browser tab and search engine title -->
   <title>Manage Videos - Admin Console</title>
+  <!-- STYLESHEET: main.css - Global design system (variables, resets, utilities, components) -->
   <link rel="stylesheet" href="../css/main.css">
+  <!-- STYLESHEET: dashboard.css - Shared admin dashboard layout styles -->
   <link rel="stylesheet" href="../css/admin/dashboard.css">
+  <!-- STYLESHEET: videos.css - Video management styles (grid cards, search bar, sort, bulk actions, pagination) -->
   <link rel="stylesheet" href="../css/admin/videos.css">
 </head>
 <body>
 
-  <!-- Toast Container -->
+  <!-- TOAST CONTAINER: Fixed notification area for success/error feedback messages -->
   <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
 
-  <!-- Reusable Confirmation Modal -->
+  <!--
+    CONFIRMATION MODAL OVERLAY:
+    Standard reusable dialog for confirming destructive actions (e.g., bulk delete).
+    role="dialog" + aria-modal="true" for accessible keyboard interaction.
+  -->
   <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
     <div class="modal">
       <div class="modal-header">
@@ -30,18 +58,28 @@
     </div>
   </div>
 
+  <!-- ─── SECTION: ADMIN LAYOUT ──────────────── -->
   <div class="admin-layout">
     
-    <!-- Sidebar Overlay for mobile menu -->
+    <!-- SIDEBAR OVERLAY: Mobile backdrop for closing sidebar -->
     <div class="sidebar-overlay"></div>
 
-    <!-- Admin Sidebar injected here -->
+    <!--
+      SIDEBAR CONTAINER (<aside>):
+      Admin navigation injected by Components.injectAdminSidebar().
+      Provides links to all admin sections with current page highlighted.
+    -->
     <aside id="sidebar-container"></aside>
 
-    <!-- Main Content Area -->
+    <!-- ==================== MAIN CONTENT ==================== -->
     <div class="admin-main">
       
-      <!-- Top Mobile Header bar -->
+      <!-- ─── SECTION: MOBILE HEADER ──────────── -->
+      <!--
+        ADMIN HEADER (Mobile Top Bar):
+        Hamburger menu, "Console" label, "View Live Site" link, theme toggle.
+        Visible on narrow screens for sidebar access.
+      -->
       <header class="admin-header">
         <div class="admin-header-left">
           <button class="admin-menu-btn" aria-label="Open sidebar menu" style="display:none; border:none; background:none; cursor:pointer;">
@@ -68,7 +106,10 @@
 
       <main class="admin-body">
         
-        <!-- Welcome Title row -->
+        <!--
+          TITLE ROW: Page heading with description and "Upload Video" CTA.
+          The CTA button links to ./upload.html for adding new videos.
+        -->
         <div class="admin-title-row">
           <div class="admin-title-group">
             <h1>Video Repository</h1>
@@ -81,10 +122,13 @@
           </div>
         </div>
 
-        <!-- Management controls -->
+        <!-- ─── SECTION: MANAGEMENT CONTROLS ───── -->
+        <!-- ==================== MANAGEMENT CONTROLS ==================== -->
         <div class="management-bar">
           
+          <!-- LEFT CONTROLS: Search input and sort dropdown -->
           <div class="management-left">
+            <!-- SEARCH: Client-side filtering by title or creator name -->
             <div class="table-search-container">
               <span class="table-search-icon">
                 <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -93,6 +137,7 @@
               </span>
               <input type="text" id="table-search-input" placeholder="Search by title or creator..." aria-label="Search items">
             </div>
+            <!-- SORT: Reorder videos by date, title, views, or likes -->
             <select id="sort-select" class="sort-select" aria-label="Sort videos">
               <option value="publishDate-desc">Newest First</option>
               <option value="publishDate-asc">Oldest First</option>
@@ -105,13 +150,21 @@
             </select>
           </div>
 
+          <!-- RIGHT CONTROLS: Select All checkbox, total count, bulk actions -->
           <div class="management-right">
+            <!-- SELECT ALL: Toggles checkbox selection state on all visible video cards -->
             <label class="select-all-label">
               <input type="checkbox" id="header-checkbox" class="admin-checkbox" aria-label="Select all visible videos">
               <span>Select All</span>
             </label>
+            <!-- TOTAL COUNT: Shows total number of videos in the system -->
             <span style="font-size: var(--text-xs); color: var(--text-muted);" id="table-count-span">0 total videos</span>
-            <!-- Bulk actions toolbar (hidden by default) -->
+            <!--
+              BULK ACTIONS BAR (hidden by default):
+              Appears when one or more videos are selected. Shows the count
+              of selected videos and a "Delete Selected" button that triggers
+              the confirmation modal for bulk deletion.
+            -->
             <div id="bulk-actions-bar" style="display:none;">
               <span id="bulk-selected-count">0 selected</span>
               <button id="delete-selected-btn" class="btn btn-secondary delete-btn-sm">
@@ -122,13 +175,26 @@
 
         </div>
 
-        <!-- Video Cards Grid -->
+        <!-- ─── SECTION: VIDEO CARDS GRID ──────── -->
+        <!-- ==================== VIDEO CARDS GRID ==================== -->
         <section class="videos-section" aria-label="Videos catalog listing">
+          <!--
+            VIDEOS GRID:
+            Displays video cards in a responsive grid layout. Each card shows
+            thumbnail, title, creator, view/like counts, publish date, status
+            badge, and action buttons (edit, delete, checkbox for bulk).
+            Dynamically populated by admin/videos.js from mock data.
+          -->
           <div class="videos-grid" id="videos-grid">
             <!-- Dynamically populated via JS -->
           </div>
 
-          <!-- Pagination Footer -->
+          <!--
+            PAGINATION FOOTER:
+            Page navigation controls (prev/next, page numbers) injected by
+            Components.injectPagination(). Handles client-side pagination
+            of the video card grid.
+          -->
           <footer id="pagination-wrapper"></footer>
         </section>
 
@@ -143,11 +209,27 @@
     }
   </style>
 
-  <!-- Scripts -->
+  <!-- ─── SECTION: SCRIPTS ──────────────────── -->
+  <!-- ==================== SCRIPTS ==================== -->
+  <!-- mockData.js: Mock data factory for prototype video data and tags -->
   <script src="../js/mockData.js"></script>
+  <!-- main.js: Core app - theme toggling, toast notifications, URL utilities -->
   <script src="../js/main.js"></script>
+  <!-- components.js: UI injectors - sidebar, navbar, footer, pagination -->
   <script src="../js/components.js"></script>
+  <!-- animations.js: Scroll-reveal and transition animation utilities -->
   <script src="../js/animations.js"></script>
+  <!--
+    admin/videos.js: Video management page logic.
+    - Renders video cards in a responsive grid with pagination
+    - Client-side search/filter by title or creator name
+    - Sort videos by date, title, views, or likes
+    - Inline editing of video title and description
+    - Checkbox selection with Select All / deselect all
+    - Bulk delete with confirmation modal
+    - Individual video delete action
+    - Pagination controls via Components.injectPagination()
+  -->
   <script src="../js/admin/videos.js"></script>
 </body>
 </html>

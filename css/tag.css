@@ -1,196 +1,239 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   TAG PAGE
+   Individual tag detail page with header, results, and related tags grid.
+   Also includes the "All Tags" browse view at the bottom.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Tag page container: fade-in entrance animation */
 #tag-page-container {
-  animation: fadeIn 0.4s var(--ease-relax) forwards;
+  animation: fadeIn 0.4s var(--ease-relax) forwards;  /* Quick fade-in on page load */
 }
 
-/* --- TAG HEADER --- */
+/* ═══════════════════════════════════════════════════════════════════════
+   TAG HEADER
+   Displays the tag icon/badge, name, and description.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Tag header container: vertical margins and bottom border separator */
 .tag-header-container {
-  margin: var(--space-2xl) 0;
-  padding: var(--space-2xl) 0;
-  border-bottom: 1px solid var(--border);
+  margin: var(--space-2xl) 0;      /* 32px top and bottom margin */
+  padding: var(--space-2xl) 0;      /* 32px top and bottom padding */
+  border-bottom: 1px solid var(--border);  /* Separator below header */
 }
 
+/* Title row: icon badge and page title side by side */
 .tag-title-row {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
+  display: flex;             /* Horizontal layout */
+  align-items: center;       /* Vertically centre badge and title */
+  gap: var(--space-md);      /* 12px between badge and title */
 }
 
+/* Tag icon/badge: monospace, accent background, black text */
 .tag-icon-badge {
-  background-color: var(--accent);
-  color: #000;
-  font-family: var(--font-mono);
-  font-size: var(--text-md);
-  font-weight: 700;
-  padding: var(--space-xs) var(--space-md);
-  border-radius: var(--radius-sm);
+  background-color: var(--accent);  /* Green accent background */
+  color: #000;                      /* Black text */
+  font-family: var(--font-mono);    /* Monospace for technical feel */
+  font-size: var(--text-md);        /* 16px */
+  font-weight: 700;                 /* Bold */
+  padding: var(--space-xs) var(--space-md);  /* 4px vertical, 12px horizontal */
+  border-radius: var(--radius-sm);  /* 4px rounded corners */
 }
 
+/* Light theme: white text on accent badge for contrast */
 [data-theme="light"] .tag-icon-badge {
-  color: #fff;
+  color: #fff;                      /* White text in light mode */
 }
 
+/* Tag page title: large, bold, tight tracking */
 .tag-page-title {
-  font-size: var(--text-3xl);
-  font-weight: 700;
-  letter-spacing: -0.5px;
+  font-size: var(--text-3xl);      /* 32px */
+  font-weight: 700;                /* Bold */
+  letter-spacing: -0.5px;          /* Slightly tightened tracking */
 }
 
+/* Tag description: small secondary text */
 .tag-page-desc {
-  font-size: var(--text-sm);
-  color: var(--text-secondary);
-  margin-top: var(--space-sm);
+  font-size: var(--text-sm);       /* 14px */
+  color: var(--text-secondary);    /* Grey text */
+  margin-top: var(--space-sm);     /* 8px above the description */
 }
 
+/* Results grid: responsive auto-fill grid for video cards */
 .tag-results-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: var(--space-xl);
-  margin-bottom: var(--space-4xl);
+  display: grid;                                          /* Grid layout */
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));  /* Auto-fill, min 260px */
+  gap: var(--space-xl);                                   /* 24px gap */
+  margin-bottom: var(--space-4xl);                         /* 64px below */
 }
 
-/* --- RELATED TAGS GRID --- */
+/* ═══════════════════════════════════════════════════════════════════════
+   RELATED TAGS GRID
+   Grid of tag cards linking to related/similar tags.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Related tags grid: auto-fill with smaller card minimum */
 .related-tags-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: var(--space-md);
+  display: grid;                                          /* Grid layout */
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));  /* Auto-fill, min 220px */
+  gap: var(--space-md);                                   /* 12px gap */
 }
 
+/* Related tag card hover: lift and add border/shadow */
 .related-tag-card:hover {
-  background: var(--bg-elevated) !important;
-  border-color: var(--text-muted) !important;
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-sm);
+  background: var(--bg-elevated) !important;   /* Force elevated background */
+  border-color: var(--text-muted) !important;   /* Darker border */
+  transform: translateY(-2px);                  /* Float up 2px */
+  box-shadow: var(--shadow-sm);                 /* Small shadow for depth */
 }
 
+/* Related tag icon hover: brighten to secondary colour */
 .related-tag-card:hover svg {
-  color: var(--text-secondary) !important;
+  color: var(--text-secondary) !important;      /* Brighter icon on hover */
 }
 
+/* Tablet: reduce sizes and adjust grids */
 @media (max-width: 768px) {
   .tag-hero-content {
-    padding: var(--space-xl) !important;
+    padding: var(--space-xl) !important;         /* 24px padding */
   }
   .tag-page-title {
-    font-size: var(--text-xl) !important;
+    font-size: var(--text-xl) !important;        /* 20px */
   }
   .tag-icon-badge {
-    width: 40px !important;
+    width: 40px !important;                      /* Smaller square badge */
     height: 40px !important;
-    font-size: var(--text-lg) !important;
+    font-size: var(--text-lg) !important;        /* 18px */
   }
   .tag-results-grid {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: var(--space-md);
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));  /* Smaller cards */
+    gap: var(--space-md);                       /* 12px gap */
   }
   .related-tags-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr;             /* 2 columns */
   }
 }
 
+/* Mobile: tighter grids */
 @media (max-width: 480px) {
   .tag-results-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-sm);
+    grid-template-columns: 1fr 1fr;             /* 2 equal columns */
+    gap: var(--space-sm);                       /* 8px gap */
   }
   .related-tags-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr;                 /* Single column */
   }
 }
 
-/* --- ALL TAGS BROWSE VIEW --- */
+/* ═══════════════════════════════════════════════════════════════════════
+   ALL TAGS BROWSE VIEW
+   Full directory of all tags with search/filter functionality.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* All tags wrapper: vertical stack layout */
 .alltags-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xl);
+  display: flex;                  /* Vertical layout */
+  flex-direction: column;         /* Stack children */
+  gap: var(--space-xl);           /* 24px between sections */
 }
 
+/* Search bar for filtering tags */
 .alltags-search-bar {
-  position: relative;
-  width: 100%;
-  max-width: 480px;
+  position: relative;             /* Anchor for search icon */
+  width: 100%;                    /* Full width */
+  max-width: 480px;               /* Constrain width */
 }
 
+/* Search icon: positioned inside the input on the left */
 .alltags-search-icon {
-  position: absolute;
-  left: var(--space-md);
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--text-muted);
-  pointer-events: none;
+  position: absolute;             /* Inside the search bar */
+  left: var(--space-md);          /* 12px from left */
+  top: 50%;                       /* Centre vertically */
+  transform: translateY(-50%);    /* Precise centering */
+  color: var(--text-muted);       /* Dim icon */
+  pointer-events: none;           /* Clicks pass through to the input */
 }
 
+/* Search input field for filtering tags */
 .alltags-search-input {
-  width: 100%;
-  height: 42px;
-  padding: 0 var(--space-md) 0 40px;
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-full);
-  font-size: var(--text-sm);
-  color: var(--text-primary);
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  width: 100%;                           /* Full width */
+  height: 42px;                          /* Taller than standard input */
+  padding: 0 var(--space-md) 0 40px;     /* 12px right, 40px left (for icon) */
+  background-color: var(--bg-secondary); /* Card background */
+  border: 1px solid var(--border);       /* Subtle border */
+  border-radius: var(--radius-full);     /* Pill shape */
+  font-size: var(--text-sm);             /* 14px */
+  color: var(--text-primary);            /* White text */
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);  /* Smooth focus */
 }
 
+/* Search input focus: accent border with glow */
 .alltags-search-input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
-  outline: none;
+  border-color: var(--accent);                                 /* Green border */
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);  /* Green glow ring */
+  outline: none;                                               /* Remove default outline */
 }
 
+/* Tags grid: wrapping flexbox for tag cards */
 .alltags-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-sm);
+  display: flex;            /* Horizontal wrapping layout */
+  flex-wrap: wrap;          /* Wrap to next line */
+  gap: var(--space-sm);     /* 8px between cards */
 }
 
+/* Individual tag card in the browse view */
 .alltags-card {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-md) var(--space-lg);
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  text-decoration: none;
-  flex-shrink: 0;
-  transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+  display: flex;                      /* Horizontal layout: dot + name + count */
+  align-items: center;                /* Centre items vertically */
+  gap: var(--space-sm);               /* 8px between elements */
+  padding: var(--space-md) var(--space-lg);  /* 12px vertical, 16px horizontal */
+  background-color: var(--bg-secondary);     /* Card background */
+  border: 1px solid var(--border);           /* Subtle border */
+  border-radius: var(--radius-lg);           /* 12px rounded corners */
+  text-decoration: none;                     /* Remove underline from link */
+  flex-shrink: 0;                            /* Prevent shrinking */
+  transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);  /* Smooth hover */
 }
 
+/* Tag card hover: lift and add border/shadow */
 .alltags-card:hover {
-  transform: translateY(-2px);
-  border-color: var(--text-muted);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);              /* Float up 2px */
+  border-color: var(--text-muted);          /* Darker border */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);  /* Subtle shadow */
 }
 
+/* Colour dot indicator on the tag card */
 .alltags-card-dot {
-  width: 10px;
+  width: 10px;               /* Small dot */
   height: 10px;
-  border-radius: 50%;
-  flex-shrink: 0;
+  border-radius: 50%;        /* Perfect circle */
+  flex-shrink: 0;            /* Don't shrink */
 }
 
+/* Tag name text */
 .alltags-card-name {
-  font-size: var(--text-sm);
-  font-weight: 600;
-  color: var(--text-primary);
-  flex: 1;
-  overflow: hidden;
+  font-size: var(--text-sm);         /* 14px */
+  font-weight: 600;                  /* Semi-bold */
+  color: var(--text-primary);        /* White text */
+  flex: 1;                           /* Take remaining space */
+  overflow: hidden;                  /* Ellipsis for long names */
   text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: nowrap;               /* Single line */
 }
 
+/* Video count badge: shows how many videos have this tag */
 .alltags-card-count {
-  font-size: var(--text-xs);
-  color: var(--text-muted);
-  white-space: nowrap;
-  flex-shrink: 0;
+  font-size: var(--text-xs);         /* 12px */
+  color: var(--text-muted);          /* Dim text */
+  white-space: nowrap;               /* Prevent wrapping */
+  flex-shrink: 0;                    /* Don't shrink */
 }
 
+/* Mobile: tighter spacing for tag cards */
 @media (max-width: 576px) {
   .alltags-grid {
-    gap: var(--space-xs);
+    gap: var(--space-xs);            /* 4px gap */
   }
   .alltags-card {
-    padding: var(--space-sm) var(--space-md);
+    padding: var(--space-sm) var(--space-md);  /* 8px vertical, 12px horizontal */
   }
 }

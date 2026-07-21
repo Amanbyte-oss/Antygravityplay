@@ -1,20 +1,57 @@
 <!DOCTYPE html>
+<!-- ═══════════════════════════════════════════ -->
+<!-- FILE: index.html                           -->
+<!-- PURPOSE: Admin dashboard with stat cards,  -->
+<!--          chart, recent uploads, feed,      -->
+<!--          and up-next video selector.       -->
+<!-- ═══════════════════════════════════════════ -->
+<!--
+  ============================================================================
+  FILE: admin/index.html
+  SECTION: Admin / Dashboard
+  DESCRIPTION: Main admin dashboard showing platform performance overview,
+  stat cards (videos, views, likes, tags), views trend line chart, recent
+  activity feed, recent uploads grid, and up-next video selector.
+  DEPENDENCIES: main.js, components.js, dashboard.js
+  ============================================================================
+-->
 <html lang="en">
 <head>
+  <!-- ==================== HEAD ==================== -->
+  <!--
+    THEME INIT: Sets data-theme from localStorage on <html> before render
+    to prevent FOUC. Falls back to "dark".
+  -->
   <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+  <!-- META: UTF-8 encoding for proper Unicode support -->
   <meta charset="UTF-8">
+  <!-- META: Responsive viewport for mobile-friendly layout -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- META: SEO description summarizing the dashboard purpose -->
   <meta name="description" content="Overview of platform performance, views analytics, and recent uploads.">
+  <!-- TITLE: Browser tab and search engine title -->
   <title>Admin Dashboard - Antigravity Play</title>
+  <!-- STYLESHEET: main.css - Global design system foundation (variables, resets, utilities, components) -->
   <link rel="stylesheet" href="../css/main.css">
+  <!-- STYLESHEET: dashboard.css - Dashboard-specific styles (stat cards, charts grid, activity feed, uploads grid) -->
   <link rel="stylesheet" href="../css/admin/dashboard.css">
 </head>
 <body>
 
-  <!-- Toast Container -->
+  <!--
+    TOAST CONTAINER: Fixed position notification hub (top-right).
+    Displays temporary feedback messages via window.App.showToast().
+    Uses role="status" + aria-live="polite" for screen reader support.
+  -->
   <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
 
-  <!-- Reusable Confirmation Modal -->
+  <!--
+    CONFIRMATION MODAL OVERLAY:
+    Shared reusable dialog for confirming destructive/important actions.
+    Contains title, body text, Cancel and Confirm buttons.
+    role="dialog" + aria-modal="true" ensures accessible keyboard navigation.
+    Visibility toggled via .visible CSS class on the overlay.
+  -->
   <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
     <div class="modal">
       <div class="modal-header">
@@ -29,18 +66,35 @@
     </div>
   </div>
 
+  <!-- ─── SECTION: ADMIN LAYOUT ──────────────── -->
   <div class="admin-layout">
     
-    <!-- Admin Sidebar overlay for mobile -->
+    <!--
+    SIDEBAR OVERLAY:
+    Semi-transparent backdrop that appears on mobile when the sidebar is
+    open. Tapping it closes the sidebar. Hidden on desktop breakpoints.
+  -->
     <div class="sidebar-overlay"></div>
 
-    <!-- Admin Sidebar injected here -->
+    <!--
+      SIDEBAR CONTAINER (<aside>):
+      Admin navigation sidebar dynamically injected by
+      window.Components.injectAdminSidebar('index') on DOMContentLoaded.
+      Contains links to all admin sections with the current page highlighted.
+    -->
     <aside id="sidebar-container"></aside>
 
-    <!-- Main Content Area -->
+    <!-- ==================== MAIN CONTENT ==================== -->
     <div class="admin-main">
       
-      <!-- Top Mobile Header bar -->
+      <!-- ─── SECTION: MOBILE HEADER ──────────── -->
+      <!--
+        ADMIN HEADER (Mobile Top Bar):
+        Visible on narrow screens (<896px). Contains hamburger menu button
+        (toggles sidebar overlay), "Console" label, "View Live Site" link,
+        and theme toggle (sun/moon icons). Hidden or collapsed on desktop
+        where the sidebar is persistently visible.
+      -->
       <header class="admin-header">
         <div class="admin-header-left">
           <button class="admin-menu-btn" aria-label="Open sidebar menu" style="display:none; border:none; background:none; cursor:pointer;">
@@ -67,7 +121,11 @@
 
       <main class="admin-body">
         
-        <!-- Welcome Title row -->
+        <!--
+          TITLE ROW: Page heading with description and primary CTA button.
+          "Upload Video" button links directly to ./upload.html for quick access
+          to the video upload/add form.
+        -->
         <div class="admin-title-row">
           <div class="admin-title-group">
             <h1>Workspace Performance</h1>
@@ -80,7 +138,14 @@
           </div>
         </div>
 
-        <!-- 4 Stat Cards grid -->
+        <!--
+          STATS GRID: Four metric cards summarizing key platform data.
+          - Total Videos: Shows published video count, with weekly change indicator
+          - Total Views: Cumulative view count, with % change vs last week
+          - Total Likes: Cumulative like count, with % change vs last week
+          - Total Tags: Active tag/label count
+          Each .stat-value is dynamically populated from mock data by dashboard.js.
+        -->
         <section class="stats-grid" aria-label="Quick metrics">
           
           <div class="stat-card">
@@ -120,10 +185,17 @@
 
         </section>
 
-        <!-- Charts and Activity feed row -->
+        <!-- ─── SECTION: ANALYTICS GRID ─────────── -->
+        <!-- ==================== ANALYTICS GRID ==================== -->
         <div class="analytics-grid">
           
-          <!-- Line Chart -->
+          <!-- ─── CHART: Views Trend ───────────── -->
+          <!--
+            CHART CARD: Views Trend Line Chart (Last 7 Days).
+            Renders a Chart.js line chart on the #analytics-line-chart canvas,
+            showing daily view counts for the past week to visualize trends.
+            Data and chart initialization handled in admin/dashboard.js.
+          -->
           <section class="chart-card" aria-label="Views Analytics">
             <div class="chart-header">
               <h2 class="chart-title">Views Trend (Last 7 Days)</h2>
@@ -133,7 +205,15 @@
             </div>
           </section>
 
-          <!-- Mock Activity Feed -->
+          <!-- ─── SECTION: Activity Feed ─────────── -->
+          <!--
+            FEED CARD: Recent Activity Feed.
+            Static mock activity feed showing the latest platform events:
+            new video published, new like received, title modification,
+            and database sync. Each item has a contextual icon (checkmark,
+            heart, pencil), description text, and relative timestamp.
+            This is currently a static placeholder; not dynamically populated.
+          -->
           <section class="feed-card" aria-labelledby="feed-heading">
             <h2 id="feed-heading" class="feed-title">Recent Activity</h2>
             <div class="feed-list">
@@ -175,7 +255,15 @@
 
         </div>
 
-        <!-- Recent Uploads Grid -->
+        <!--
+          RECENT UPLOADS SECTION:
+          Shows thumbnail cards for the most recently uploaded videos.
+          Each card displays the video thumbnail, title, creator name,
+          view count, and publish status. The grid (#recent-uploads-grid)
+          is dynamically populated by admin/dashboard.js from mock data.
+          "Manage All" link navigates to ./videos.html for full management.
+        -->
+        <!-- ─── SECTION: Recent Uploads ────────── -->
         <section class="uploads-section" aria-labelledby="uploads-heading">
           <div class="uploads-section-header">
             <h2 id="uploads-heading" class="uploads-section-title">Recent Uploads</h2>
@@ -186,7 +274,14 @@
           </div>
         </section>
 
-        <!-- Up Next Video Selector -->
+        <!--
+          UP NEXT VIDEO SELECTOR:
+          Dropdown/selector widget that lets the admin choose which video
+          appears as "Up Next" on the public watch page. The selection is
+          saved to localStorage and retrieved by the watch page player.
+          Populated dynamically by admin/dashboard.js from the video list.
+        -->
+        <!-- ─── SECTION: Up Next Selector ──────── -->
         <section class="upnext-section" aria-labelledby="upnext-heading">
           <div class="upnext-section-header">
             <h2 id="upnext-heading" class="upnext-section-title">Up Next Video</h2>
@@ -201,18 +296,48 @@
     </div>
   </div>
 
-  <!-- Responsive Sidebar toggle CSS -->
+  <!--
+    RESPONSIVE STYLE: Forces the hamburger menu button to be visible on
+    screens narrower than 896px, where the sidebar is hidden by default.
+  -->
   <style>
     @media (max-width: 896px) {
       .admin-menu-btn { display: flex !important; }
     }
   </style>
 
-  <!-- Scripts -->
+  <!-- ─── SECTION: SCRIPTS ──────────────────── -->
+  <!-- ==================== SCRIPTS ==================== -->
+  <!--
+    mockData.js: Mock data factory - generates sample video data, tags,
+    analytics stats, and other prototype data used across all admin pages.
+  -->
   <script src="../js/mockData.js"></script>
+  <!--
+    main.js: Core application singleton (window.App). Manages theme toggling
+    with localStorage persistence, toast notification API, URL query parameter
+    parsing, and shared utility functions.
+  -->
   <script src="../js/main.js"></script>
+  <!--
+    components.js: Dynamic UI injection (window.Components). Provides
+    injectAdminSidebar(), injectNavbar(), injectFooter(), and
+    injectPagination() methods to render reusable UI elements.
+  -->
   <script src="../js/components.js"></script>
+  <!--
+    animations.js: Animation utilities (window.Animations). Handles
+    scroll-triggered reveal animations (initScrollReveal), fade transitions,
+    and other visual effects used across the site.
+  -->
   <script src="../js/animations.js"></script>
+  <!--
+    admin/dashboard.js: Dashboard page-specific logic.
+    - Populates stat cards (#stat-total-videos, #stat-total-views, etc.)
+    - Initializes the views trend chart (#analytics-line-chart) via Chart.js
+    - Renders the recent uploads grid (#recent-uploads-grid) from mock data
+    - Populates the Up Next video selector (#upnext-selector)
+  -->
   <script src="../js/admin/dashboard.js"></script>
 </body>
 </html>

@@ -1,68 +1,111 @@
+<!-- ═══════════════════════════════════════════ -->
+<!-- FILE: cookie-policy.html                    -->
+<!-- PURPOSE: Informs users about localStorage   -->
+<!--   usage for storing preferences and data.   -->
+<!-- ═══════════════════════════════════════════ -->
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: HEAD                               -->
+<!-- ═══════════════════════════════════════════ -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Cookie policy for Antigravity Play - how we use cookies">
+
   <title>Cookie Policy - Antigravity Play</title>
+
+  <!-- main.css: Global design system & base styles -->
   <link rel="stylesheet" href="./css/main.css">
+  <!-- legal.css: Legal/info page-specific styles (headers, sections, date) -->
   <link rel="stylesheet" href="./css/legal.css">
 </head>
 <body>
-  <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
-  <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
-    <div class="modal">
-      <div class="modal-header"><h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button></div>
-      <div class="modal-body">Are you sure?</div>
-      <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button class="btn btn-primary confirm-modal-btn">Confirm</button></div>
-    </div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: TOAST NOTIFICATION CONTAINER       -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: CONFIRMATION MODAL                 -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal-header"><h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button></div>
+    <div class="modal-body">Are you sure?</div>
+    <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button class="btn btn-primary confirm-modal-btn">Confirm</button></div>
   </div>
-  <header id="navbar-container" class="navbar-wrapper"></header>
-  <main class="container legal-page">
-    <div class="legal-header">
-      <h1>Cookie Policy</h1>
-      <p class="legal-date">Last updated: July 21, 2026</p>
-    </div>
-    <div class="legal-content">
-      <section>
-        <h2>What Are Cookies</h2>
-        <p>Cookies are small text files stored on your device by your web browser. They help websites remember your preferences and improve your browsing experience.</p>
-      </section>
-      <section>
-        <h2>How We Use Cookies</h2>
-        <p>Antigravity Play uses localStorage (not traditional cookies) to store your preferences, including:</p>
-        <p>• Theme preference (dark/light mode)</p>
-        <p>• Authentication session</p>
-        <p>• Liked videos</p>
-        <p>• Continue watching positions</p>
-        <p>• Emoji reaction data</p>
-      </section>
-      <section>
-        <h2>Third-Party Storage</h2>
-        <p>Embedded videos from third-party platforms (YouTube, Vimeo, etc.) may set their own cookies when you interact with the embedded player. We have no control over these third-party cookies.</p>
-      </section>
-      <section>
-        <h2>Managing Storage</h2>
-        <p>You can clear your localStorage and cookies at any time through your browser settings. Note that this will reset your preferences and logged-in status.</p>
-      </section>
-      <section>
-        <h2>Changes to This Policy</h2>
-        <p>We may update this Cookie Policy from time to time. Any changes will be posted on this page with an updated revision date.</p>
-      </section>
-    </div>
-  </main>
-  <footer id="footer-container" style="margin-top: 100px;"></footer>
-  <script src="./js/mockData.js"></script>
-  <script src="./js/main.js"></script>
-  <script src="./js/components.js"></script>
-  <script src="./js/animations.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      window.Components.injectNavbar();
-      window.Components.injectFooter();
-      window.Animations.initScrollReveal();
-    });
-  </script>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: HEADER / NAVBAR                    -->
+<!-- ═══════════════════════════════════════════ -->
+<header id="navbar-container" class="navbar-wrapper"></header>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: MAIN CONTENT (legal-page)          -->
+<!-- ═══════════════════════════════════════════ -->
+<!-- legal-page: standard layout for legal/info content
+     with a header section and content sections -->
+<main class="container legal-page">
+  <div class="legal-header">
+    <h1>Cookie Policy</h1>
+    <p class="legal-date">Last updated: July 21, 2026</p>
+  </div>
+  <div class="legal-content">
+    <section>
+      <h2>What Are Cookies</h2>
+      <p>Cookies are small text files stored on your device by your web browser. They help websites remember your preferences and improve your browsing experience.</p>
+    </section>
+    <section>
+      <h2>How We Use Cookies</h2>
+      <p>Antigravity Play uses localStorage (not traditional cookies) to store your preferences, including:</p>
+      <p>• Theme preference (dark/light mode)</p>
+      <p>• Authentication session</p>
+      <p>• Liked videos</p>
+      <p>• Continue watching positions</p>
+      <p>• Emoji reaction data</p>
+    </section>
+    <section>
+      <h2>Third-Party Storage</h2>
+      <p>Embedded videos from third-party platforms (YouTube, Vimeo, etc.) may set their own cookies when you interact with the embedded player. We have no control over these third-party cookies.</p>
+    </section>
+    <section>
+      <h2>Managing Storage</h2>
+      <p>You can clear your localStorage and cookies at any time through your browser settings. Note that this will reset your preferences and logged-in status.</p>
+    </section>
+    <section>
+      <h2>Changes to This Policy</h2>
+      <p>We may update this Cookie Policy from time to time. Any changes will be posted on this page with an updated revision date.</p>
+    </section>
+  </div>
+</main>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: FOOTER                             -->
+<!-- ═══════════════════════════════════════════ -->
+<footer id="footer-container" style="margin-top: 100px;"></footer>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: SCRIPTS                            -->
+<!-- ═══════════════════════════════════════════ -->
+<script src="./js/mockData.js"></script>
+<script src="./js/main.js"></script>
+<script src="./js/components.js"></script>
+<script src="./js/animations.js"></script>
+
+  <!-- Init: inject shared navbar, footer, and scroll-reveal animations -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    window.Components.injectNavbar();
+    window.Components.injectFooter();
+    window.Animations.initScrollReveal();
+  });
+</script>
 </body>
 </html>

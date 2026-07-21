@@ -1,81 +1,124 @@
+<!-- ═══════════════════════════════════════════ -->
+<!-- FILE: status.html                           -->
+<!-- PURPOSE: Real-time system status dashboard  -->
+<!--   showing operational status of all         -->
+<!--   platform services.                        -->
+<!-- ═══════════════════════════════════════════ -->
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: HEAD                               -->
+<!-- ═══════════════════════════════════════════ -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Antigravity Play system status - real-time service health dashboard">
+
   <title>System Status - Antigravity Play</title>
+
+  <!-- main.css: Global design system & base styles -->
   <link rel="stylesheet" href="./css/main.css">
+  <!-- system.css: System/status page styles (centered content, error icons) -->
   <link rel="stylesheet" href="./css/system.css">
 </head>
 <body>
-  <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
-  <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
-    <div class="modal">
-      <div class="modal-header"><h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button></div>
-      <div class="modal-body">Are you sure?</div>
-      <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button class="btn btn-primary confirm-modal-btn">Confirm</button></div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: TOAST NOTIFICATION CONTAINER       -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: CONFIRMATION MODAL                 -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal-header"><h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button></div>
+    <div class="modal-body">Are you sure?</div>
+    <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button class="btn btn-primary confirm-modal-btn">Confirm</button></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: HEADER / NAVBAR                    -->
+<!-- ═══════════════════════════════════════════ -->
+<header id="navbar-container" class="navbar-wrapper"></header>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: MAIN CONTENT (system-page)         -->
+<!-- ═══════════════════════════════════════════ -->
+<main class="container system-page">
+  <!-- Clock icon (all-clear indicator) -->
+  <svg class="system-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+  </svg>
+  <h1 class="system-title" style="font-size:var(--text-3xl);">All Systems Operational</h1>
+  <p class="system-desc">Antigravity Play is fully operational. Real-time status of all platform services.</p>
+  <!-- Status card grid: one card per service component -->
+  <div class="system-grid">
+    <div class="system-card">
+      <svg class="system-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/></svg>
+      <h3>Video Platform</h3>
+      <p>Video playback, embeds, and streaming infrastructure.</p>
+      <span class="system-status up">Operational</span>
+    </div>
+    <div class="system-card">
+      <svg class="system-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg>
+      <h3>User Accounts</h3>
+      <p>Authentication, login, and account management.</p>
+      <span class="system-status up">Operational</span>
+    </div>
+    <div class="system-card">
+      <svg class="system-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <h3>Admin Panel</h3>
+      <p>Content management, analytics, and moderation tools.</p>
+      <span class="system-status up">Operational</span>
+    </div>
+    <div class="system-card">
+      <svg class="system-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <h3>Search & Discovery</h3>
+      <p>Search indexing, filters, and video recommendations.</p>
+      <span class="system-status up">Operational</span>
+    </div>
+    <div class="system-card">
+      <svg class="system-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <h3>CDN & Streaming</h3>
+      <p>Content delivery network and video transcoding pipeline.</p>
+      <span class="system-status up">Operational</span>
+    </div>
+    <div class="system-card">
+      <svg class="system-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      <h3>API Services</h3>
+      <p>Third-party integrations, oEmbed, and metadata fetching.</p>
+      <span class="system-status up">Operational</span>
     </div>
   </div>
-  <header id="navbar-container" class="navbar-wrapper"></header>
-  <main class="container system-page">
-    <svg class="system-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-    </svg>
-    <h1 class="system-title" style="font-size:var(--text-3xl);">All Systems Operational</h1>
-    <p class="system-desc">Antigravity Play is fully operational. Real-time status of all platform services.</p>
-    <div class="system-grid">
-      <div class="system-card">
-        <svg class="system-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/></svg>
-        <h3>Video Platform</h3>
-        <p>Video playback, embeds, and streaming infrastructure.</p>
-        <span class="system-status up">Operational</span>
-      </div>
-      <div class="system-card">
-        <svg class="system-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg>
-        <h3>User Accounts</h3>
-        <p>Authentication, login, and account management.</p>
-        <span class="system-status up">Operational</span>
-      </div>
-      <div class="system-card">
-        <svg class="system-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-        <h3>Admin Panel</h3>
-        <p>Content management, analytics, and moderation tools.</p>
-        <span class="system-status up">Operational</span>
-      </div>
-      <div class="system-card">
-        <svg class="system-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <h3>Search & Discovery</h3>
-        <p>Search indexing, filters, and video recommendations.</p>
-        <span class="system-status up">Operational</span>
-      </div>
-      <div class="system-card">
-        <svg class="system-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        <h3>CDN & Streaming</h3>
-        <p>Content delivery network and video transcoding pipeline.</p>
-        <span class="system-status up">Operational</span>
-      </div>
-      <div class="system-card">
-        <svg class="system-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        <h3>API Services</h3>
-        <p>Third-party integrations, oEmbed, and metadata fetching.</p>
-        <span class="system-status up">Operational</span>
-      </div>
-    </div>
-    <p style="font-size:var(--text-xs);color:var(--text-muted);margin-top:var(--space-3xl);">Last checked: just now &middot; Updates every 5 minutes</p>
-  </main>
-  <footer id="footer-container" style="margin-top: 100px;"></footer>
-  <script src="./js/mockData.js"></script>
-  <script src="./js/main.js"></script>
-  <script src="./js/components.js"></script>
-  <script src="./js/animations.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      window.Components.injectNavbar();
-      window.Components.injectFooter();
-      window.Animations.initScrollReveal();
-    });
-  </script>
+  <p style="font-size:var(--text-xs);color:var(--text-muted);margin-top:var(--space-3xl);">Last checked: just now &middot; Updates every 5 minutes</p>
+</main>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: FOOTER                             -->
+<!-- ═══════════════════════════════════════════ -->
+<footer id="footer-container" style="margin-top: 100px;"></footer>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: SCRIPTS                            -->
+<!-- ═══════════════════════════════════════════ -->
+<script src="./js/mockData.js"></script>
+<script src="./js/main.js"></script>
+<script src="./js/components.js"></script>
+<script src="./js/animations.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    window.Components.injectNavbar();
+    window.Components.injectFooter();
+    window.Animations.initScrollReveal();
+  });
+</script>
 </body>
 </html>

@@ -1,20 +1,56 @@
 <!DOCTYPE html>
+<!-- ═══════════════════════════════════════════ -->
+<!-- FILE: notifications.html                  -->
+<!-- PURPOSE: Notification center with filter  -->
+<!--          by type, mark-all-read, clear    -->
+<!--          all, and pagination.             -->
+<!-- ═══════════════════════════════════════════ -->
+<!--
+  ============================================================================
+  FILE: notifications.html
+  SECTION: Admin / Communication
+  DESCRIPTION: Notification center for viewing and managing system alerts,
+  upload status updates, and platform announcements. Supports filtering by
+  type (all, unread, read, uploads, errors) and bulk mark-as-read/clear.
+  DEPENDENCIES: main.js, components.js, admin/notifications.js
+  ============================================================================
+-->
 <html lang="en">
 <head>
+  <!-- ==================== HEAD ==================== -->
+  <!--
+    THEME INIT SCRIPT: Sets data-theme from localStorage on <html> before
+    rendering to prevent FOUC. Defaults to "dark".
+  -->
   <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+  <!-- META: UTF-8 encoding for proper Unicode rendering -->
   <meta charset="UTF-8">
+  <!-- META: Responsive viewport configuration for mobile devices -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- META: Search engine description for this page -->
   <meta name="description" content="View and manage platform notifications, filter by type, mark as read.">
+  <!-- TITLE: Browser tab title and search engine result title -->
   <title>Notifications - Admin Console</title>
+  <!-- STYLESHEET: main.css - Global design system foundation -->
   <link rel="stylesheet" href="../css/main.css">
+  <!-- STYLESHEET: dashboard.css - Shared admin dashboard layout styles -->
   <link rel="stylesheet" href="../css/admin/dashboard.css">
+  <!-- STYLESHEET: videos.css - Shared list/table styles reused for notifications -->
   <link rel="stylesheet" href="../css/admin/videos.css">
+  <!--
+    STYLESHEET: notifications.css
+    Notification-specific styles - filter buttons, notification item layout,
+    read/unread states, toolbar, badge indicators, pagination.
+  -->
   <link rel="stylesheet" href="../css/admin/notifications.css">
 </head>
+<!-- ==================== BODY ==================== -->
 <body>
 
+  <!-- TOAST CONTAINER: Fixed notification area for feedback messages -->
   <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
 
+  <!-- CONFIRMATION MODAL: Reusable dialog for action confirmations -->
   <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
     <div class="modal">
       <div class="modal-header">
@@ -29,11 +65,18 @@
     </div>
   </div>
 
+  <!-- ─── SECTION: ADMIN LAYOUT ──────────────── -->
+  <!-- ==================== ADMIN LAYOUT ==================== -->
   <div class="admin-layout">
+    <!-- SIDEBAR OVERLAY: Mobile backdrop that closes sidebar on tap -->
     <div class="sidebar-overlay"></div>
+    <!-- SIDEBAR CONTAINER: Admin nav injected by Components.injectAdminSidebar() -->
     <aside id="sidebar-container"></aside>
 
+    <!-- ==================== MAIN CONTENT ==================== -->
     <div class="admin-main">
+      <!-- ─── SECTION: MOBILE HEADER ──────────── -->
+      <!-- ADMIN HEADER: Mobile top bar with hamburger menu, label, theme toggle -->
       <header class="admin-header">
         <div class="admin-header-left">
           <button class="admin-menu-btn" aria-label="Open sidebar menu" style="display:none;border:none;background:none;cursor:pointer;">
@@ -53,6 +96,7 @@
       </header>
 
       <main class="admin-body">
+        <!-- TITLE ROW: Page heading with description -->
         <div class="admin-title-row">
           <div class="admin-title-group">
             <h1>Notifications</h1>
@@ -60,6 +104,8 @@
           </div>
         </div>
 
+        <!-- ─── SECTION: Breadcrumbs ──────────── -->
+        <!-- BREADCRUMBS: Dashboard > Notifications navigation path -->
         <nav class="breadcrumbs" aria-label="Breadcrumb">
           <ol class="breadcrumbs-list">
             <li><a href="./index.html">Dashboard</a></li>
@@ -68,6 +114,12 @@
           </ol>
         </nav>
 
+        <!-- ─── SECTION: Toolbar ──────────────── -->
+        <!--
+          TOOLBAR: Bulk action buttons for managing notifications.
+          "Mark All as Read" marks all notifications as read via JS.
+          "Clear All" removes all notifications via JS (with confirmation).
+        -->
         <div class="notifications-toolbar">
           <div class="notifications-actions">
             <button class="btn btn-secondary notif-action-btn" id="mark-all-read-btn">
@@ -81,6 +133,17 @@
           </div>
         </div>
 
+        <!--
+          FILTER BUTTONS: Category tabs for filtering notifications.
+          - All: Shows all notifications
+          - Unread: Only unread notifications
+          - Read: Only read notifications
+          - Uploads: Only upload-related notifications
+          - Errors: Only error/warning notifications
+          "active" class highlights the currently selected filter.
+          Filtering is handled client-side in notifications.js.
+        -->
+        <!-- ─── SECTION: Filter Buttons ─────────── -->
         <div class="notification-filters">
           <button class="notification-filter-btn active" data-filter="all">All</button>
           <button class="notification-filter-btn" data-filter="unread">Unread</button>
@@ -89,8 +152,17 @@
           <button class="notification-filter-btn" data-filter="errors">Errors</button>
         </div>
 
+        <!-- ─── SECTION: Notifications List ────── -->
+        <!-- NOTIFICATIONS LIST: Dynamic container populated by JS with notification items -->
         <div class="notifications-list" id="notifications-list"></div>
 
+        <!--
+          EMPTY STATE: Shown when no notifications match the current filter.
+          Hidden by default (display:none). Shown by JS when list is empty.
+          Displays a bell icon, "No notifications" heading, and
+          "You're all caught up!" message.
+        -->
+        <!-- ─── SECTION: Empty State ────────────── -->
         <div class="empty-state-container" id="notifications-empty" style="display:none;">
           <svg width="48" height="48" fill="none" stroke="var(--text-muted)" stroke-width="1.5" viewBox="0 0 24 24" style="margin:0 auto var(--space-md) auto;display:block;">
             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
@@ -100,20 +172,37 @@
           <p style="font-size:var(--text-sm);color:var(--text-muted);">You're all caught up!</p>
         </div>
 
+        <!-- ─── SECTION: Pagination ─────────────── -->
+        <!-- PAGINATION WRAPPER: Pagination controls injected by Components.injectPagination() -->
         <footer id="pagination-wrapper" style="margin-top:var(--space-xl);"></footer>
 
       </main>
     </div>
   </div>
 
+  <!-- RESPONSIVE STYLE: Shows hamburger button on screens narrower than 896px -->
   <style>
     @media (max-width: 896px) { .admin-menu-btn { display: flex !important; } }
   </style>
 
+  <!-- ─── SECTION: SCRIPTS ──────────────────── -->
+  <!-- ==================== SCRIPTS ==================== -->
+  <!-- mockData.js: Mock data generation for prototype notifications -->
   <script src="../js/mockData.js"></script>
+  <!-- main.js: App core - theme management, toast notifications, utilities -->
   <script src="../js/main.js"></script>
+  <!-- components.js: UI component injectors - sidebar, navbar, footer, pagination -->
   <script src="../js/components.js"></script>
+  <!-- animations.js: Scroll-reveal and transition animation effects -->
   <script src="../js/animations.js"></script>
+  <!--
+    admin/notifications.js: Notifications page logic.
+    - Generates mock notification items with read/unread states
+    - Handles filter button clicks to show/hide notifications by category
+    - Implements "Mark All as Read" and "Clear All" actions
+    - Manages pagination via Components.injectPagination()
+    - Toggles empty state visibility based on filtered results
+  -->
   <script src="../js/admin/notifications.js"></script>
 </body>
 </html>

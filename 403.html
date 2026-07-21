@@ -1,45 +1,132 @@
+<!-- ═══════════════════════════════════════════ -->
+<!-- FILE: 403.html                              -->
+<!-- PURPOSE: 403 Forbidden error page shown     -->
+<!--   when a user lacks permission to access    -->
+<!--   a resource.                               -->
+<!-- ═══════════════════════════════════════════ -->
+<!-- (empty line: spacing between file header and next section) -->
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: HEAD                               -->
+<!-- ═══════════════════════════════════════════ -->
+<!-- DOCTYPE declaration: tells browser this is an HTML5 document -->
 <!DOCTYPE html>
+<!-- Opening <html> tag with lang attribute set to English for accessibility/SEO -->
 <html lang="en">
+<!-- (empty line: spacing before <head> section) -->
+<!-- Opening <head> tag: contains metadata, stylesheets, and pre-paint scripts -->
 <head>
+  <!-- Blocking inline script: Sets data-theme before paint to avoid FOUC -->
   <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+  <!-- (empty line: spacing between script and meta tags) -->
+  <!-- Declares UTF-8 character encoding for proper text rendering of all characters -->
   <meta charset="UTF-8">
+  <!-- Enables responsive viewport sizing on mobile devices; initial-scale=1.0 prevents zoom issues -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Provides page description for SEO / search snippet shown in search results -->
   <meta name="description" content="Access forbidden - you do not have permission to view this page">
+  <!-- (empty line: spacing between meta tags and title) -->
+  <!-- Page title shown in browser tab and search engine results -->
   <title>403 Forbidden - Antigravity Play</title>
+  <!-- (empty line: spacing between title and stylesheets) -->
+  <!-- main.css: Global design system & utility classes -->
   <link rel="stylesheet" href="./css/main.css">
+  <!-- system.css: Error/system page layout & status styles -->
   <link rel="stylesheet" href="./css/system.css">
 </head>
+<!-- Closing </head> tag: end of metadata and style declarations -->
+<!-- Opening <body> tag: start of visible page content -->
 <body>
-  <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
-  <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
-    <div class="modal">
-      <div class="modal-header"><h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button></div>
-      <div class="modal-body">Are you sure?</div>
-      <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button class="btn btn-primary confirm-modal-btn">Confirm</button></div>
-    </div>
+<!-- (empty line: spacing before toast section) -->
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: TOAST NOTIFICATION CONTAINER       -->
+<!-- ═══════════════════════════════════════════ -->
+<!-- Toast container: renders ephemeral success/error/info messages. -->
+<!--   id="toast-container" is targeted by JS to inject toasts.       -->
+<!--   class="toast-container" provides styling.                      -->
+<!--   role="status" aria-live="polite" ensures accessibility.        -->
+<div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+<!-- Closing </div> for toast-container -->
+<!-- (empty line: spacing between sections) -->
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: CONFIRMATION MODAL                 -->
+<!-- ═══════════════════════════════════════════ -->
+<!-- Reusable confirmation dialog overlay.                                -->
+<!--   class="modal-overlay" provides semi-transparent backdrop.          -->
+<!--   id="confirm-modal-overlay" targeted by JS to show/hide.            -->
+<!--   role="dialog" aria-modal="true" for accessibility (traps focus).   -->
+<div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
+  <!-- Modal container: centered white/dark card with rounded corners -->
+  <div class="modal">
+    <!-- Modal header row: title and close button (single line) -->
+    <div class="modal-header"><h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button></div>
+    <!-- Modal body content: message text shown to user -->
+    <div class="modal-body">Are you sure?</div>
+    <!-- Modal footer: action buttons with secondary/cancel and primary/confirm -->
+    <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button class="btn btn-primary confirm-modal-btn">Confirm</button></div>
   </div>
-  <header id="navbar-container" class="navbar-wrapper"></header>
-  <main class="container system-page">
-    <svg class="system-icon error" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-    <div class="system-code">403</div>
-    <h1 class="system-title">Access Forbidden</h1>
-    <p class="system-desc">You do not have permission to access this page. Please log in with an authorized account or contact support.</p>
-    <div class="system-actions">
-      <a href="./index.html" class="btn btn-primary">Go Home</a>
-      <a href="./search.html" class="btn btn-secondary">Browse Videos</a>
-    </div>
-  </main>
-  <footer id="footer-container" style="margin-top: 100px;"></footer>
-  <script src="./js/mockData.js"></script>
-  <script src="./js/main.js"></script>
-  <script src="./js/components.js"></script>
-  <script src="./js/animations.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      window.Components.injectNavbar();
-      window.Components.injectFooter();
-      window.Animations.initScrollReveal();
-    });
-  </script>
+  <!-- Closing </div> for modal -->
+</div>
+<!-- Closing </div> for modal-overlay -->
+<!-- (empty line: spacing between sections) -->
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: HEADER / NAVBAR                    -->
+<!-- ═══════════════════════════════════════════ -->
+<!-- Placeholder for site navbar, injected dynamically by window.Components.injectNavbar() -->
+<header id="navbar-container" class="navbar-wrapper"></header>
+<!-- Closing </header> for navbar container -->
+<!-- (empty line: spacing between sections) -->
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: MAIN CONTENT (system-page)         -->
+<!-- ═══════════════════════════════════════════ -->
+<!-- System page layout: centered error display with code, title, description, and action buttons -->
+<main class="container system-page">
+  <!-- Error icon: shield with lock SVG representing forbidden access -->
+  <svg class="system-icon error" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+  <!-- Error status code: large bold number (403) for visual emphasis -->
+  <div class="system-code">403</div>
+  <!-- Error title: "Access Forbidden" heading -->
+  <h1 class="system-title">Access Forbidden</h1>
+  <!-- Error description: explanatory text guiding user what to do next -->
+  <p class="system-desc">You do not have permission to access this page. Please log in with an authorized account or contact support.</p>
+  <!-- Action buttons container: flex row with CTA links -->
+  <div class="system-actions">
+    <!-- Primary action: link back to home page -->
+    <a href="./index.html" class="btn btn-primary">Go Home</a>
+    <!-- Secondary action: link to search/browse page -->
+    <a href="./search.html" class="btn btn-secondary">Browse Videos</a>
+  </div>
+  <!-- Closing </div> for system-actions -->
+</main>
+<!-- Closing </main> for main content -->
+<!-- (empty line: spacing between sections) -->
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: FOOTER                             -->
+<!-- ═══════════════════════════════════════════ -->
+<!-- Placeholder for site footer, injected dynamically by window.Components.injectFooter() -->
+<footer id="footer-container" style="margin-top: 100px;"></footer>
+<!-- Closing </footer> for footer container -->
+<!-- (empty line: spacing between sections) -->
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: SCRIPTS                            -->
+<!-- ═══════════════════════════════════════════ -->
+<!-- mockData.js: Mock video/tag/creator data for demo purposes -->
+<script src="./js/mockData.js"></script>
+<!-- main.js: Core app logic — routing, theme toggle, utilities -->
+<script src="./js/main.js"></script>
+<!-- components.js: UI component factory — navbar, footer, toast, modal injection -->
+<script src="./js/components.js"></script>
+<!-- animations.js: ScrollReveal, fade-in, transition helpers -->
+<script src="./js/animations.js"></script>
+<!-- (empty line: spacing between external and inline scripts) -->
+<!-- Inline DOMContentLoaded handler: injects navbar, footer, and initializes animations -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    window.Components.injectNavbar();
+    window.Components.injectFooter();
+    window.Animations.initScrollReveal();
+  });
+</script>
 </body>
+<!-- Closing </body> tag: end of visible page content -->
 </html>
+<!-- Closing </html> tag: end of HTML document -->

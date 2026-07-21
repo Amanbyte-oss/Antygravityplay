@@ -1,492 +1,585 @@
-/* --- WATCH LAYOUT --- */
+/* ═══════════════════════════════════════════════════════════════════════
+   WATCH / VIDEO PLAYER PAGE
+   Two-column layout: video player + details on the left, related videos sidebar on the right.
+   Full custom video player overlay with controls, emoji reactions, end screen, and error states.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════════════
+   WATCH LAYOUT
+   Two-column grid: main content (player + details) and sidebar (related videos).
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Main watch grid: player/content on left, sidebar on right */
 .watch-grid {
-  display: grid;
-  grid-template-columns: 1fr 360px;
-  gap: var(--space-2xl);
-  margin-top: var(--space-2xl);
-  margin-bottom: var(--space-5xl); /* Buffer for now playing bar */
+  display: grid;                           /* Grid layout for two columns */
+  grid-template-columns: 1fr 360px;        /* Left column fills remaining space, right is 360px fixed */
+  gap: var(--space-2xl);                   /* 32px between columns */
+  margin-top: var(--space-2xl);            /* 32px above the grid */
+  margin-bottom: var(--space-5xl);         /* 96px below - extra buffer so the sticky now-playing bar doesn't overlap content */
 }
 
+/* Tablet and below: stack in single column */
 @media (max-width: 1024px) {
   .watch-grid {
-    grid-template-columns: 1fr;
-    gap: var(--space-xl);
+    grid-template-columns: 1fr;            /* Single column */
+    gap: var(--space-xl);                  /* 24px gap between sections */
   }
 }
 
+/* Mobile: increase bottom margin for a taller now-playing bar */
 @media (max-width: 576px) {
   .watch-grid {
-    margin-bottom: 120px;
+    margin-bottom: 120px;                  /* Extra space for the now-playing bar on small screens */
   }
 }
 
-/* --- THEATER PLAYER --- */
+/* ═══════════════════════════════════════════════════════════════════════
+   THEATER PLAYER
+   Primary video player container with 16:9 aspect ratio.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Player container: maintains 16:9 ratio, dark background, rounded corners */
 .player-container {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  background-color: #000;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  box-shadow: var(--shadow-lg);
+  position: relative;              /* Anchor for all overlay elements (controls, gradients, etc.) */
+  width: 100%;                     /* Fill column width */
+  aspect-ratio: 16 / 9;            /* Maintain 16:9 aspect ratio */
+  background-color: #000;          /* Black background for the player */
+  border-radius: var(--radius-lg); /* 12px rounded corners */
+  overflow: hidden;                /* Clip overlays to container bounds */
+  box-shadow: var(--shadow-lg);    /* Prominent shadow */
 }
 
+/* Native video element: fill the container */
 .player-container video {
-  width: 100%;
-  height: 100%;
+  width: 100%;                     /* Fill container width */
+  height: 100%;                    /* Fill container height */
 }
 
-/* ─── EMBED PLAYER LOADING ───────────────────────────────────────────── */
+/* ─── EMBED PLAYER LOADING ─── */
+/* Loading state shown while the video/embed is initialising */
 .player-loading {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-md);
-  background-color: #000;
-  z-index: 2;
+  position: absolute;              /* Overlay on top of the player */
+  inset: 0;                        /* Cover entire player area (top, right, bottom, left = 0) */
+  display: flex;                   /* Centre spinner and text */
+  flex-direction: column;          /* Stack vertically: spinner above label */
+  align-items: center;             /* Centre horizontally */
+  justify-content: center;         /* Centre vertically */
+  gap: var(--space-md);            /* 12px between spinner and text */
+  background-color: #000;          /* Black background */
+  z-index: 2;                      /* Above the video element */
 }
 
+/* Loading text */
 .player-loading span {
-  font-size: var(--text-sm);
-  color: var(--text-muted);
-}
-  object-fit: contain;
-  display: block;
+  font-size: var(--text-sm);       /* 14px */
+  color: var(--text-muted);        /* Dim text */
 }
 
-/* --- VIDEO DETAILS --- */
+/* ═══════════════════════════════════════════════════════════════════════
+   VIDEO DETAILS
+   Video title, action buttons (like, share, save), metadata below the player.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Video details section: spacing and bottom border separator */
 .video-watch-details {
-  margin-top: var(--space-xl);
-  padding-bottom: var(--space-xl);
-  border-bottom: 1px solid var(--border);
+  margin-top: var(--space-xl);       /* 24px above */
+  padding-bottom: var(--space-xl);   /* 24px below */
+  border-bottom: 1px solid var(--border);  /* Separator from description */
 }
 
+/* Watch page video title: large, bold, tight line height */
 .watch-title {
-  font-size: var(--text-2xl);
-  font-weight: 700;
-  line-height: 1.2;
-  margin-bottom: var(--space-md);
-  letter-spacing: -0.5px;
+  font-size: var(--text-2xl);        /* 24px */
+  font-weight: 700;                  /* Bold */
+  line-height: 1.2;                  /* Tight leading */
+  margin-bottom: var(--space-md);    /* 12px below */
+  letter-spacing: -0.5px;            /* Slightly tighter tracking */
 }
 
+/* Actions row: metadata (views/date) on left, buttons on right */
 .watch-actions-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: var(--space-md);
-  margin-bottom: var(--space-lg);
+  display: flex;                     /* Horizontal layout */
+  justify-content: space-between;    /* Meta left, actions right */
+  align-items: center;               /* Vertically centre */
+  flex-wrap: wrap;                   /* Wrap on small screens */
+  gap: var(--space-md);              /* 12px gap */
+  margin-bottom: var(--space-lg);    /* 16px below */
 }
 
+/* Metadata text: views, upload date, etc. */
 .watch-meta-text {
-  font-size: var(--text-sm);
-  color: var(--text-secondary);
+  font-size: var(--text-sm);         /* 14px */
+  color: var(--text-secondary);      /* Grey text */
 }
 
+/* Actions container: row of buttons (like, share, save) */
 .watch-actions {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
+  display: flex;                     /* Horizontal row */
+  align-items: center;               /* Centre vertically */
+  gap: var(--space-md);              /* 12px between buttons */
 }
 
-/* --- LIKE HEART BUTTON --- */
+/* ═══════════════════════════════════════════════════════════════════════
+   LIKE HEART BUTTON
+   Pill-shaped like/favourite button with heart icon and count.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Like button: pill-shaped with border, animated hover */
 .like-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-sm) var(--space-lg);
-  border-radius: var(--radius-full);
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border);
-  font-size: var(--text-sm);
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+  display: inline-flex;              /* Inline but flexible */
+  align-items: center;               /* Centre icon and text vertically */
+  gap: var(--space-sm);              /* 8px between icon and count */
+  padding: var(--space-sm) var(--space-lg);  /* 8px vertical, 16px horizontal */
+  border-radius: var(--radius-full); /* Pill shape */
+  background-color: var(--bg-secondary);    /* Card background */
+  border: 1px solid var(--border);         /* Subtle border */
+  font-size: var(--text-sm);             /* 14px */
+  font-weight: 600;                      /* Semi-bold */
+  cursor: pointer;                       /* Clickable */
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);  /* Smooth interactions */
 }
 
+/* Like button hover: elevated background, lift, shadow */
 .like-btn:hover {
-  background-color: var(--bg-elevated);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  background-color: var(--bg-elevated);                /* Lighter background */
+  transform: translateY(-1px);                          /* Float up 1px */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);          /* Depth shadow */
 }
 
+/* Like button press: scale down for tactile feedback */
 .like-btn:active {
-  transform: scale(0.95);
+  transform: scale(0.95);           /* Shrink slightly */
 }
 
+/* Heart SVG: unfilled outline by default */
 .like-btn svg {
-  fill: none;
-  stroke: var(--text-secondary);
-  stroke-width: 2;
-  transition: transform var(--transition-base), stroke var(--transition-fast), fill var(--transition-fast);
+  fill: none;                       /* Unfilled heart */
+  stroke: var(--text-secondary);    /* Grey outline */
+  stroke-width: 2;                  /* Outline thickness */
+  transition: transform var(--transition-base), stroke var(--transition-fast), fill var(--transition-fast);  /* Smooth like animation */
 }
 
+/* Liked state: filled red heart */
 .like-btn.liked svg {
-  fill: #f3727f;
-  stroke: #f3727f;
+  fill: #f3727f;                    /* Red fill */
+  stroke: #f3727f;                  /* Red outline (matches fill) */
 }
 
+/* Liked button text: red to match the heart */
 .like-btn.liked {
-  color: #f3727f;
+  color: #f3727f;                   /* Red text for the count */
 }
 
-/* --- CREATOR / DESCRIPTION --- */
+/* ═══════════════════════════════════════════════════════════════════════
+   CREATOR / DESCRIPTION
+   Video metadata: creator profile, description text, and tag badges.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Description box: card with border, below the title/actions */
 .video-description-box {
-  margin-top: var(--space-xl);
-  background-color: var(--bg-secondary);
-  border-radius: var(--radius-md);
-  padding: var(--space-xl);
-  border: 1px solid var(--border);
+  margin-top: var(--space-xl);             /* 24px above */
+  background-color: var(--bg-secondary);   /* Card background */
+  border-radius: var(--radius-md);         /* 8px rounded corners */
+  padding: var(--space-xl);                /* 24px internal padding */
+  border: 1px solid var(--border);         /* Subtle border */
 }
 
+/* Creator profile: avatar + name/subscriber count row */
 .creator-profile {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-  margin-bottom: var(--space-lg);
+  display: flex;                /* Horizontal layout */
+  align-items: center;          /* Centre vertically */
+  gap: var(--space-md);         /* 12px gap */
+  margin-bottom: var(--space-lg);  /* 16px below */
 }
 
+/* Creator avatar: circular placeholder with accent text */
 .creator-avatar {
-  width: 48px;
+  width: 48px;                           /* Fixed size circle */
   height: 48px;
-  border-radius: var(--radius-full);
-  background-color: var(--bg-elevated);
-  display: flex;
+  border-radius: var(--radius-full);     /* Perfect circle */
+  background-color: var(--bg-elevated);  /* Elevated background */
+  display: flex;                         /* Centre initials or icon */
   align-items: center;
   justify-content: center;
-  font-weight: 700;
-  color: var(--accent);
-  border: 1px solid var(--border);
+  font-weight: 700;                      /* Bold initials */
+  color: var(--accent);                  /* Accent colour text */
+  border: 1px solid var(--border);       /* Subtle border */
 }
 
+/* Creator name heading */
 .creator-info h3 {
-  font-size: var(--text-md);
-  font-weight: 600;
+  font-size: var(--text-md);      /* 16px */
+  font-weight: 600;               /* Semi-bold */
 }
 
+/* Creator subscriber count or secondary info */
 .creator-info p {
-  font-size: var(--text-xs);
-  color: var(--text-secondary);
+  font-size: var(--text-xs);      /* 12px */
+  color: var(--text-secondary);   /* Grey text */
 }
 
+/* Video description text: pre-wrapped to preserve line breaks */
 .description-text {
-  font-size: var(--text-sm);
-  color: var(--text-secondary);
-  line-height: 1.6;
-  white-space: pre-wrap;
+  font-size: var(--text-sm);      /* 14px */
+  color: var(--text-secondary);   /* Grey text */
+  line-height: 1.6;               /* Comfortable reading */
+  white-space: pre-wrap;          /* Preserve newlines and wrap long lines */
 }
 
+/* Tags row: wrapping row of topic badges */
 .tags-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-sm);
-  margin-top: var(--space-lg);
+  display: flex;             /* Horizontal wrapping layout */
+  flex-wrap: wrap;           /* Wrap to next line */
+  gap: var(--space-sm);      /* 8px between badges */
+  margin-top: var(--space-lg);  /* 16px above */
 }
 
+/* Individual tag badge: pill-shaped */
 .tag-badge {
-  background-color: var(--bg-elevated);
-  border: 1px solid var(--border);
-  color: var(--text-secondary);
-  padding: 4px 12px;
-  border-radius: var(--radius-full);
-  font-size: var(--text-xs);
-  font-weight: 500;
-  transition: color var(--transition-fast), background-color var(--transition-fast);
+  background-color: var(--bg-elevated);  /* Elevated background */
+  border: 1px solid var(--border);       /* Subtle border */
+  color: var(--text-secondary);          /* Grey text */
+  padding: 4px 12px;                     /* Compact padding */
+  border-radius: var(--radius-full);     /* Pill shape */
+  font-size: var(--text-xs);             /* 12px */
+  font-weight: 500;                      /* Medium weight */
+  transition: color var(--transition-fast), background-color var(--transition-fast);  /* Smooth hover */
 }
 
+/* Tag badge hover: lighter background and brighter text */
 .tag-badge:hover {
-  background-color: var(--bg-secondary);
-  color: var(--text-primary);
+  background-color: var(--bg-secondary);  /* Lighter background */
+  color: var(--text-primary);             /* Brighter text */
 }
 
-/* --- SIDEBAR RELATED VIDEOS --- */
+/* ═══════════════════════════════════════════════════════════════════════
+   SIDEBAR RELATED VIDEOS
+   Right-column sidebar showing suggested/related videos to watch next.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Sidebar: vertical stack of related video cards */
 .watch-sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-lg);
+  display: flex;                  /* Vertical layout */
+  flex-direction: column;         /* Stack cards vertically */
+  gap: var(--space-lg);           /* 16px between related cards */
 }
 
+/* Sidebar section title */
 .sidebar-title {
-  font-size: var(--text-lg);
-  font-weight: 700;
-  margin-bottom: var(--space-sm);
+  font-size: var(--text-lg);      /* 18px */
+  font-weight: 700;               /* Bold */
+  margin-bottom: var(--space-sm); /* 8px below */
 }
 
+/* Related video card: horizontal thumbnail + info layout */
 .related-card {
-  display: flex;
-  gap: var(--space-md);
-  cursor: pointer;
+  display: flex;             /* Horizontal row */
+  gap: var(--space-md);      /* 12px between thumbnail and info */
+  cursor: pointer;           /* Clickable */
 }
 
+/* Related video thumbnail: fixed width, 16:9 */
 .related-thumb {
-  flex: 0 0 140px;
-  aspect-ratio: 16 / 9;
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-  position: relative;
-  background-color: var(--bg-elevated);
+  flex: 0 0 140px;                    /* Fixed 140px width, don't grow/shrink */
+  aspect-ratio: 16 / 9;               /* 16:9 aspect ratio */
+  border-radius: var(--radius-sm);    /* 4px rounded corners */
+  overflow: hidden;                   /* Clip image to rounded corners */
+  position: relative;                 /* For future overlay elements */
+  background-color: var(--bg-elevated);  /* Placeholder background */
 }
 
+/* Thumbnail image: cover the container */
 .related-thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  width: 100%;                    /* Fill width */
+  height: 100%;                   /* Fill height */
+  object-fit: cover;              /* Crop to cover */
 }
 
+/* Related video info: title and metadata */
 .related-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+  flex: 1;                        /* Fill remaining space */
+  display: flex;                  /* Vertical layout */
+  flex-direction: column;         /* Title on top, meta on bottom */
 }
 
+/* Related video title: clamped to 2 lines */
 .related-title {
-  font-size: var(--text-sm);
-  font-weight: 600;
-  line-height: 1.3;
-  margin-bottom: var(--space-xs);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  font-size: var(--text-sm);      /* 14px */
+  font-weight: 600;               /* Semi-bold */
+  line-height: 1.3;               /* Tight leading */
+  margin-bottom: var(--space-xs); /* 4px below */
+  display: -webkit-box;           /* Line clamp container (WebKit) */
+  -webkit-line-clamp: 2;          /* Max 2 lines */
+  -webkit-box-orient: vertical;   /* Vertical clamping */
+  overflow: hidden;               /* Hide overflow text */
 }
 
+/* "Up next" badge: small accent-coloured indicator for the next auto-play video */
 .upnext-badge {
-  display: inline-block;
-  font-size: 9px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--accent);
-  background-color: color-mix(in srgb, var(--accent) 15%, transparent);
-  padding: 1px 6px;
-  border-radius: var(--radius-sm);
-  margin-left: 4px;
-  vertical-align: middle;
+  display: inline-block;          /* Inline with text */
+  font-size: 9px;                 /* Very small */
+  font-weight: 700;               /* Bold */
+  text-transform: uppercase;      /* ALL CAPS */
+  letter-spacing: 0.5px;          /* Slight spacing */
+  color: var(--accent);           /* Green accent */
+  background-color: color-mix(in srgb, var(--accent) 15%, transparent);  /* Semi-transparent green background */
+  padding: 1px 6px;               /* Compact */
+  border-radius: var(--radius-sm); /* 4px rounded */
+  margin-left: 4px;               /* Small gap before label */
+  vertical-align: middle;          /* Align with text baseline */
 }
 
+/* Related video metadata: views, upload date */
 .related-meta {
-  font-size: var(--text-xs);
-  color: var(--text-secondary);
-  margin-top: auto;
+  font-size: var(--text-xs);      /* 12px */
+  color: var(--text-secondary);   /* Grey text */
+  margin-top: auto;               /* Push to bottom of the info column */
 }
 
-/* --- NOW PLAYING BOTTOM BAR (Spotify-style) --- */
+/* ═══════════════════════════════════════════════════════════════════════
+   NOW PLAYING BOTTOM BAR (Spotify-style)
+   Fixed bottom bar showing current video, playback controls, and volume.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Now-playing bar wrapper: fixed to the bottom, hidden by default */
 .now-playing-bar-wrapper {
-  position: fixed;
-  bottom: 0;
-  left: 0;
+  position: fixed;                     /* Fixed at bottom of viewport */
+  bottom: 0;                           /* At the very bottom */
+  left: 0;                             /* Full width */
   width: 100%;
-  background-color: #181818;
-  border-top: 1px solid var(--border);
-  z-index: 200;
-  height: 90px;
-  padding: 0 var(--space-2xl);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.6);
-  opacity: 0;
-  transform: translateY(100%);
-  transition: transform var(--transition-slow), opacity var(--transition-slow);
+  background-color: #181818;           /* Dark background (doesn't use CSS var for consistency) */
+  border-top: 1px solid var(--border); /* Top separator */
+  z-index: 200;                        /* Above all page content */
+  height: 90px;                        /* Standard height on desktop */
+  padding: 0 var(--space-2xl);         /* 32px side padding */
+  display: flex;                       /* Three-section layout: left, centre, right */
+  align-items: center;                 /* Centre vertically */
+  justify-content: space-between;      /* Spread sections across width */
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.6);  /* Deep top shadow for elevation */
+  opacity: 0;                          /* Hidden by default */
+  transform: translateY(100%);         /* Slide off-screen to the bottom */
+  transition: transform var(--transition-slow), opacity var(--transition-slow);  /* Smooth slide in/out */
 }
 
+/* Active state: slide the bar up into view */
 .now-playing-bar-wrapper.active {
-  opacity: 1;
-  transform: translateY(0);
+  opacity: 1;                          /* Fully visible */
+  transform: translateY(0);            /* Slide into natural position */
 }
 
+/* Left section: thumbnail + video info (30% width, min 180px) */
 .now-playing-left {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-  width: 30%;
-  min-width: 180px;
+  display: flex;             /* Horizontal row */
+  align-items: center;       /* Centre vertically */
+  gap: var(--space-md);      /* 12px between thumbnail and text */
+  width: 30%;                /* Take 30% of bar width */
+  min-width: 180px;          /* Don't shrink below 180px */
 }
 
+/* Thumbnail image in the now-playing bar */
 .now-playing-thumb {
-  width: 56px;
+  width: 56px;                           /* Fixed square */
   height: 56px;
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-  background-color: var(--bg-elevated);
+  border-radius: var(--radius-sm);       /* 4px rounded */
+  overflow: hidden;                      /* Clip image */
+  background-color: var(--bg-elevated);  /* Placeholder background */
 }
 
+/* Thumbnail image: cover */
 .now-playing-thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  width: 100%;                    /* Fill width */
+  height: 100%;                   /* Fill height */
+  object-fit: cover;              /* Crop to cover */
 }
 
+/* Video title + creator text column */
 .now-playing-info {
-  display: flex;
+  display: flex;                  /* Vertical stack */
   flex-direction: column;
-  overflow: hidden;
+  overflow: hidden;               /* Clip text to prevent overflow */
 }
 
+/* Now-playing title: single line with ellipsis */
 .now-playing-title {
-  font-size: var(--text-sm);
-  font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: var(--text-primary);
+  font-size: var(--text-sm);       /* 14px */
+  font-weight: 600;                /* Semi-bold */
+  white-space: nowrap;             /* Single line */
+  overflow: hidden;                /* Prevent overflow */
+  text-overflow: ellipsis;         /* Show "..." for long titles */
+  color: var(--text-primary);      /* White text */
 }
 
+/* Creator name: smaller, secondary colour, single line */
 .now-playing-creator {
-  font-size: var(--text-xs);
-  color: var(--text-secondary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-top: 2px;
+  font-size: var(--text-xs);       /* 12px */
+  color: var(--text-secondary);    /* Grey text */
+  white-space: nowrap;             /* Single line */
+  overflow: hidden;                /* Prevent overflow */
+  text-overflow: ellipsis;         /* Show "..." for long names */
+  margin-top: 2px;                 /* Small gap below title */
 }
 
+/* Centre section: playback controls + progress bar (40% width, max 500px) */
 .now-playing-center {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-xs);
-  width: 40%;
-  max-width: 500px;
+  display: flex;                  /* Vertical stack */
+  flex-direction: column;         /* Controls on top, progress below */
+  align-items: center;            /* Centre horizontally */
+  gap: var(--space-xs);           /* 4px between controls and progress */
+  width: 40%;                     /* Take 40% of bar width */
+  max-width: 500px;               /* Don't stretch too wide */
 }
 
+/* Playback control buttons row */
 .player-controls {
-  display: flex;
-  align-items: center;
-  gap: var(--space-xl);
+  display: flex;             /* Horizontal row of buttons */
+  align-items: center;       /* Centre vertically */
+  gap: var(--space-xl);      /* 24px between controls */
 }
 
+/* Generic control button: grey icon by default */
 .control-btn {
-  color: var(--text-secondary);
-  display: flex;
+  color: var(--text-secondary);        /* Grey icon */
+  display: flex;                       /* Centre the icon */
   align-items: center;
   justify-content: center;
-  transition: color var(--transition-fast), transform var(--transition-fast);
+  transition: color var(--transition-fast), transform var(--transition-fast);  /* Smooth hover */
 }
 
+/* Control button hover: brighten icon */
 .control-btn:hover {
-  color: var(--text-primary);
+  color: var(--text-primary);          /* White icon on hover */
 }
 
+/* Play/pause button: white circle with black icon */
 .control-btn-play {
-  width: 32px;
+  width: 32px;                         /* Small circle */
   height: 32px;
-  background-color: #ffffff;
-  color: #000000;
-  border-radius: var(--radius-full);
-  padding: 8px;
+  background-color: #ffffff;           /* White background */
+  color: #000000;                      /* Black icon */
+  border-radius: var(--radius-full);   /* Perfect circle */
+  padding: 8px;                        /* Internal spacing for icon */
 }
 
+/* Play button hover: slightly larger */
 .control-btn-play:hover {
-  transform: scale(1.05);
-  background-color: #ffffff;
-  color: #000000;
+  transform: scale(1.05);              /* Grow slightly */
+  background-color: #ffffff;           /* Keep white */
+  color: #000000;                      /* Keep black */
 }
 
+/* Progress bar container: time labels + slider */
 .progress-bar-container {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-  width: 100%;
+  display: flex;             /* Row: time - slider - time */
+  align-items: center;       /* Centre vertically */
+  gap: var(--space-md);      /* 12px between elements */
+  width: 100%;               /* Fill centre section width */
 }
 
+/* Time labels: current time and duration */
 .progress-time {
-  font-size: var(--text-xs);
-  font-family: var(--font-mono);
-  color: var(--text-secondary);
-  min-width: 40px;
-  text-align: center;
+  font-size: var(--text-xs);        /* 12px */
+  font-family: var(--font-mono);    /* Monospace for consistent width numbers */
+  color: var(--text-secondary);     /* Grey text */
+  min-width: 40px;                  /* Fixed width to prevent layout shift */
+  text-align: center;               /* Centre numbers */
 }
 
+/* Progress slider track: thin grey bar */
 .progress-slider-bg {
-  flex: 1;
-  height: 4px;
-  background-color: var(--border);
-  border-radius: var(--radius-full);
-  position: relative;
-  cursor: pointer;
+  flex: 1;                          /* Fill remaining space */
+  height: 4px;                      /* Thin track */
+  background-color: var(--border);  /* Dark track background */
+  border-radius: var(--radius-full);/* Rounded ends */
+  position: relative;               /* Anchor for the fill */
+  cursor: pointer;                  /* Clickable to seek */
 }
 
+/* Progress fill: white bar that grows as video plays */
 .progress-slider-fill {
-  position: absolute;
-  top: 0;
+  position: absolute;               /* Inside the track */
+  top: 0;                           /* Full height of track */
   left: 0;
-  height: 100%;
-  background-color: var(--text-primary);
+  height: 100%;                     /* Match track height */
+  background-color: var(--text-primary);  /* White fill */
   border-radius: var(--radius-full);
-  width: 0%;
+  width: 0%;                        /* Starts at 0, updated by JS */
 }
 
+/* Hover: show accent colour on the progress fill */
 .progress-slider-bg:hover .progress-slider-fill {
-  background-color: var(--accent);
+  background-color: var(--accent);  /* Green accent on hover */
 }
 
+/* Right section: volume and additional controls (30% width, min 180px) */
 .now-playing-right {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: var(--space-md);
-  width: 30%;
-  min-width: 180px;
+  display: flex;                 /* Horizontal row */
+  align-items: center;           /* Centre vertically */
+  justify-content: flex-end;     /* Align to the right */
+  gap: var(--space-md);          /* 12px between controls */
+  width: 30%;                    /* Take 30% of bar width */
+  min-width: 180px;              /* Don't shrink below 180px */
 }
 
+/* Volume control: icon + slider */
 .volume-bar-container {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  width: 120px;
+  display: flex;             /* Row: icon + slider */
+  align-items: center;       /* Centre vertically */
+  gap: var(--space-sm);      /* 8px gap */
+  width: 120px;              /* Fixed width for volume control area */
 }
 
+/* Volume slider track */
 .volume-slider-bg {
-  flex: 1;
-  height: 4px;
-  background-color: var(--border);
+  flex: 1;                          /* Fill remaining space */
+  height: 4px;                      /* Thin track */
+  background-color: var(--border);  /* Dark track */
   border-radius: var(--radius-full);
   position: relative;
   cursor: pointer;
 }
 
+/* Volume fill: shows current volume level (70% default) */
 .volume-slider-fill {
-  position: absolute;
+  position: absolute;               /* Inside the track */
   top: 0;
   left: 0;
   height: 100%;
-  background-color: var(--text-secondary);
+  background-color: var(--text-secondary);  /* Grey fill */
   border-radius: var(--radius-full);
-  width: 70%;
+  width: 70%;                       /* Default 70% volume */
 }
 
+/* Hover: accent colour on volume fill */
 .volume-slider-bg:hover .volume-slider-fill {
-  background-color: var(--accent);
+  background-color: var(--accent);  /* Green on hover */
 }
 
+/* Tablet: reduce height, hide right section, widen centre */
 @media (max-width: 768px) {
   .now-playing-bar-wrapper {
-    height: 64px;
-    padding: 0 var(--space-md);
+    height: 64px;                     /* Shorter bar */
+    padding: 0 var(--space-md);       /* Tighter padding */
   }
   .now-playing-left {
-    width: auto;
-    min-width: 0;
+    width: auto;                      /* Auto width */
+    min-width: 0;                     /* No minimum */
   }
   .now-playing-right {
-    display: none;
+    display: none;                    /* Hide volume controls on tablet */
   }
   .now-playing-center {
-    width: 60%;
+    width: 60%;                       /* Centre takes more space */
   }
 }
 
+/* Mobile: even shorter bar, smaller thumbnail */
 @media (max-width: 480px) {
   .now-playing-bar-wrapper {
-    height: 56px;
-    padding: 0 var(--space-sm);
+    height: 56px;                     /* Compact bar */
+    padding: 0 var(--space-sm);       /* 8px side padding */
   }
   .now-playing-thumb {
-    width: 40px;
+    width: 40px;                      /* Smaller thumbnail */
     height: 40px;
   }
 }
@@ -495,667 +588,764 @@
    CUSTOM VIDEO PLAYER OVERLAY
    ═══════════════════════════════════════════════════ */
 
-/* --- OVERLAY BASE --- */
+/* ═══════════════════════════════════════════════════════════════════════
+   CUSTOM VIDEO PLAYER OVERLAY
+   Full-featured custom controls overlay on top of the video element.
+   Includes: gradients, play button, seek zones, emoji reactions,
+   progress bar, volume, speed, error overlay, and end screen.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ─── OVERLAY BASE ─── */
+/* Main overlay: covers the entire player, hidden by default, shown on mouse move */
 .player-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 10;
-  display: flex;
+  position: absolute;              /* Cover the player container */
+  inset: 0;                        /* Full coverage (top/right/bottom/left = 0) */
+  z-index: 10;                     /* Above the video element */
+  display: flex;                   /* Vertical layout, content at bottom */
   flex-direction: column;
-  justify-content: flex-end;
-  opacity: 0;
-  transition: opacity 0.3s var(--ease-relax);
-  cursor: default;
+  justify-content: flex-end;       /* Controls sit at the bottom of the overlay */
+  opacity: 0;                      /* Hidden by default */
+  transition: opacity 0.3s var(--ease-relax);  /* Fade in/out */
+  cursor: default;                 /* Default cursor when overlay is visible */
 }
+/* Visible state: show the overlay (triggered by mouse movement) */
 .player-overlay.visible {
   opacity: 1;
 }
+/* Hide cursor state: hides cursor when idle (for distraction-free viewing) */
 .player-overlay.hide-cursor {
   cursor: none;
 }
 
-/* --- GRADIENT OVERLAYS --- */
+/* ─── GRADIENT OVERLAYS ─── */
+/* Top gradient: darkens the top of the video for readability of top controls */
 .player-gradient-top {
-  position: absolute;
+  position: absolute;              /* Overlaid on the player */
   top: 0;
   left: 0;
   right: 0;
-  height: 40%;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 100%);
-  pointer-events: none;
+  height: 40%;                     /* Covers top 40% of player */
+  background: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 100%);  /* Dark to transparent */
+  pointer-events: none;            /* Clicks pass through to controls behind */
 }
+/* Bottom gradient: darkens bottom for readability of control bar */
 .player-gradient-bottom {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  height: 50%;
-  background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%);
+  height: 50%;                     /* Covers bottom 50% */
+  background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%);  /* Dark to transparent */
   pointer-events: none;
 }
 
-/* --- CENTER PLAY BUTTON --- */
+/* ─── CENTRE PLAY BUTTON ─── */
+/* Large centred play/pause button with glassmorphism effect */
 .player-center-play {
-  position: absolute;
+  position: absolute;                          /* Centred in the player */
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%) scale(1);
-  width: 72px;
+  transform: translate(-50%, -50%) scale(1);   /* Perfect centering */
+  width: 72px;                                 /* Large circular button */
   height: 72px;
-  border-radius: var(--radius-full);
-  background: rgba(255,255,255,0.15);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 2px solid rgba(255,255,255,0.25);
-  color: #fff;
-  display: flex;
+  border-radius: var(--radius-full);           /* Perfect circle */
+  background: rgba(255,255,255,0.15);          /* Semi-transparent white */
+  backdrop-filter: blur(8px);                  /* Glassmorphism blur */
+  -webkit-backdrop-filter: blur(8px);          /* Safari prefix */
+  border: 2px solid rgba(255,255,255,0.25);    /* Subtle white border */
+  color: #fff;                                 /* White play icon */
+  display: flex;                               /* Centre the SVG icon */
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  z-index: 15;
-  opacity: 0;
-  transition: opacity 0.35s var(--ease-relax), transform 0.35s var(--ease-spring), background 0.2s;
+  cursor: pointer;                             /* Clickable */
+  z-index: 15;                                 /* Above gradients */
+  opacity: 0;                                  /* Hidden by default */
+  transition: opacity 0.35s var(--ease-relax), transform 0.35s var(--ease-spring), background 0.2s;  /* Smooth show/hide and hover */
 }
+/* Show the centre play button when overlay is visible AND button has .show class */
 .player-overlay.visible .player-center-play.show {
   opacity: 1;
 }
+/* Hover: brighter background and slight scale up */
 .player-center-play:hover {
-  background: rgba(255,255,255,0.25);
-  transform: translate(-50%, -50%) scale(1.06);
+  background: rgba(255,255,255,0.25);          /* Brighter hover */
+  transform: translate(-50%, -50%) scale(1.06); /* Grow slightly */
 }
+/* Press: scale down for feedback */
 .player-center-play:active {
-  transform: translate(-50%, -50%) scale(0.95);
+  transform: translate(-50%, -50%) scale(0.95); /* Shrink */
 }
+/* Play icon: shift right slightly for optical centering of the triangle */
 .player-center-play svg {
-  margin-left: 4px;
+  margin-left: 4px;                             /* Optical alignment for play triangle */
 }
 
-/* --- DOUBLE-TAP SEEK ZONES --- */
+/* ─── DOUBLE-TAP SEEK ZONES ─── */
+/* Left and right invisible tap zones for double-tap to seek forward/backward */
 .player-dtap-left,
 .player-dtap-right {
-  position: absolute;
+  position: absolute;              /* Overlaid on player */
   top: 0;
-  bottom: 80px;
-  width: 40%;
-  z-index: 12;
-  cursor: pointer;
+  bottom: 80px;                    /* Above the bottom controls area */
+  width: 40%;                      /* Each zone covers 40% (total 80%, centre 20% excluded) */
+  z-index: 12;                     /* Above the overlay base */
+  cursor: pointer;                 /* Clickable */
 }
-.player-dtap-left { left: 0; }
-.player-dtap-right { right: 0; }
+.player-dtap-left { left: 0; }    /* Left zone for seeking backward */
+.player-dtap-right { right: 0; }  /* Right zone for seeking forward */
 
-/* --- SEEK INDICATOR --- */
+/* ─── SEEK INDICATOR ─── */
+/* Animated popup showing how many seconds were seeked (+10, -10, etc.) */
 .player-seek-indicator {
-  position: absolute;
+  position: absolute;                      /* Centred horizontally, at vertical centre */
   top: 50%;
-  transform: translateY(-50%);
-  display: flex;
+  transform: translateY(-50%);            /* Vertical centering */
+  display: flex;                          /* Icon + text horizontal */
   align-items: center;
-  gap: var(--space-sm);
-  background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(6px);
+  gap: var(--space-sm);                   /* 8px between icon and text */
+  background: rgba(0,0,0,0.6);           /* Dark semi-transparent background */
+  backdrop-filter: blur(6px);            /* Glassmorphism */
   -webkit-backdrop-filter: blur(6px);
-  padding: var(--space-sm) var(--space-md);
-  border-radius: var(--radius-full);
-  color: #fff;
-  font-size: var(--text-md);
-  font-weight: 700;
-  z-index: 16;
-  animation: playerSeekPop 0.4s var(--ease-spring) forwards;
-  pointer-events: none;
+  padding: var(--space-sm) var(--space-md);  /* 8px vertical, 12px horizontal */
+  border-radius: var(--radius-full);     /* Pill shape */
+  color: #fff;                           /* White text */
+  font-size: var(--text-md);             /* 16px */
+  font-weight: 700;                      /* Bold */
+  z-index: 16;                           /* On top of everything */
+  animation: playerSeekPop 0.4s var(--ease-spring) forwards;  /* Pop-in animation */
+  pointer-events: none;                  /* Not interactive */
 }
+/* Position variants: left or right side of the player */
 .player-seek-indicator.seek-left { left: 20%; }
 .player-seek-indicator.seek-right { right: 20%; }
 
+/* Seek indicator pop animation: scales up with bounce, fades in */
 @keyframes playerSeekPop {
-  0% { opacity: 0; transform: translateY(-50%) scale(0.7); }
-  60% { opacity: 1; transform: translateY(-50%) scale(1.1); }
-  100% { opacity: 1; transform: translateY(-50%) scale(1); }
+  0% { opacity: 0; transform: translateY(-50%) scale(0.7); }    /* Start small and invisible */
+  60% { opacity: 1; transform: translateY(-50%) scale(1.1); }   /* Overshoot larger */
+  100% { opacity: 1; transform: translateY(-50%) scale(1); }    /* Settle at normal size */
 }
 
-/* --- EMOJI REACTIONS BAR --- */
+/* ─── EMOJI REACTIONS BAR ─── */
+/* Vertical column of emoji reaction buttons on the right side of the player */
 .player-emoji-bar {
-  position: absolute;
-  right: var(--space-xl);
-  bottom: 110px;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
-  z-index: 14;
-  opacity: 0;
-  transition: opacity 0.3s var(--ease-relax);
+  position: absolute;              /* Positioned inside the player overlay */
+  right: var(--space-xl);          /* 24px from right edge */
+  bottom: 110px;                   /* Above the bottom controls area */
+  display: flex;                   /* Vertical column */
+  flex-direction: column;          /* Emojis stacked vertically */
+  gap: var(--space-xs);            /* 4px between emoji buttons */
+  z-index: 14;                     /* Above seek zones but below center play button */
+  opacity: 0;                      /* Hidden by default */
+  transition: opacity 0.3s var(--ease-relax);  /* Fade in with overlay */
 }
+/* Show emoji bar when overlay is visible */
 .player-overlay.visible .player-emoji-bar {
   opacity: 1;
 }
+
+/* Individual emoji reaction button: glassmorphism pill */
 .emoji-btn {
-  position: relative;
-  background: rgba(0,0,0,0.5);
-  backdrop-filter: blur(6px);
+  position: relative;                        /* For future tooltip positioning */
+  background: rgba(0,0,0,0.5);              /* Dark transparent background */
+  backdrop-filter: blur(6px);               /* Glassmorphism */
   -webkit-backdrop-filter: blur(6px);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: var(--radius-full);
-  padding: 4px 10px;
-  font-size: var(--text-md);
-  cursor: pointer;
-  display: flex;
+  border: 1px solid rgba(255,255,255,0.1);  /* Subtle white border */
+  border-radius: var(--radius-full);        /* Pill shape */
+  padding: 4px 10px;                        /* Compact */
+  font-size: var(--text-md);                /* 16px emoji size */
+  cursor: pointer;                          /* Clickable */
+  display: flex;                            /* Emoji + count inline */
   align-items: center;
-  gap: var(--space-xs);
-  transition: transform 0.2s var(--ease-spring), background 0.2s;
+  gap: var(--space-xs);                     /* 4px between emoji and count */
+  transition: transform 0.2s var(--ease-spring), background 0.2s;  /* Bouncy hover */
 }
+/* Emoji button hover: scale up with spring effect */
 .emoji-btn:hover {
-  transform: scale(1.15);
-  background: rgba(0,0,0,0.7);
+  transform: scale(1.15);                   /* Grow 15% */
+  background: rgba(0,0,0,0.7);              /* Darker background */
 }
+/* Emoji button press: shrink for feedback */
 .emoji-btn:active {
-  transform: scale(0.9);
+  transform: scale(0.9);                    /* Shrink */
 }
+
+/* Reaction count number next to the emoji */
 .emoji-count {
-  font-size: 10px;
-  font-weight: 600;
-  color: rgba(255,255,255,0.8);
-  min-width: 12px;
-  text-align: center;
+  font-size: 10px;                          /* Small count */
+  font-weight: 600;                         /* Semi-bold */
+  color: rgba(255,255,255,0.8);             /* Semi-transparent white */
+  min-width: 12px;                          /* Minimum width for single digits */
+  text-align: center;                       /* Centre the number */
 }
 
-/* Floating emoji animation */
+/* ─── FLOATING EMOJI ANIMATION ─── */
+/* An emoji that flies upward when a reaction is sent */
 .emoji-float {
-  position: absolute;
-  z-index: 20;
-  font-size: 28px;
-  pointer-events: none;
-  animation: emojiFloat 1.2s var(--ease-relax) forwards;
+  position: absolute;                       /* Floating in the player */
+  z-index: 20;                              /* On top of everything */
+  font-size: 28px;                          /* Large emoji */
+  pointer-events: none;                     /* Not interactive */
+  animation: emojiFloat 1.2s var(--ease-relax) forwards;  /* Float up and fade out */
 }
+/* Floating animation: rises up, scales, fades out */
 @keyframes emojiFloat {
-  0% { opacity: 1; transform: translateY(0) scale(0.5); }
-  40% { opacity: 1; transform: translateY(-60px) scale(1.2); }
-  100% { opacity: 0; transform: translateY(-140px) scale(0.8); }
+  0% { opacity: 1; transform: translateY(0) scale(0.5); }       /* Start small at origin */
+  40% { opacity: 1; transform: translateY(-60px) scale(1.2); }  /* Rise, grow larger */
+  100% { opacity: 0; transform: translateY(-140px) scale(0.8); } /* Fade out, shrink slightly */
 }
 
-/* --- BOTTOM CONTROLS --- */
+/* ─── BOTTOM CONTROLS ─── */
+/* Container at the bottom of the player for progress bar and control buttons */
 .player-bottom {
-  position: relative;
-  z-index: 13;
-  padding: 0 var(--space-lg) var(--space-sm);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
+  position: relative;              /* Stacking context */
+  z-index: 13;                     /* Above gradients but below centre play button */
+  padding: 0 var(--space-lg) var(--space-sm);  /* 16px sides, 8px bottom padding */
+  display: flex;                   /* Vertical stack */
+  flex-direction: column;          /* Progress bar on top, controls below */
+  gap: var(--space-xs);            /* 4px between progress and controls */
 }
 
-/* --- PROGRESS BAR --- */
+/* ─── PROGRESS BAR ─── */
+/* Clickable video progress bar with buffered indicator, fill, and hover thumb */
 .player-progress {
-  position: relative;
-  width: 100%;
-  padding: 8px 0;
-  cursor: pointer;
+  position: relative;              /* For absolutely-positioned children */
+  width: 100%;                     /* Full width */
+  padding: 8px 0;                  /* Vertical padding for easier clicking */
+  cursor: pointer;                 /* Clickable */
 }
+/* Progress track background: thin grey line */
 .player-progress-track {
-  position: relative;
-  width: 100%;
-  height: 4px;
-  background: rgba(255,255,255,0.2);
-  border-radius: var(--radius-full);
-  overflow: visible;
-  transition: height 0.15s var(--ease-relax);
+  position: relative;              /* Stacking for fill/buffered */
+  width: 100%;                     /* Full width */
+  height: 4px;                     /* Thin track */
+  background: rgba(255,255,255,0.2);  /* Semi-transparent white */
+  border-radius: var(--radius-full);  /* Rounded ends */
+  overflow: visible;               /* Allow thumb to extend beyond */
+  transition: height 0.15s var(--ease-relax);  /* Thicken on hover */
 }
+/* Thicken progress track on hover for easier targeting */
 .player-progress:hover .player-progress-track {
-  height: 6px;
+  height: 6px;                     /* 6px on hover */
 }
+/* Buffered area: shows how much video is pre-loaded */
 .player-progress-buffered {
-  position: absolute;
+  position: absolute;              /* Inside the track */
   top: 0;
   left: 0;
   height: 100%;
-  background: rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.15);  /* Even lighter grey */
   border-radius: var(--radius-full);
-  width: 0%;
+  width: 0%;                       /* Set by JS */
 }
+/* Playback progress fill: accent-coloured bar showing current position */
 .player-progress-fill {
   position: absolute;
   top: 0;
   left: 0;
   height: 100%;
-  background: var(--accent);
+  background: var(--accent);       /* Green accent */
   border-radius: var(--radius-full);
-  width: 0%;
-  transition: width 0.1s linear;
+  width: 0%;                       /* Set by JS */
+  transition: width 0.1s linear;   /* Smooth progress movement */
 }
+/* Draggable thumb handle on the progress bar */
 .player-progress-thumb {
-  position: absolute;
+  position: absolute;                          /* Positioned at the fill edge */
   top: 50%;
-  transform: translate(-50%, -50%) scale(0);
-  width: 14px;
+  transform: translate(-50%, -50%) scale(0);   /* Centred on fill end, hidden by default */
+  width: 14px;                                 /* Small circle */
   height: 14px;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 8px rgba(30,215,96,0.5);
-  left: 0%;
-  transition: transform 0.2s var(--ease-spring);
+  border-radius: 50%;                          /* Perfect circle */
+  background: var(--accent);                   /* Green accent */
+  box-shadow: 0 0 8px rgba(30,215,96,0.5);     /* Green glow */
+  left: 0%;                                    /* Set by JS */
+  transition: transform 0.2s var(--ease-spring);  /* Bouncy show/hide */
 }
+/* Show the thumb on progress bar hover */
 .player-progress:hover .player-progress-thumb {
-  transform: translate(-50%, -50%) scale(1);
+  transform: translate(-50%, -50%) scale(1);   /* Scale to full size */
 }
 
-/* Preview tooltip */
+/* ─── PREVIEW TOOLTIP ─── */
+/* Time preview tooltip shown above the progress bar on hover */
 .player-preview {
-  position: absolute;
-  bottom: 100%;
-  left: 0;
-  transform: translateX(-50%);
-  background: rgba(0,0,0,0.8);
-  backdrop-filter: blur(8px);
+  position: absolute;              /* Above the progress bar */
+  bottom: 100%;                    /* Position above the parent */
+  left: 0;                         /* Horizontally positioned by JS */
+  transform: translateX(-50%);     /* Centre on the cursor */
+  background: rgba(0,0,0,0.8);    /* Dark background */
+  backdrop-filter: blur(8px);     /* Glassmorphism */
   -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: var(--radius-md);
-  padding: 2px 8px;
-  pointer-events: none;
-  white-space: nowrap;
-  margin-bottom: 6px;
+  border: 1px solid rgba(255,255,255,0.1);  /* Subtle border */
+  border-radius: var(--radius-md);/* 8px rounded */
+  padding: 2px 8px;               /* Compact */
+  pointer-events: none;           /* Not interactive */
+  white-space: nowrap;            /* Single line */
+  margin-bottom: 6px;             /* Gap from progress bar */
 }
+/* Preview time text */
 .player-preview-time {
-  font-size: var(--text-xs);
-  font-weight: 600;
-  color: #fff;
+  font-size: var(--text-xs);      /* 12px */
+  font-weight: 600;               /* Semi-bold */
+  color: #fff;                    /* White text */
 }
 
-/* --- CONTROLS ROW --- */
+/* ─── CONTROLS ROW ─── */
+/* Main controls row: left buttons, centre (empty), right buttons */
 .player-controls {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-md);
+  display: flex;                   /* Horizontal layout */
+  align-items: center;             /* Centre vertically */
+  justify-content: space-between;  /* Left and right groups */
+  gap: var(--space-md);            /* 12px between groups */
 }
 
+/* Left controls group: play/pause, volume, time */
 .player-controls-left {
-  display: flex;
+  display: flex;                   /* Horizontal row */
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--space-sm);            /* 8px between buttons */
 }
+/* Right controls group: speed, fullscreen, etc. */
 .player-controls-right {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
 }
 
-/* --- CONTROL BUTTONS --- */
+/* ─── CONTROL BUTTONS ─── */
+/* Generic player button: circular, transparent, white icon */
 .player-btn {
-  background: none;
+  background: none;                              /* Transparent */
   border: none;
-  color: #fff;
-  cursor: pointer;
-  padding: 6px;
-  border-radius: var(--radius-full);
-  display: flex;
+  color: #fff;                                   /* White icon */
+  cursor: pointer;                                /* Clickable */
+  padding: 6px;                                  /* Clickable area */
+  border-radius: var(--radius-full);             /* Circular hover background */
+  display: flex;                                 /* Centre the SVG icon */
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s var(--ease-spring), background 0.2s, color 0.2s;
-  position: relative;
+  transition: transform 0.2s var(--ease-spring), background 0.2s, color 0.2s;  /* Bouncy hover */
+  position: relative;                            /* For tooltips */
 }
+/* Button hover: light background and scale up */
 .player-btn:hover {
-  background: rgba(255,255,255,0.1);
-  transform: scale(1.1);
+  background: rgba(255,255,255,0.1);             /* Subtle white background */
+  transform: scale(1.1);                         /* Grow */
 }
+/* Button press: scale down */
 .player-btn:active {
-  transform: scale(0.9);
+  transform: scale(0.9);                         /* Shrink */
 }
 
-/* --- TIME DISPLAY --- */
+/* ─── TIME DISPLAY ─── */
+/* Current time / duration display with monospace font */
 .player-time {
-  font-size: var(--text-xs);
-  font-family: var(--font-mono);
-  color: rgba(255,255,255,0.9);
-  min-width: 36px;
-  text-align: center;
+  font-size: var(--text-xs);        /* 12px */
+  font-family: var(--font-mono);    /* Monospace for consistent width numbers */
+  color: rgba(255,255,255,0.9);     /* Near-white */
+  min-width: 36px;                  /* Fixed width to prevent layout shift */
+  text-align: center;               /* Centre text */
 }
+/* Separator between current time and duration (e.g., "/" or ":") */
 .player-time-sep {
-  font-size: var(--text-xs);
-  color: rgba(255,255,255,0.4);
-  margin: 0 2px;
+  font-size: var(--text-xs);        /* 12px */
+  color: rgba(255,255,255,0.4);     /* Dimmed separator */
+  margin: 0 2px;                    /* Small horizontal margin */
 }
 
-/* --- VOLUME SLIDER --- */
+/* ─── VOLUME SLIDER ─── */
+/* Volume control: expandable slider on hover */
 .player-volume-wrap {
-  display: flex;
+  display: flex;             /* Icon + slider inline */
   align-items: center;
-  gap: var(--space-xs);
+  gap: var(--space-xs);      /* 4px between icon and slider */
 }
+/* Volume slider: hidden by default (width: 0), expands on hover */
 .player-volume-slider {
-  width: 0;
-  overflow: hidden;
-  transition: width 0.25s var(--ease-relax);
+  width: 0;                  /* Collapsed by default */
+  overflow: hidden;          /* Hide the slider content */
+  transition: width 0.25s var(--ease-relax);  /* Smooth expand */
 }
+/* Expand slider on hover or focus */
 .player-volume-wrap:hover .player-volume-slider,
 .player-volume-wrap:focus-within .player-volume-slider {
-  width: 80px;
+  width: 80px;               /* Expanded width */
 }
+/* Volume slider track background */
 .player-volume-track {
   position: relative;
-  width: 80px;
-  height: 4px;
-  background: rgba(255,255,255,0.2);
+  width: 80px;               /* Fixed width (same as expanded container) */
+  height: 4px;               /* Thin track */
+  background: rgba(255,255,255,0.2);  /* Semi-transparent white */
   border-radius: var(--radius-full);
   cursor: pointer;
 }
+/* Volume fill: white bar showing current level */
 .player-volume-fill {
   position: absolute;
   top: 0;
   left: 0;
   height: 100%;
-  background: #fff;
+  background: #fff;          /* White fill */
   border-radius: var(--radius-full);
-  width: 70%;
-  transition: width 0.05s linear;
+  width: 70%;                /* Default 70% volume */
+  transition: width 0.05s linear;  /* Smooth adjustment */
 }
+/* Hover: accent colour on volume fill */
 .player-volume-track:hover .player-volume-fill {
-  background: var(--accent);
+  background: var(--accent); /* Green on hover */
 }
 
-/* --- PLAYBACK SPEED --- */
+/* ─── PLAYBACK SPEED ─── */
+/* Speed control wrapper: relative positioning for dropdown menu */
 .player-speed-wrap {
-  position: relative;
+  position: relative;        /* Anchor for the speed menu dropdown */
 }
+/* Speed button: monospace, compact */
 .player-speed-btn {
-  font-size: 11px;
-  font-weight: 700;
-  font-family: var(--font-mono);
-  min-width: 32px;
-  letter-spacing: 0.5px;
+  font-size: 11px;           /* Small size to fit in control bar */
+  font-weight: 700;          /* Bold */
+  font-family: var(--font-mono);  /* Monospace for "1x", "1.5x" display */
+  min-width: 32px;           /* Minimum width for consistent alignment */
+  letter-spacing: 0.5px;     /* Slight spacing */
 }
+/* Speed menu dropdown: appears above the speed button */
 .player-speed-menu {
-  position: absolute;
-  bottom: 100%;
-  right: 0;
-  margin-bottom: 4px;
-  min-width: 100px;
-  background: rgba(20,20,20,0.95);
-  backdrop-filter: blur(12px);
+  position: absolute;                          /* Above the button */
+  bottom: 100%;                                /* Position above the parent */
+  right: 0;                                    /* Align to right */
+  margin-bottom: 4px;                          /* Small gap from button */
+  min-width: 100px;                            /* Minimum dropdown width */
+  background: rgba(20,20,20,0.95);             /* Near-black, semi-transparent */
+  backdrop-filter: blur(12px);                 /* Strong glassmorphism */
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: var(--radius-lg);
-  padding: var(--space-xs);
-  z-index: 20;
-  animation: fadeIn 0.15s ease;
+  border: 1px solid rgba(255,255,255,0.1);     /* Subtle border */
+  border-radius: var(--radius-lg);             /* 12px rounded */
+  padding: var(--space-xs);                    /* 4px padding */
+  z-index: 20;                                 /* On top of everything */
+  animation: fadeIn 0.15s ease;                /* Quick fade-in */
 }
+/* Speed menu option buttons */
 .player-speed-menu button {
-  display: block;
+  display: block;                              /* Full width */
   width: 100%;
-  text-align: left;
+  text-align: left;                            /* Left-aligned text */
   background: none;
   border: none;
-  color: rgba(255,255,255,0.7);
-  padding: 6px 12px;
-  font-size: var(--text-xs);
-  border-radius: var(--radius-md);
+  color: rgba(255,255,255,0.7);                /* Dim text */
+  padding: 6px 12px;                           /* Comfortable click area */
+  font-size: var(--text-xs);                   /* 12px */
+  border-radius: var(--radius-md);             /* 8px rounded */
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  transition: background 0.15s, color 0.15s;   /* Quick hover */
 }
+/* Speed option hover: highlight */
 .player-speed-menu button:hover {
-  background: rgba(255,255,255,0.1);
-  color: #fff;
+  background: rgba(255,255,255,0.1);           /* Subtle white background */
+  color: #fff;                                 /* Bright text */
 }
+/* Active speed option: accent colour */
 .player-speed-menu button.active {
-  color: var(--accent);
-  font-weight: 600;
+  color: var(--accent);                        /* Green accent */
+  font-weight: 600;                            /* Semi-bold */
 }
 
-/* --- ERROR OVERLAY --- */
+/* ─── ERROR OVERLAY ─── */
+/* Full-screen error display when video fails to load */
 .player-error {
-  position: absolute;
+  position: absolute;              /* Cover the entire player */
   inset: 0;
-  z-index: 18;
-  display: flex;
+  z-index: 18;                     /* Above controls but below centre play */
+  display: flex;                   /* Centre error content */
   align-items: center;
   justify-content: center;
-  background: rgba(0,0,0,0.85);
-  backdrop-filter: blur(8px);
+  background: rgba(0,0,0,0.85);    /* Dark semi-transparent backdrop */
+  backdrop-filter: blur(8px);      /* Glassmorphism blur */
   -webkit-backdrop-filter: blur(8px);
-  animation: playerErrorFadeIn 0.4s var(--ease-relax) forwards;
+  animation: playerErrorFadeIn 0.4s var(--ease-relax) forwards;  /* Fade in */
 }
+/* Error content: centred card with icon, title, message, and retry button */
 .player-error-content {
-  text-align: center;
-  max-width: 360px;
-  padding: var(--space-2xl);
-  animation: playerErrorBounce 0.5s var(--ease-spring) forwards;
+  text-align: center;               /* Centre all text */
+  max-width: 360px;                 /* Don't stretch too wide */
+  padding: var(--space-2xl);        /* 32px padding */
+  animation: playerErrorBounce 0.5s var(--ease-spring) forwards;  /* Bouncy entrance */
 }
+/* Error icon: uses the error colour with a pulsing animation */
 .player-error-icon {
-  color: var(--error, #f44336);
-  margin-bottom: var(--space-lg);
-  animation: playerErrorPulse 1.5s ease-in-out infinite;
+  color: var(--error, #f44336);     /* Red error colour (with fallback) */
+  margin-bottom: var(--space-lg);   /* 16px below */
+  animation: playerErrorPulse 1.5s ease-in-out infinite;  /* Continuous pulse */
 }
+/* Error icon SVG: centred block */
 .player-error-icon svg {
-  display: block;
-  margin: 0 auto;
+  display: block;                   /* Remove inline gap */
+  margin: 0 auto;                   /* Centre horizontally */
 }
+/* Error title: large, bold, white */
 .player-error-title {
-  font-size: var(--text-xl);
-  font-weight: 700;
-  color: #fff;
-  margin-bottom: var(--space-sm);
+  font-size: var(--text-xl);        /* 20px */
+  font-weight: 700;                 /* Bold */
+  color: #fff;                      /* White */
+  margin-bottom: var(--space-sm);   /* 8px below */
 }
+/* Error message: smaller, semi-transparent white */
 .player-error-msg {
-  font-size: var(--text-sm);
-  color: rgba(255,255,255,0.7);
-  line-height: 1.5;
-  margin-bottom: var(--space-xl);
+  font-size: var(--text-sm);        /* 14px */
+  color: rgba(255,255,255,0.7);     /* Semi-transparent white */
+  line-height: 1.5;                 /* Comfortable reading */
+  margin-bottom: var(--space-xl);   /* 24px below */
 }
+/* Retry button: glassmorphism pill */
 .player-error-retry {
-  display: inline-flex;
+  display: inline-flex;             /* Inline with icon+text */
   align-items: center;
-  gap: var(--space-sm);
-  background: rgba(255,255,255,0.12);
-  border: 1px solid rgba(255,255,255,0.2);
+  gap: var(--space-sm);             /* 8px gap */
+  background: rgba(255,255,255,0.12);  /* Subtle white background */
+  border: 1px solid rgba(255,255,255,0.2);  /* White border */
   color: #fff;
-  padding: var(--space-sm) var(--space-xl);
-  border-radius: var(--radius-full);
-  font-size: var(--text-sm);
-  font-weight: 600;
+  padding: var(--space-sm) var(--space-xl);  /* 8px vertical, 24px horizontal */
+  border-radius: var(--radius-full);  /* Pill shape */
+  font-size: var(--text-sm);        /* 14px */
+  font-weight: 600;                 /* Semi-bold */
   cursor: pointer;
-  transition: background 0.2s, transform 0.2s;
+  transition: background 0.2s, transform 0.2s;  /* Quick hover */
 }
+/* Retry hover: brighter background and slight scale up */
 .player-error-retry:hover {
-  background: rgba(255,255,255,0.2);
-  transform: scale(1.04);
+  background: rgba(255,255,255,0.2);  /* Brighter on hover */
+  transform: scale(1.04);             /* Slight grow */
 }
+/* Retry press: scale down */
 .player-error-retry:active {
   transform: scale(0.96);
 }
 
+/* Error overlay fade-in animation */
 @keyframes playerErrorFadeIn {
   0% { opacity: 0; }
   100% { opacity: 1; }
 }
+/* Error content bounce entrance */
 @keyframes playerErrorBounce {
-  0% { opacity: 0; transform: scale(0.7) translateY(20px); }
-  60% { opacity: 1; transform: scale(1.05) translateY(-4px); }
-  100% { opacity: 1; transform: scale(1) translateY(0); }
+  0% { opacity: 0; transform: scale(0.7) translateY(20px); }    /* Small and below */
+  60% { opacity: 1; transform: scale(1.05) translateY(-4px); }  /* Overshoot larger */
+  100% { opacity: 1; transform: scale(1) translateY(0); }       /* Settle at normal */
 }
+/* Error icon pulse: gently scales in and out */
 @keyframes playerErrorPulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(1.1); }
+  0%, 100% { opacity: 1; transform: scale(1); }    /* Normal */
+  50% { opacity: 0.6; transform: scale(1.1); }     /* Fade and grow */
 }
 
-/* --- END SCREEN (DISCOVERY) --- */
+/* ─── END SCREEN (DISCOVERY) ─── */
+/* Full-screen overlay shown when video ends, suggesting next videos */
 .player-endscreen {
-  position: absolute;
+  position: absolute;              /* Cover the player */
   inset: 0;
-  z-index: 18;
-  display: flex;
+  z-index: 18;                     /* Above controls */
+  display: flex;                   /* Centre content */
   align-items: center;
   justify-content: center;
-  background: rgba(0,0,0,0.8);
-  backdrop-filter: blur(4px);
+  background: rgba(0,0,0,0.8);     /* Dark backdrop */
+  backdrop-filter: blur(4px);      /* Subtle blur */
   -webkit-backdrop-filter: blur(4px);
-  animation: fadeIn 0.3s ease;
+  animation: fadeIn 0.3s ease;     /* Quick fade-in */
 }
+/* End screen content container */
 .player-endscreen-content {
-  text-align: center;
-  max-width: 420px;
-  padding: var(--space-2xl);
+  text-align: center;               /* Centre text */
+  max-width: 420px;                 /* Don't stretch too wide */
+  padding: var(--space-2xl);        /* 32px padding */
 }
+/* "Up next" or "Recommended" title */
 .endscreen-title {
-  font-size: var(--text-2xl);
-  font-weight: 700;
-  color: #fff;
-  margin-bottom: var(--space-xl);
+  font-size: var(--text-2xl);       /* 24px */
+  font-weight: 700;                 /* Bold */
+  color: #fff;                      /* White */
+  margin-bottom: var(--space-xl);   /* 24px below */
 }
+/* Suggested video card in end screen */
 .player-end-card {
-  display: flex;
+  display: flex;                    /* Thumbnail + info horizontal */
   align-items: center;
-  gap: var(--space-md);
-  background: rgba(255,255,255,0.08);
-  border-radius: var(--radius-lg);
-  padding: var(--space-md);
-  margin-bottom: var(--space-lg);
-  cursor: pointer;
-  transition: background 0.2s, transform 0.2s;
-  text-decoration: none;
-  color: #fff;
+  gap: var(--space-md);             /* 12px gap */
+  background: rgba(255,255,255,0.08);  /* Subtle white background */
+  border-radius: var(--radius-lg);  /* 12px rounded */
+  padding: var(--space-md);         /* 12px padding */
+  margin-bottom: var(--space-lg);   /* 16px below */
+  cursor: pointer;                  /* Clickable */
+  transition: background 0.2s, transform 0.2s;  /* Quick hover */
+  text-decoration: none;            /* Remove underline from link */
+  color: #fff;                      /* White text */
 }
+/* End card hover: brighter background and lift */
 .player-end-card:hover {
-  background: rgba(255,255,255,0.15);
-  transform: translateY(-2px);
+  background: rgba(255,255,255,0.15);  /* Brighter on hover */
+  transform: translateY(-2px);         /* Float up */
 }
+/* End card thumbnail */
 .player-end-thumb {
-  width: 120px;
-  aspect-ratio: 16/9;
-  border-radius: var(--radius-sm);
-  object-fit: cover;
-  background: var(--bg-elevated);
+  width: 120px;                    /* Fixed width */
+  aspect-ratio: 16/9;              /* 16:9 ratio */
+  border-radius: var(--radius-sm); /* 4px rounded */
+  object-fit: cover;               /* Crop to cover */
+  background: var(--bg-elevated);  /* Placeholder background */
 }
+/* End card text info */
 .player-end-info {
-  flex: 1;
-  text-align: left;
+  flex: 1;                         /* Fill remaining space */
+  text-align: left;                /* Left-aligned text */
 }
+/* End card video title: clamped to 2 lines */
 .player-end-title {
-  font-size: var(--text-sm);
-  font-weight: 600;
-  margin-bottom: 4px;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
+  font-size: var(--text-sm);       /* 14px */
+  font-weight: 600;                /* Semi-bold */
+  margin-bottom: 4px;              /* Small gap below */
+  display: -webkit-box;            /* Line clamp (WebKit) */
+  -webkit-line-clamp: 2;           /* Max 2 lines */
   -webkit-box-orient: vertical;
-  overflow: hidden;
+  overflow: hidden;                /* Clip overflow */
 }
+/* End card creator name */
 .player-end-creator {
-  font-size: var(--text-xs);
-  color: rgba(255,255,255,0.6);
+  font-size: var(--text-xs);       /* 12px */
+  color: rgba(255,255,255,0.6);    /* Dim white */
 }
+/* Replay button: restart the current video */
 .player-replay-btn {
-  display: inline-flex;
+  display: inline-flex;            /* Inline with icon+text */
   align-items: center;
-  gap: var(--space-sm);
-  background: rgba(255,255,255,0.12);
-  border: 1px solid rgba(255,255,255,0.2);
+  gap: var(--space-sm);            /* 8px gap */
+  background: rgba(255,255,255,0.12);  /* Subtle white background */
+  border: 1px solid rgba(255,255,255,0.2);  /* White border */
   color: #fff;
-  padding: var(--space-sm) var(--space-xl);
-  border-radius: var(--radius-full);
-  font-size: var(--text-sm);
-  font-weight: 600;
+  padding: var(--space-sm) var(--space-xl);  /* 8px vertical, 24px horizontal */
+  border-radius: var(--radius-full);  /* Pill shape */
+  font-size: var(--text-sm);       /* 14px */
+  font-weight: 600;                /* Semi-bold */
   cursor: pointer;
   transition: background 0.2s, transform 0.2s;
 }
+/* Replay hover: brighter and slightly larger */
 .player-replay-btn:hover {
   background: rgba(255,255,255,0.2);
   transform: scale(1.04);
 }
+/* Replay press: scale down */
 .player-replay-btn:active {
   transform: scale(0.96);
 }
 
-/* --- LOADING SPINNER (Enhanced) --- */
+/* ─── LOADING SPINNER (Enhanced) ─── */
+/* Circular spinner shown while the video loads */
 .player-loading .loader-spinner {
-  width: 40px;
+  width: 40px;                                  /* Fixed size */
   height: 40px;
-  border: 3px solid rgba(255,255,255,0.1);
-  border-top-color: var(--accent);
-  border-radius: 50%;
-  animation: playerSpin 0.7s linear infinite;
+  border: 3px solid rgba(255,255,255,0.1);      /* Faint white ring */
+  border-top-color: var(--accent);              /* Green top segment for spinning effect */
+  border-radius: 50%;                           /* Perfect circle */
+  animation: playerSpin 0.7s linear infinite;   /* Continuous spin */
 }
 
+/* Spin animation: full rotation */
 @keyframes playerSpin {
-  to { transform: rotate(360deg); }
+  to { transform: rotate(360deg); }             /* One full rotation */
 }
 
+/* Loading text: pulsing opacity */
 .player-loading span {
-  animation: playerLoadingPulse 1.2s ease-in-out infinite;
+  animation: playerLoadingPulse 1.2s ease-in-out infinite;  /* Pulse in/out */
 }
+/* Pulse animation: dim to bright */
 @keyframes playerLoadingPulse {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 1; }
+  0%, 100% { opacity: 0.6; }    /* Dim */
+  50% { opacity: 1; }           /* Bright */
 }
 
-/* --- THEATER MODE --- */
+/* ─── THEATER MODE ─── */
+/* Theater mode: full-width player, no rounded corners or shadow */
 .player-container.theater-mode {
-  max-width: 100%;
-  border-radius: 0;
-  box-shadow: none;
+  max-width: 100%;               /* Stretch to full width */
+  border-radius: 0;              /* Remove rounded corners */
+  box-shadow: none;              /* Remove shadow */
 }
 
-/* --- FULLSCREEN --- */
+/* ─── FULLSCREEN MODE ─── */
+/* Fullscreen mode: no rounded corners or shadow */
 .player-container.fullscreen-mode {
-  border-radius: 0;
-  box-shadow: none;
+  border-radius: 0;              /* Remove rounded corners (saves performance) */
+  box-shadow: none;              /* Remove shadow */
 }
 
-/* --- RESPONSIVE --- */
+/* ═══════════════════════════════════════════════════════════════════════
+   RESPONSIVE BREAKPOINTS - PLAYER
+   Adjust player overlay elements for tablet and mobile.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Tablet: smaller centre play button, adjusted emoji bar and seek zone positions */
 @media (max-width: 768px) {
   .player-center-play {
-    width: 56px;
+    width: 56px;                   /* Smaller play button */
     height: 56px;
   }
   .player-center-play svg {
-    width: 32px;
+    width: 32px;                   /* Smaller play icon */
     height: 32px;
   }
   .player-emoji-bar {
-    right: var(--space-md);
-    bottom: 90px;
+    right: var(--space-md);        /* 12px from right */
+    bottom: 90px;                  /* Adjusted for smaller bottom controls */
   }
   .emoji-btn {
-    padding: 3px 8px;
-    font-size: var(--text-sm);
+    padding: 3px 8px;             /* More compact emoji buttons */
+    font-size: var(--text-sm);    /* Smaller emoji text */
   }
   .player-dtap-left,
   .player-dtap-right {
-    bottom: 60px;
+    bottom: 60px;                  /* Adjusted seek zone bottom */
   }
 }
 
+/* Mobile: even smaller controls, emoji bar becomes horizontal at bottom */
 @media (max-width: 480px) {
   .player-center-play {
-    width: 48px;
+    width: 48px;                   /* Compact play button */
     height: 48px;
   }
   .player-center-play svg {
-    width: 26px;
+    width: 26px;                   /* Compact play icon */
     height: 26px;
   }
   .player-bottom {
-    padding: 0 var(--space-sm) var(--space-xs);
+    padding: 0 var(--space-sm) var(--space-xs);  /* Tighter padding: 8px sides, 4px bottom */
   }
   .player-controls-left .player-time,
   .player-controls-left .player-time-sep {
-    font-size: 10px;
-    min-width: 28px;
+    font-size: 10px;               /* Smaller time text */
+    min-width: 28px;               /* Narrower time container */
   }
   .player-emoji-bar {
-    flex-direction: row;
-    bottom: 75px;
-    right: auto;
-    left: 50%;
-    transform: translateX(-50%);
-    gap: var(--space-xs);
+    flex-direction: row;           /* Horizontal row of emojis */
+    bottom: 75px;                  /* Above bottom controls */
+    right: auto;                   /* Override right positioning */
+    left: 50%;                     /* Centre horizontally */
+    transform: translateX(-50%);   /* Precise centering */
+    gap: var(--space-xs);          /* 4px between emoji buttons */
   }
   .player-dtap-left,
   .player-dtap-right {
-    bottom: 50px;
+    bottom: 50px;                  /* Adjusted seek zone bottom */
   }
   .player-controls-right .player-volume-wrap {
-    display: none;
+    display: none;                 /* Hide volume control on small screens */
   }
   .player-btn {
-    padding: 4px;
+    padding: 4px;                  /* Smaller button padding */
   }
   .player-speed-btn {
-    min-width: 28px;
-    font-size: 10px;
+    min-width: 28px;               /* Narrower speed button */
+    font-size: 10px;               /* Smaller speed text */
   }
 }

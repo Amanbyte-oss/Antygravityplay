@@ -1,9 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ============================================================================
+  opensearch.xml - Antigravity Play
+  OpenSearch Description Document - allows browsers to add Antigravity Play
+  as a custom search engine. Users can search directly from the browser's
+  address bar or search field.
+  Spec: http://www.opensearch.org/Specifications/OpenSearch/1.1
+  ============================================================================
+-->
 <OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
+  <!-- SHORT NAME: Displayed in browser search engine list (max 16 chars recommended) -->
   <ShortName>Antigravity Play</ShortName>
+  <!-- DESCRIPTION: Longer description shown in browser search settings -->
   <Description>Search videos on Antigravity Play</Description>
+  <!-- INPUT ENCODING: Character encoding for search query parameters -->
   <InputEncoding>UTF-8</InputEncoding>
+  <!--
+    ICON: Favicon shown next to the search engine name in browser UI.
+    16x16 pixels, ICO format. Hosted at the site root.
+  -->
   <Image width="16" height="16" type="image/x-icon">https://antigravityplay.com/favicon.ico</Image>
+  <!--
+    SEARCH URL TEMPLATE: The URL template for search results.
+    {searchTerms} is replaced with the user's query.
+    type="text/html" indicates the response is an HTML page.
+    method="get" means query params are appended to the URL.
+  -->
   <Url type="text/html" method="get" template="https://antigravityplay.com/search.html?q={searchTerms}"/>
+  <!--
+    SELF URL: Reference back to this OpenSearch description document itself.
+    Allows browsers to discover and auto-update the search engine definition.
+  -->
   <Url type="application/opensearchdescription+xml" rel="self" template="https://antigravityplay.com/opensearch.xml"/>
 </OpenSearchDescription>

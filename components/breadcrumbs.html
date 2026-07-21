@@ -1,5 +1,14 @@
+<!-- ═══════════════════════════════════════════ -->
+<!-- FILE: breadcrumbs.html                     -->
+<!-- PURPOSE: Breadcrumb navigation — home icon -->
+<!--   with Dashboard link, separator chevron,  -->
+<!--   and current page indicator.              -->
+<!-- ═══════════════════════════════════════════ -->
+
+<!-- ─── Breadcrumb navigation ─────────────────────────────── -->
 <nav class="breadcrumbs" aria-label="Breadcrumb">
   <ol class="breadcrumbs-list">
+    <!-- First crumb: Dashboard (with home icon) -->
     <li class="breadcrumbs-item">
       <a href="./index.html" class="breadcrumbs-link">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -9,11 +18,13 @@
         Dashboard
       </a>
     </li>
+    <!-- Chevron separator between crumbs -->
     <li class="breadcrumbs-separator">
       <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
         <polyline points="9 18 15 12 9 6"></polyline>
       </svg>
     </li>
+    <!-- Current page (non-linked, aria-current) -->
     <li class="breadcrumbs-item">
       <span class="breadcrumbs-current" aria-current="page">Current Page</span>
     </li>

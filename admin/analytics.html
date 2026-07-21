@@ -1,19 +1,69 @@
 <!DOCTYPE html>
+<!-- ═══════════════════════════════════════════ -->
+<!-- FILE: analytics.html                       -->
+<!-- PURPOSE: Analytics dashboard with line,    -->
+<!--          bar, pie, donut charts; date      -->
+<!--          range filters; export button.     -->
+<!-- ═══════════════════════════════════════════ -->
+<!--
+  ============================================================================
+  FILE: analytics.html
+  SECTION: Admin / Reports
+  DESCRIPTION: Analytics dashboard with interactive charts (line, bar, pie,
+  donut) for views-over-time, top videos, tag distribution, and device
+  breakdown. Uses Chart.js via CDN for rendering.
+  DEPENDENCIES: main.js, components.js, Chart.js, admin/analytics.js
+  ============================================================================
+-->
 <html lang="en">
 <head>
+  <!-- ==================== HEAD ==================== -->
+  <!--
+    THEME INIT SCRIPT:
+    Sets data-theme on <html> from localStorage before rendering to
+    prevent FOUC. Falls back to "dark" if no preference stored.
+  -->
   <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+  <!-- META: UTF-8 encoding declaration for proper character rendering -->
   <meta charset="UTF-8">
+  <!-- META: Responsive viewport for mobile device scaling -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- META: Search engine description - analytics dashboard with charts -->
   <meta name="description" content="Platform analytics dashboard with charts for views, top videos, tag distribution, and device breakdown.">
+  <!-- TITLE: Browser tab title and search engine result title -->
   <title>Analytics - Admin Console</title>
+  <!--
+    STYLESHEET: main.css
+    Global design system - CSS variables, base resets, utilities, components.
+  -->
   <link rel="stylesheet" href="../css/main.css">
+  <!--
+    STYLESHEET: dashboard.css
+    Shared admin dashboard styles - stat cards, charts grid, admin layout
+    enhancements used across dashboard-like admin pages.
+  -->
   <link rel="stylesheet" href="../css/admin/dashboard.css">
+  <!--
+    STYLESHEET: analytics.css
+    Analytics-specific styles - chart container cards, tooltips, legends,
+    date-range picker, and responsive adjustments for chart canvases.
+  -->
   <link rel="stylesheet" href="../css/admin/analytics.css">
 </head>
+<!-- ==================== BODY ==================== -->
 <body>
 
+  <!--
+    TOAST CONTAINER: Fixed notification area (top-right). Messages inserted
+    by window.App.showToast(). ARIA live region for screen reader support.
+  -->
   <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
 
+  <!--
+    CONFIRMATION MODAL OVERLAY:
+    Reusable dialog with Cancel/Confirm buttons. role="dialog" + aria-modal="true".
+    Toggled via .visible class in JavaScript.
+  -->
   <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
     <div class="modal">
       <div class="modal-header">
@@ -28,13 +78,32 @@
     </div>
   </div>
 
+  <!-- ─── SECTION: ADMIN LAYOUT ──────────────── -->
+  <!-- ==================== ADMIN LAYOUT ==================== -->
   <div class="admin-layout">
+    <!--
+      SIDEBAR OVERLAY: Semi-transparent backdrop shown on mobile when sidebar
+      is open. Clicking it closes the sidebar. Hidden on desktop.
+    -->
     <div class="sidebar-overlay"></div>
+    <!--
+      SIDEBAR CONTAINER: <aside> element dynamically populated by
+      Components.injectAdminSidebar() with admin navigation links.
+      Active page highlighted based on the argument passed.
+    -->
     <aside id="sidebar-container"></aside>
 
+    <!-- ==================== MAIN CONTENT ==================== -->
     <div class="admin-main">
+      <!-- ─── SECTION: MOBILE HEADER ──────────── -->
+      <!--
+        ADMIN HEADER: Top bar with "Console" label, hamburger menu (mobile),
+        "View Live Site" link (opens ../index.html), and theme toggle button
+        (sun/moon icons). Hidden on desktop, visible on mobile.
+      -->
       <header class="admin-header">
         <div class="admin-header-left">
+          <!-- HAMBURGER BUTTON: Toggles sidebar on narrow screens; hidden on desktop -->
           <button class="admin-menu-btn" aria-label="Open sidebar menu" style="display:none;border:none;background:none;cursor:pointer;">
             <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line>
@@ -52,18 +121,29 @@
       </header>
 
       <main class="admin-body">
+        <!--
+          TITLE ROW: Page heading + description + date range filter + export button.
+          The date-range-buttons filter chart data by period (7/30/90 days).
+          Export button is currently a UI placeholder (non-functional).
+        -->
         <div class="admin-title-row">
           <div class="admin-title-group">
             <h1>Analytics</h1>
             <p>Platform metrics, trends, and content performance data.</p>
           </div>
           <div style="display:flex;gap:var(--space-md);align-items:center;flex-wrap:wrap;">
+            <!--
+              DATE RANGE PICKER: Button group for selecting analytics period.
+              "active" class on Last 30 Days indicates the default selection.
+              "disabled" on Custom indicates it's a placeholder for future use.
+            -->
             <div class="date-range-picker">
               <button class="date-range-btn" data-range="7">Last 7 Days</button>
               <button class="date-range-btn active" data-range="30">Last 30 Days</button>
               <button class="date-range-btn" data-range="90">Last 90 Days</button>
               <button class="date-range-btn disabled" data-range="custom">Custom</button>
             </div>
+            <!-- EXPORT BUTTON: Triggers data export (placeholder UI for future implementation) -->
             <button class="btn btn-secondary export-btn" id="export-data-btn">
               <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
               Export Data
@@ -71,6 +151,11 @@
           </div>
         </div>
 
+        <!-- ─── SECTION: Breadcrumbs ──────────── -->
+        <!--
+          BREADCRUMBS NAV: Shows current page location hierarchy.
+          Dashboard > Analytics. Provides a link back to ./index.html.
+        -->
         <nav class="breadcrumbs" aria-label="Breadcrumb">
           <ol class="breadcrumbs-list">
             <li><a href="./index.html">Dashboard</a></li>
@@ -79,7 +164,14 @@
           </ol>
         </nav>
 
+        <!-- ─── SECTION: Stats Grid ─────────────── -->
+        <!--
+          STATS GRID: Four large stat cards showing key metrics at a glance.
+          Each card has a title, value (dynamically populated by JS), and a
+          change indicator (up/down arrow + percentage vs. last period).
+        -->
         <section class="stats-grid" aria-label="Key metrics">
+          <!-- STAT CARD: Total Views - primary KPI with up-trend indicator -->
           <div class="stat-card large-stat">
             <div class="stat-title">Total Views</div>
             <div class="stat-value" id="stat-total-views">0</div>
@@ -88,6 +180,7 @@
               <span>+12.4% vs last period</span>
             </div>
           </div>
+          <!-- STAT CARD: Total Likes - engagement metric with up-trend indicator -->
           <div class="stat-card large-stat">
             <div class="stat-title">Total Likes</div>
             <div class="stat-value" id="stat-total-likes">0</div>
@@ -96,6 +189,7 @@
               <span>+8.2% vs last period</span>
             </div>
           </div>
+          <!-- STAT CARD: Total Videos - content volume metric -->
           <div class="stat-card large-stat">
             <div class="stat-title">Total Videos</div>
             <div class="stat-value" id="stat-total-videos">0</div>
@@ -103,6 +197,7 @@
               <span>Published content</span>
             </div>
           </div>
+          <!-- STAT CARD: Avg Watch Time - engagement depth metric -->
           <div class="stat-card large-stat">
             <div class="stat-title">Avg Watch Time</div>
             <div class="stat-value" id="stat-avg-watch">0:00</div>
@@ -112,9 +207,22 @@
           </div>
         </section>
 
+        <!--
+          CHART TOOLTIP: A shared tooltip container for all charts.
+          Populated by Chart.js or custom hover logic. Positioned
+          absolutely near the cursor on chart hover events.
+        -->
         <div id="chart-tooltip" class="chart-tooltip"></div>
 
+        <!-- ─── SECTION: Charts Grid ────────────── -->
+        <!-- ==================== CHARTS GRID ==================== -->
         <div class="charts-grid">
+          <!-- ─── CHART: Views Over Time ────────── -->
+          <!--
+            CHART: Views Over Time (Line Chart)
+            Full-width card showing daily view counts over the selected period.
+            Renders on canvas#line-chart via Chart.js in analytics.js.
+          -->
           <div class="chart-container-card full-width">
             <div class="chart-header">
               <div>
@@ -127,6 +235,12 @@
             </div>
           </div>
 
+          <!-- ─── CHART: Top 10 Videos ──────────── -->
+          <!--
+            CHART: Top 10 Videos (Horizontal Bar Chart)
+            Shows the 10 most-viewed videos ranked by view count.
+            Renders on canvas#bar-chart via Chart.js in analytics.js.
+          -->
           <div class="chart-container-card">
             <div class="chart-header">
               <div>
@@ -139,6 +253,13 @@
             </div>
           </div>
 
+          <!-- ─── CHART: Tag Distribution ───────── -->
+          <!--
+            CHART: Tag Distribution (Pie Chart)
+            Shows the proportional breakdown of videos by assigned tag.
+            Renders on canvas#pie-chart via Chart.js. Legend rendered in
+            #pie-legend div below the chart.
+          -->
           <div class="chart-container-card">
             <div class="chart-header">
               <div>
@@ -152,6 +273,12 @@
             <div class="chart-legend" id="pie-legend"></div>
           </div>
 
+          <!-- ─── CHART: Device Breakdown ───────── -->
+          <!--
+            CHART: Device Breakdown (Donut Chart)
+            Shows traffic distribution by device type (desktop, mobile, tablet).
+            Renders on canvas#donut-chart via Chart.js. Legend in #donut-legend.
+          -->
           <div class="chart-container-card">
             <div class="chart-header">
               <div>
@@ -170,14 +297,31 @@
     </div>
   </div>
 
+  <!--
+    RESPONSIVE STYLE: Forces the hamburger menu button to display on screens
+    narrower than 896px, where the sidebar is collapsed by default.
+  -->
   <style>
     @media (max-width: 896px) { .admin-menu-btn { display: flex !important; } }
   </style>
 
+  <!-- ─── SECTION: SCRIPTS ──────────────────── -->
+  <!-- ==================== SCRIPTS ==================== -->
+  <!-- mockData.js: Mock data generation functions for prototyping -->
   <script src="../js/mockData.js"></script>
+  <!-- main.js: Core app singleton - theme toggling, toast API, utilities -->
   <script src="../js/main.js"></script>
+  <!-- components.js: Dynamic UI injectors - sidebar, navbar, footer, pagination -->
   <script src="../js/components.js"></script>
+  <!-- animations.js: Scroll-reveal and transition animation utilities -->
   <script src="../js/animations.js"></script>
+  <!--
+    admin/analytics.js: Analytics page-specific logic.
+    - Initializes Chart.js instances for line, bar, pie, and donut charts
+    - Populates stat cards (#stat-total-views, #stat-total-likes, etc.)
+    - Handles date range filter button clicks to update chart data
+    - Manages chart tooltip positioning and content
+  -->
   <script src="../js/admin/analytics.js"></script>
 </body>
 </html>

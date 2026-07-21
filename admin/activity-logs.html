@@ -1,15 +1,72 @@
 <!DOCTYPE html>
+<!-- ═══════════════════════════════════════════ -->
+<!-- FILE: activity-logs.html                   -->
+<!-- PURPOSE: Timestamped table of user actions -->
+<!--          and system events (publish, edit, -->
+<!--          delete, login) with mock data.     -->
+<!-- ═══════════════════════════════════════════ -->
+<!--
+  ============================================================================
+  FILE: activity-logs.html
+  SECTION: Admin / Monitoring
+  DESCRIPTION: Displays a timestamped table of user actions and system events
+  (video published, edited, deleted, login attempts, etc.). Data is generated
+  client-side via mock data for demonstration and prototyping purposes.
+  DEPENDENCIES: main.js, components.js, mockData.js
+  ============================================================================
+-->
 <html lang="en">
 <head>
+  <!-- ==================== HEAD ==================== -->
+  <!--
+    THEME INIT SCRIPT:
+    Reads the "site-theme" key from localStorage and sets the "data-theme"
+    attribute on <html> BEFORE the page renders. This prevents a flash of
+    unstyled content (FOUC) on theme switch. Falls back to "dark" if no
+    preference is stored. The theme toggle button in the header calls
+    window.App.toggleTheme() which updates localStorage and this attribute.
+  -->
   <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+  <!-- META: Declares UTF-8 character encoding for proper Unicode text rendering -->
   <meta charset="UTF-8">
+  <!-- META: Viewport width=device-width + initial-scale=1.0 ensures responsive
+       layout on mobile devices by preventing default zoom and fitting content
+       to the screen width -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- META: Page description used by search engines in SERP snippets;
+       should concisely describe the page content for SEO -->
   <meta name="description" content="Activity logs - monitor user actions and system events">
+  <!-- TITLE: Appears in the browser tab, window title bar, and search engine results -->
   <title>Activity Logs - Antigravity Play</title>
+  <!--
+    STYLESHEET: main.css
+    Global design system stylesheet. Provides:
+    - CSS custom property tokens (colors, spacing, typography, shadows)
+    - Base/reset styles (box-sizing, body defaults)
+    - Utility classes (.btn, .badge, .modal, .toast, .card, .table, .form)
+    - Admin layout styles (.admin-layout, .admin-main, .admin-header, .admin-content)
+    - Responsive breakpoints and theme variant ([data-theme="light"])
+  -->
   <link rel="stylesheet" href="../css/main.css">
 </head>
+<!-- ==================== BODY ==================== -->
 <body>
+  <!--
+    TOAST CONTAINER:
+    A fixed-position notification hub at the top-right of the viewport.
+    window.App.showToast() inserts temporary alert messages (success/error/
+    warning/info) here. role="status" + aria-live="polite" ensures screen
+    readers announce new toasts without interrupting the current task.
+  -->
   <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+  <!--
+    CONFIRMATION MODAL OVERLAY:
+    A reusable dialog for confirming destructive or impactful actions
+    (delete, publish, etc.). Uses role="dialog" + aria-modal="true" for
+    accessibility. The modal contains a title, body text, and Cancel/Confirm
+    buttons. It is shown/hidden via JavaScript by toggling a .visible class
+    on this overlay. Clicking the overlay backdrop closes the modal.
+  -->
   <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
     <div class="modal">
       <div class="modal-header"><h3 class="modal-title">Confirm</h3><button class="modal-close">&times;</button></div>
@@ -17,22 +74,71 @@
       <div class="modal-footer"><button class="btn btn-secondary cancel-modal-btn">Cancel</button><button class="btn btn-primary confirm-modal-btn">Confirm</button></div>
     </div>
   </div>
+  <!-- ─── SECTION: ADMIN LAYOUT ──────────────── -->
+  <!-- ==================== ADMIN LAYOUT ==================== -->
+  <!--
+    ADMIN LAYOUT:
+    A flex-based two-column layout. The sidebar (left) is dynamically injected
+    via JavaScript. The main content area (right) fills the remaining width.
+    On narrow screens (<896px) the sidebar is hidden by default and toggled
+    via the hamburger menu button.
+  -->
   <div class="admin-layout">
+    <!--
+      SIDEBAR CONTAINER:
+      This empty container is populated by window.Components.injectAdminSidebar()
+      on DOMContentLoaded. It renders the full admin navigation menu with links
+      to Dashboard, Videos, Upload, Tags, Settings, Analytics, Notifications,
+      Activity Logs, Error Logs, and Login Logs. The currently active page is
+      highlighted based on the string passed to injectAdminSidebar().
+    -->
     <div id="sidebar-container"></div>
+    <!-- ==================== MAIN CONTENT ==================== -->
     <main class="admin-main">
+      <!-- ─── SECTION: MOBILE HEADER ──────────── -->
+      <!--
+        ADMIN HEADER (Mobile Top Bar):
+        Visible primarily on narrow screens. Contains the hamburger menu button
+        (opens/closes the sidebar overlay), the page title, and a spacer.
+        On desktop this bar may be hidden or collapsed.
+      -->
       <div class="admin-header">
+        <!-- HAMBURGER MENU BUTTON: Toggles sidebar visibility on mobile/tablet.
+             Uses an SVG with three horizontal lines (hamburger icon).
+             aria-label="Open menu" provides accessible context. -->
         <button class="admin-menu-btn" aria-label="Open menu">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         </button>
+        <!-- PAGE TITLE: Displayed in the mobile header bar -->
         <h1>Activity Logs</h1>
+        <!-- SPACER: Fills remaining space in the flex header row -->
         <div style="flex:1;"></div>
       </div>
+      <!-- ─── SECTION: ADMIN CONTENT ──────────── -->
+      <!--
+        ADMIN CONTENT WRAPPER:
+        Contains the main log card with the activity log table or empty state.
+      -->
       <div class="admin-content">
+        <!--
+          LOG CARD:
+          A contained card panel with a header (title + entry count badge)
+          and a body (log table or loading/empty state).
+        -->
         <div class="admin-card">
+          <!-- ─── CARD HEADER ───────────────────── -->
+          <!-- CARD HEADER: Section heading and dynamic entry count -->
           <div class="admin-card-header">
             <h2>Activity Logs</h2>
+            <!--
+              BADGE: Displays the total number of log entries.
+              Updated dynamically by JavaScript after generating the entries.
+              Class "badge-info" applies an info-style (blue) color.
+            -->
             <span class="badge badge-info" id="log-count">0 entries</span>
           </div>
+          <!-- ─── CARD BODY ─────────────────────── -->
+          <!-- CARD BODY: Holds the log table or a loading/empty state placeholder -->
           <div class="admin-card-body">
             <div id="log-container">
               <div class="empty-state-container" style="text-align:center;padding:var(--space-4xl);">
@@ -46,10 +152,49 @@
       </div>
     </main>
   </div>
+  <!-- ─── SECTION: SCRIPTS ──────────────────── -->
+  <!-- ==================== SCRIPTS ==================== -->
+  <!--
+    mockData.js:
+    Provides window.MockData - a collection of factory functions that generate
+    sample video data, tags, log entries, and other mock datasets. Used for
+    prototyping and demonstration without a backend server.
+  -->
   <script src="../js/mockData.js"></script>
+  <!--
+    main.js:
+    Core application module (window.App). Handles:
+    - Theme toggling and persistence (localStorage)
+    - Toast notification system (showToast, dismissToast)
+    - URL query parameter parsing (getQueryParams)
+    - Application-wide initialization logic
+  -->
   <script src="../js/main.js"></script>
+  <!--
+    components.js:
+    UI component injector (window.Components). Provides methods to
+    dynamically render and insert:
+    - Admin sidebar navigation (injectAdminSidebar)
+    - Public navbar (injectNavbar)
+    - Footer (injectFooter)
+    - Pagination controls (injectPagination)
+  -->
   <script src="../js/components.js"></script>
+  <!--
+    animations.js:
+    Animation utilities (window.Animations). Provides scroll-triggered
+    reveal animations (initScrollReveal), fade transitions, and other
+    visual effects used across the application.
+  -->
   <script src="../js/animations.js"></script>
+  <!--
+    INLINE SCRIPT - Page-specific logic for Activity Logs:
+    1. Calls Components.injectAdminSidebar() to render the sidebar nav.
+    2. Calls generateLogEntries() to create mock log data.
+    3. Renders the entries as an HTML table inside #log-container.
+    4. Updates #log-count with the total number of entries.
+    5. Displays an empty-state message if no entries exist.
+  -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       window.Components.injectAdminSidebar('activity-logs');

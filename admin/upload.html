@@ -1,22 +1,52 @@
 <!DOCTYPE html>
+<!-- ═══════════════════════════════════════════ -->
+<!-- FILE: upload.html                          -->
+<!-- PURPOSE: Multi-tab upload form to add      -->
+<!--          videos from URL/embed, set        -->
+<!--          metadata, tags, and thumbnail.    -->
+<!-- ═══════════════════════════════════════════ -->
+<!--
+  ============================================================================
+  FILE: upload.html
+  SECTION: Admin / Content
+  DESCRIPTION: Multi-tab form for adding videos from external platforms
+  (YouTube, Vimeo, Dailymotion, etc.) via URL or embed code. Includes
+  metadata editing, tag assignment, thumbnail upload, and publishing.
+  DEPENDENCIES: main.js, components.js, admin/upload.js
+  ============================================================================
+-->
 <html lang="en">
 <head>
+  <!-- ==================== HEAD ==================== -->
+  <!-- THEME INIT: Sets data-theme from localStorage before render to avoid FOUC -->
   <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
+  <!-- META: UTF-8 encoding for proper Unicode character handling -->
   <meta charset="UTF-8">
+  <!-- META: Viewport configuration for responsive mobile layout -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- META: SEO description for this page -->
   <meta name="description" content="Add a video from YouTube, Vimeo, Dailymotion, and more — validate, embed, and publish to the platform.">
+  <!-- TITLE: Browser tab title -->
   <title>Add Video - Admin Console</title>
+  <!-- STYLESHEET: main.css - Global design system foundation -->
   <link rel="stylesheet" href="../css/main.css">
+  <!-- STYLESHEET: dashboard.css - Shared admin dashboard card/layout styles -->
   <link rel="stylesheet" href="../css/admin/dashboard.css">
+  <!-- STYLESHEET: upload.css - Upload form-specific styles (platform selector, embed container, metadata, thumbnail) -->
   <link rel="stylesheet" href="../css/admin/upload.css">
+  <!-- STYLESHEET: tabs.css - Tab navigation styles for Source/Details tabs -->
   <link rel="stylesheet" href="../css/admin/tabs.css">
 </head>
 <body>
 
-  <!-- Toast Container -->
+  <!-- TOAST CONTAINER: Fixed notification area for success/error feedback messages -->
   <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
 
-  <!-- Reusable Confirmation Modal -->
+  <!--
+    CONFIRMATION MODAL OVERLAY:
+    Reusable dialog with Cancel/Confirm buttons for action confirmations.
+    role="dialog" + aria-modal="true" for accessible keyboard navigation.
+  -->
   <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
     <div class="modal">
       <div class="modal-header">
@@ -31,18 +61,28 @@
     </div>
   </div>
 
+  <!-- ─── SECTION: ADMIN LAYOUT ──────────────── -->
   <div class="admin-layout">
     
-    <!-- Sidebar Overlay for mobile menu -->
+    <!-- SIDEBAR OVERLAY: Mobile backdrop for closing sidebar on tap -->
     <div class="sidebar-overlay"></div>
 
-    <!-- Admin Sidebar injected here -->
+    <!--
+      SIDEBAR CONTAINER (<aside>):
+      Admin navigation sidebar injected by Components.injectAdminSidebar().
+      Provides links to all admin sections; current page highlighted.
+    -->
     <aside id="sidebar-container"></aside>
 
-    <!-- Main Content Area -->
+    <!-- ==================== MAIN CONTENT ==================== -->
     <div class="admin-main">
       
-      <!-- Top Mobile Header bar -->
+      <!-- ─── SECTION: MOBILE HEADER ──────────── -->
+      <!--
+        ADMIN HEADER (Mobile Top Bar):
+        Contains hamburger menu button, "Console" label, "View Live Site"
+        link, and theme toggle (sun/moon icons). Visible on narrow screens.
+      -->
       <header class="admin-header">
         <div class="admin-header-left">
           <button class="admin-menu-btn" aria-label="Open sidebar menu" style="display:none; border:none; background:none; cursor:pointer;">
@@ -69,7 +109,10 @@
 
       <main class="admin-body">
         
-        <!-- Welcome Title row -->
+        <!--
+          TITLE ROW: Page heading with description and a Cancel link
+          that returns to the Videos management page.
+        -->
         <div class="admin-title-row">
           <div class="admin-title-group">
             <h1>Add Video</h1>
@@ -82,9 +125,15 @@
           </div>
         </div>
 
-        <!-- Form Layout -->
+        <!-- ─── SECTION: UPLOAD FORM ───────────── -->
+        <!-- ==================== UPLOAD FORM ==================== -->
         <form id="upload-video-form">
-          <!-- Tab Navigation -->
+          <!--
+            TAB NAVIGATION: Two-step form process.
+            - "Source" tab: Select platform, paste URL or embed code, preview video
+            - "Details" tab: Edit title, description, duration, status, tags
+            Active tab is toggled by JavaScript (#tab-source-btn / #tab-details-btn).
+          -->
           <div class="tabs-nav">
             <button type="button" class="tab-btn active" data-tab="source" id="tab-source-btn">
               <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
@@ -96,18 +145,33 @@
             </button>
           </div>
 
+          <!-- ─── SECTION: Two-Column Layout ────── -->
+          <!-- ==================== FORM TWO-COLUMN LAYOUT ==================== -->
           <div class="upload-form-layout">
             
-            <!-- Left Side Details -->
+            <!-- ─── COLUMN: Source & Details ──────── -->
+            <!-- ======== LEFT COLUMN: Source + Details ======== -->
             <div class="upload-card">
-              <!-- Tab: Source -->
+              
+              <!-- ======== TAB PANEL: Source ======== -->
               <div class="tab-panel active" id="tab-panel-source">
                 <h2 class="form-title">Video Source</h2>
 
-                <!-- Platform Selector -->
+                <!--
+                  PLATFORM SELECTOR:
+                  Row of platform buttons (YouTube, Vimeo, Dailymotion, Embed, etc.)
+                  Populated by admin/upload.js. Clicking a platform updates the
+                  input section (URL vs iframe) shown below.
+                -->
                 <div class="platform-selector" id="platform-selector"></div>
 
-                <!-- Video URL Input (shown for URL-based platforms) -->
+                <!--
+                  VIDEO URL INPUT SECTION:
+                  Shown for URL-based platforms (YouTube, Vimeo, Dailymotion).
+                  Contains a text input for pasting the video URL and a "Load Video"
+                  button that fetches metadata via the oEmbed proxy. A "Remove Video"
+                  button appears after loading to clear the selection.
+                -->
                 <div class="platform-input-section" id="platform-url-section">
                   <label class="form-label" for="platform-url-input">Video URL</label>
                   <div class="youtube-input-row">
@@ -118,7 +182,12 @@
                   <button type="button" id="clear-video-btn" class="youtube-clear-btn hidden">Remove Video</button>
                 </div>
 
-                <!-- Iframe Code Input (shown for Embed Code platform) -->
+                <!--
+                  IFRAME CODE INPUT SECTION:
+                  Shown when "Embed Code" platform is selected. Provides a textarea
+                  for pasting raw <iframe> embed markup. The "Load Embed" button
+                  parses and inserts the iframe into the preview container below.
+                -->
                 <div class="platform-input-section hidden" id="platform-iframe-section">
                   <label class="form-label" for="iframe-code-input">Embed Code</label>
                   <textarea id="iframe-code-input" class="textarea-field" placeholder='Paste &lt;iframe&gt; embed code here…' style="min-height:80px;"></textarea>
@@ -128,7 +197,12 @@
                   <div id="iframe-error" class="youtube-error" role="alert"></div>
                 </div>
 
-                <!-- Video Embed Preview -->
+                <!--
+                  EMBED PREVIEW CONTAINER:
+                  Shows a loading spinner while fetching video data, then displays
+                  the embedded video player. If loading fails, shows a fallback
+                  message explaining the video may be unavailable.
+                -->
                 <div id="embed-container" class="embed-container hidden">
                   <div class="embed-loader" id="embed-loader">
                     <div class="loader-spinner"></div>
@@ -140,7 +214,12 @@
                   </div>
                 </div>
 
-                <!-- Video Metadata -->
+                <!--
+                  VIDEO METADATA:
+                  Displays the video thumbnail, title, and channel name fetched
+                  from the platform. Shown after successful URL/embed loading.
+                  The thumbnail is also used as the default cover image.
+                -->
                 <div id="video-metadata" class="video-metadata hidden">
                   <img id="meta-thumbnail" class="meta-thumbnail" alt="Video thumbnail">
                   <div class="meta-info">
@@ -149,31 +228,41 @@
                   </div>
                 </div>
 
-                <!-- Recent History -->
+                <!--
+                  RECENT HISTORY:
+                  Shows recently added videos for quick re-adding. Populated
+                  by admin/upload.js from localStorage "recentUploads" key.
+                  Each entry shows platform icon + title; click to re-load.
+                -->
                 <div id="recent-history" class="recent-history hidden"></div>
               </div>
 
-              <!-- Tab: Details -->
+              <!-- ─── TAB PANEL: Details ────────────── -->
+              <!-- ======== TAB PANEL: Details ======== -->
               <div class="tab-panel" id="tab-panel-details">
                 <h2 class="form-title">Video Details</h2>
 
                 <div class="form-grid">
 
+                  <!-- VIDEO TITLE: Auto-filled from platform metadata, editable -->
                   <div class="form-group">
                     <label class="form-label" for="title-input">Video Title</label>
                     <input type="text" id="title-input" class="form-input-field" placeholder="Auto-filled from source when available" autocomplete="off">
                   </div>
 
+                  <!-- DESCRIPTION: Optional text description for viewers -->
                   <div class="form-group">
                     <label class="form-label" for="description-input">Description</label>
                     <textarea id="description-input" class="textarea-field" placeholder="Provide a description for viewers..."></textarea>
                   </div>
 
                   <div class="form-row">
+                    <!-- DURATION: Manual input in Min:Sec format with regex validation -->
                     <div class="form-group">
                       <label class="form-label" for="duration-input">Duration (Min:Sec)</label>
                       <input type="text" id="duration-input" class="form-input-field" placeholder="E.g., 12:45" pattern="^[0-9]+:[0-5]?[0-9]:[0-5][0-9]$|^[0-9]+:[0-5][0-9]$" autocomplete="off">
                     </div>
+                    <!-- PUBLISH TOGGLE: Switch to publish immediately or save as draft -->
                     <div class="form-group">
                       <label class="form-label">Status</label>
                       <div class="toggle-row" style="padding-top: var(--space-sm);">
@@ -186,7 +275,11 @@
                     </div>
                   </div>
 
-                  <!-- Existing Tags Checkable Pills -->
+                  <!--
+                    EXISTING TAGS:
+                    Checkable tag pills showing all existing tags. Click to toggle
+                    selection. Max 10 tags per video. Populated by admin/upload.js.
+                  -->
                   <div class="form-group">
                     <label class="form-label">Existing Tags</label>
                     <div id="existing-tags-container" class="tags-checkable-grid">
@@ -194,7 +287,11 @@
                     </div>
                   </div>
 
-                  <!-- Selected Tags Display -->
+                  <!--
+                    SELECTED TAGS DISPLAY:
+                    Shows currently selected tags as removable chips.
+                    Limited to 10 selections. Counter updates in real-time.
+                  -->
                   <div class="form-group">
                     <label class="form-label">Selected Tags (<span id="selected-tags-count">0</span>/10)</label>
                     <div id="selected-tags-display" class="tag-chips-wrapper">
@@ -202,7 +299,12 @@
                     </div>
                   </div>
 
-                  <!-- Create Custom Tag -->
+                  <!--
+                    CREATE CUSTOM TAG:
+                    Inline form to create a new tag on-the-fly.
+                    Type the tag name and press Enter or click "Add".
+                    The new tag is saved to the tag list and auto-selected.
+                  -->
                   <div class="form-group">
                     <label class="form-label">Create New Tag</label>
                     <div style="display: flex; gap: var(--space-sm);">
@@ -216,11 +318,18 @@
 
             </div>
 
-            <!-- Right Side Settings & Action -->
+            <!-- ─── COLUMN: Publish & Cover ───────── -->
+            <!-- ======== RIGHT COLUMN: Publish & Cover ======== -->
             <div class="upload-card" style="height:fit-content;">
               <h2 class="form-title">Publish & Cover</h2>
               
-              <!-- Thumbnail Upload container -->
+              <!--
+                THUMBNAIL UPLOAD:
+                Drag-and-drop or click-to-upload box for a custom video thumbnail.
+                Supports image/* file types. Preview shown after selection.
+                If no custom thumbnail is uploaded, the platform-provided
+                thumbnail from the metadata is used as the default.
+              -->
               <div class="form-group">
                 <label class="form-label">Thumbnail Image</label>
                 <div class="thumbnail-upload-box" id="thumbnail-box">
@@ -236,6 +345,12 @@
                 </div>
               </div>
 
+              <!--
+                PUBLISH BUTTON:
+                Full-width submit button. Disabled until a valid video source
+                is loaded (URL/embed successfully fetched). On submit, saves
+                the video data to localStorage and redirects to ./videos.html.
+              -->
               <div style="margin-top: var(--space-2xl);">
                 <button type="submit" id="submit-btn" class="btn btn-primary" style="width:100%;" disabled>
                   Publish Video
@@ -258,11 +373,28 @@
     }
   </style>
 
-  <!-- Scripts -->
+  <!-- ─── SECTION: SCRIPTS ──────────────────── -->
+  <!-- ==================== SCRIPTS ==================== -->
+  <!-- mockData.js: Mock data factory for prototype tags and video data -->
   <script src="../js/mockData.js"></script>
+  <!-- main.js: Core app - theme toggling, toast API, utility functions -->
   <script src="../js/main.js"></script>
+  <!-- components.js: UI injectors - sidebar, navbar, footer, pagination -->
   <script src="../js/components.js"></script>
+  <!-- animations.js: Scroll-reveal and transition animation effects -->
   <script src="../js/animations.js"></script>
+  <!--
+    admin/upload.js: Video upload page logic.
+    - Platform selector rendering and switching (YouTube, Vimeo, Dailymotion, Embed)
+    - URL validation and oEmbed metadata fetching via proxy
+    - Iframe embed code parsing and injection
+    - Video preview container management (loading, player, fallback states)
+    - Auto-fill title/description/thumbnail from fetched metadata
+    - Tag selection (existing + custom creation) with 10-tag limit
+    - Thumbnail upload with FileReader preview
+    - Form submission: validates all fields, saves to localStorage, redirects
+    - Recent history tracking and display
+  -->
   <script src="../js/admin/upload.js"></script>
 </body>
 </html>
