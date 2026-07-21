@@ -41,9 +41,7 @@ function renderRecentUploadsTable(videos, tags) {
   if (!grid) return;
 
   const published = videos.filter(v => v && v.status === 'published');
-  const sortedRecent = [...published]
-    .sort((a, b) => new Date(b.publishDate) - new Date(a.publishDate))
-    .slice(0, 5);
+  const sortedRecent = [...published].reverse().slice(0, 5);
 
   if (sortedRecent.length === 0) {
     grid.innerHTML = '<div class="uploads-empty">No recent uploads found.</div>';

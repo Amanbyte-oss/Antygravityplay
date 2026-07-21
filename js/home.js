@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // 7. Render "New Releases" (date desc)
   const newReleasesContainer = document.getElementById('new-releases-container');
   if (newReleasesContainer) {
-    const newVideos = [...allVideos].sort((a, b) => new Date(b.publishDate) - new Date(a.publishDate)).slice(0, 8);
+    const newVideos = [...allVideos].reverse().slice(0, 8);
     newReleasesContainer.innerHTML = newVideos.map(vid => 
       window.Components.renderVideoCard(vid)
     ).join('');

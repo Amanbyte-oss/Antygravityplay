@@ -1,3 +1,7 @@
+#hero-section {
+  min-height: 320px;
+}
+
 /* --- HERO BANNER --- */
 .hero-banner {
   position: relative;
@@ -107,6 +111,7 @@
   scroll-snap-type: x mandatory;
   scrollbar-width: none; /* Firefox */
   padding-bottom: var(--space-md);
+  min-height: 220px;
 }
 
 .scroll-container::-webkit-scrollbar {
