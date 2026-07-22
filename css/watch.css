@@ -1051,6 +1051,60 @@
   font-weight: 600;                            /* Semi-bold */
 }
 
+/* ─── QUALITY SELECTOR ─── */
+/* Quality control wrapper: relative positioning for dropdown menu */
+.player-quality-wrap {
+  position: relative;        /* Anchor for the quality menu dropdown */
+}
+/* Quality button: compact, monospace */
+.player-quality-btn {
+  font-size: 10px;           /* Slightly smaller to fit */
+  font-weight: 700;
+  font-family: var(--font-mono);
+  min-width: 36px;
+  letter-spacing: 0.3px;
+}
+/* Quality menu dropdown: identical to speed menu */
+.player-quality-menu {
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  margin-bottom: 4px;
+  min-width: 80px;
+  background: rgba(20,20,20,0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xs);
+  z-index: 20;
+  animation: fadeIn 0.15s ease;
+}
+/* Quality menu option buttons */
+.player-quality-menu button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.7);
+  padding: 6px 12px;
+  font-size: var(--text-xs);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+/* Quality option hover */
+.player-quality-menu button:hover {
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+}
+/* Active quality option */
+.player-quality-menu button.active {
+  color: var(--accent);
+  font-weight: 600;
+}
+
 /* ─── ERROR OVERLAY ─── */
 /* Full-screen error display when video fails to load */
 .player-error {
@@ -1311,41 +1365,102 @@
 /* Mobile: even smaller controls, emoji bar becomes horizontal at bottom */
 @media (max-width: 480px) {
   .player-center-play {
-    width: 48px;                   /* Compact play button */
+    width: 48px;
     height: 48px;
   }
   .player-center-play svg {
-    width: 26px;                   /* Compact play icon */
+    width: 26px;
     height: 26px;
   }
   .player-bottom {
-    padding: 0 var(--space-sm) var(--space-xs);  /* Tighter padding: 8px sides, 4px bottom */
+    padding: 0 var(--space-sm) var(--space-xs);
   }
   .player-controls-left .player-time,
   .player-controls-left .player-time-sep {
-    font-size: 10px;               /* Smaller time text */
-    min-width: 28px;               /* Narrower time container */
+    font-size: 10px;
+    min-width: 28px;
   }
   .player-emoji-bar {
-    flex-direction: row;           /* Horizontal row of emojis */
-    bottom: 75px;                  /* Above bottom controls */
-    right: auto;                   /* Override right positioning */
-    left: 50%;                     /* Centre horizontally */
-    transform: translateX(-50%);   /* Precise centering */
-    gap: var(--space-xs);          /* 4px between emoji buttons */
+    flex-direction: row;
+    bottom: 75px;
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    gap: var(--space-xs);
+  }
+  .emoji-btn {
+    padding: 6px 12px;
+    font-size: var(--text-md);
   }
   .player-dtap-left,
   .player-dtap-right {
-    bottom: 50px;                  /* Adjusted seek zone bottom */
+    bottom: 50px;
   }
   .player-controls-right .player-volume-wrap {
-    display: none;                 /* Hide volume control on small screens */
+    display: none;
+  }
+  #player-pip-btn {
+    display: none;
   }
   .player-btn {
-    padding: 4px;                  /* Smaller button padding */
+    padding: 4px;
   }
   .player-speed-btn {
-    min-width: 28px;               /* Narrower speed button */
-    font-size: 10px;               /* Smaller speed text */
+    min-width: 28px;
+    font-size: 10px;
+  }
+  .player-quality-btn {
+    min-width: 28px;
+    font-size: 9px;
+  }
+  .player-progress {
+    padding: 12px 0;
+  }
+  .player-progress-track {
+    height: 6px;
+  }
+  .player-progress:hover .player-progress-track {
+    height: 8px;
+  }
+  .player-progress-thumb {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* Very small screens: further compact controls */
+@media (max-width: 360px) {
+  .player-controls-right {
+    gap: 2px;
+  }
+  .player-btn {
+    padding: 3px;
+  }
+  .player-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+  .player-speed-btn {
+    min-width: 24px;
+    font-size: 9px;
+  }
+  .player-quality-btn {
+    min-width: 24px;
+    font-size: 8px;
+  }
+  .player-dtap-left,
+  .player-dtap-right {
+    bottom: 45px;
+  }
+  .player-emoji-bar {
+    gap: 2px;
+    bottom: 70px;
+  }
+  .emoji-btn {
+    padding: 4px 8px;
+    font-size: var(--text-sm);
+  }
+  .player-progress {
+    padding: 14px 0;
   }
 }

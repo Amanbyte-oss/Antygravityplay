@@ -82,7 +82,7 @@
         <!-- Embed placeholder for YouTube/Vimeo iframes -->
         <div id="player-embed-placeholder" style="display:none; width:100%; height:100%;"></div>
         <!-- Native HTML5 video element (hidden initially, shown for local videos) -->
-        <video id="main-video-player" preload="metadata" crossorigin="anonymous" style="display:none;">
+        <video id="main-video-player" preload="metadata" style="display:none;">
           Your browser does not support HTML5 video streaming.
         </video>
 
@@ -181,6 +181,18 @@
                     <button data-speed="1.25">1.25x</button>
                     <button data-speed="1.5">1.5x</button>
                     <button data-speed="2">2x</button>
+                  </div>
+                </div>
+
+                <!-- Quality selector dropdown -->
+                <div class="player-quality-wrap">
+                  <button class="player-btn player-quality-btn" id="player-quality-btn" title="Quality">Auto</button>
+                  <div class="player-quality-menu" id="player-quality-menu" style="display:none;">
+                    <button data-quality="1080p">1080p</button>
+                    <button data-quality="720p">720p</button>
+                    <button data-quality="480p">480p</button>
+                    <button data-quality="360p" class="active">360p</button>
+                    <button data-quality="144p">144p</button>
                   </div>
                 </div>
 

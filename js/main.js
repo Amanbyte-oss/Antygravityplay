@@ -274,14 +274,23 @@
      * @returns {Array} Array of video objects
      */
     getVideos() {
+      // Bump this when mock data schema changes to force re-seed
+      const DB_VERSION = '2';
       // Read raw video data from localStorage
       let raw = localStorage.getItem('db-videos');
+      const storedVersion = localStorage.getItem('db-videos-version');
+      // If version mismatch, discard cache and re-seed
+      if (raw && storedVersion !== DB_VERSION) {
+        localStorage.removeItem('db-videos');
+        raw = null;
+      }
       // If no data exists yet, seed from mock data
       if (!raw) {
         // Deep clone the mock videos to avoid mutating the original
         const mockCopy = JSON.parse(JSON.stringify(window.MOCK_VIDEOS));
-        // Store the clone in localStorage
+        // Store the clone in localStorage with version marker
         localStorage.setItem('db-videos', JSON.stringify(mockCopy));
+        localStorage.setItem('db-videos-version', DB_VERSION);
         return mockCopy;
       }
       try {
@@ -314,6 +323,7 @@
     saveVideos(videosList) {
       // Stringify and store the full video list
       localStorage.setItem('db-videos', JSON.stringify(videosList));
+      localStorage.setItem('db-videos-version', '2');
       // Dispatch a custom event to notify other components of the update
       window.dispatchEvent(new CustomEvent('videosupdated'));
     },
