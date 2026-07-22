@@ -496,7 +496,11 @@ function setupYouTubeControls(video, ytPlayer, loadingEl, onFirstPlay, handleLik
   if (overlay) {
     overlay.addEventListener('mousemove', showControls);
     overlay.addEventListener('touchstart', showControlsOnce, { passive: true });
-    overlay.addEventListener('click', showControlsOnce);
+    overlay.addEventListener('click', function(e) {
+      var isControl = e.target.closest('button, .player-bottom, .player-emoji-bar, .player-error, .player-endscreen, .player-seek-indicator');
+      if (!isControl) togglePlay();
+      else showControlsOnce();
+    });
   }
 
   var fmt = function(s) {
@@ -1070,8 +1074,12 @@ function initCustomPlayer(video, videoEl, onFirstPlay, handleLike) {
   overlay.addEventListener('mousemove', showControls);
   // Show controls on touch start (mobile), with passive flag for performance
   overlay.addEventListener('touchstart', showControlsOnce, { passive: true });
-  // Show controls on any click within the overlay
-  overlay.addEventListener('click', showControlsOnce);
+  // Single click toggles play/pause, but not when clicking on controls
+  overlay.addEventListener('click', (e) => {
+    const isControl = e.target.closest('button, .player-bottom, .player-emoji-bar, .player-error, .player-endscreen, .player-seek-indicator');
+    if (!isControl) togglePlay();
+    else showControlsOnce();
+  });
 
   // ─── FORMAT TIME ────────────────────────────────────────
   // Converts seconds (number) to a "M:SS" display string
