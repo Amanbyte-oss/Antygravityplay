@@ -49,7 +49,7 @@
       // ─── Generate Tags Dropdown items ───
       // Map each tag to a list item with a colored dot and name
       const tagDropdownItems = tags.map(tag => 
-        `<li><a href="${rootPrefix}tag.html?tag=${encodeURIComponent(tag.name)}"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:${tag.color}; margin-right:6px;"></span>${tag.name}</a></li>`
+        `<li><a href="${rootPrefix}tag.html?tag=${encodeURIComponent(tag.name)}"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:${this._tagColor(tag.name)}; margin-right:6px;"></span>${tag.name}</a></li>`
       ).join('');
 
       // ─── Inject Navbar HTML ───
@@ -310,15 +310,15 @@
       `;
 
       // ─── LOGOUT LOGIC ───
-      // Bind the logout button click to clear session and redirect to home
-      document.getElementById('logout-btn').addEventListener('click', () => {
-        // Remove the admin session token
-        localStorage.removeItem('admin-session');
-        // Remove the stored admin name
-        localStorage.removeItem('admin-name');
-        // Redirect to the public home page
-        window.location.href = `${rootPrefix}index.html`;
-      });
+      var logoutBtn = document.getElementById('logout-btn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+          localStorage.removeItem('admin-session');
+          localStorage.removeItem('admin-name');
+          if (window.SupabaseAuth && window.SupabaseAuth.logout) window.SupabaseAuth.logout();
+          window.location.href = rootPrefix + 'index.html';
+        });
+      }
     },
 
     // ─── 3. FOOTER ───
@@ -423,6 +423,16 @@
       });
     },
 
+    // ─── TAG COLOR HELPER ───
+    _tagColor(str) {
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      const colors = ['#0070f3','#7928ca','#ff0080','#ffa42b','#50e3c2','#539df5','#1db954','#f3727f','#e91e63','#ff5722','#9c27b0','#00bcd4','#ff9800','#4caf50','#f44336','#3f51b5'];
+      return colors[Math.abs(hash) % colors.length];
+    },
+
     // ─── 4. VIDEO CARD ───
     /**
      * Renders an HTML string for a video card (thumbnail, title, meta, tags).
@@ -431,22 +441,14 @@
      * @returns {string} HTML string for the video card
      */
     renderVideoCard(video) {
-      // Check if the current user has liked this video
-      const isLiked = window.App.isVideoLiked(video.id);
-      // Get all available tags for rendering tag pills
-      const allTags = window.App.getTags();
-      // Limit to first 3 tag IDs for display
-      const videoTagIds = (video.tags || []).slice(0, 3);
+      // Limit to first 3 tag strings for display
+      const videoTags = (video.tags || []).slice(0, 3);
       // Count how many tags are hidden beyond the first 3
       const extraCount = (video.tags || []).length - 3;
       // Generate HTML for each visible tag pill
-      const tagPillsHtml = videoTagIds.map(tagId => {
-        // Find the full tag object by ID
-        const tag = allTags.find(t => t.id === tagId);
-        // Skip if tag is not found
-        if (!tag) return '';
-        // Render a small anchor styled as a tag pill with color indicator
-        return `<a href="${rootPrefix}tag.html?tag=${encodeURIComponent(tag.name)}" class="tag-pill" style="display:inline-flex; align-items:center; gap:4px; padding:2px 8px; font-size:11px; border-radius:12px; border-left:4px solid ${tag.color}; background:${tag.color}18; color:var(--text-secondary); text-decoration:none; margin-right:4px; margin-bottom:4px;">${escapeHtml(tag.name)}</a>`;
+      const tagPillsHtml = videoTags.map(t => {
+        const color = Components._tagColor(t);
+        return '<a href="' + rootPrefix + 'tag.html?tag=' + encodeURIComponent(t) + '" class="tag-pill" style="display:inline-flex; align-items:center; gap:4px; padding:2px 8px; font-size:11px; border-radius:12px; border-left:4px solid ' + color + '; background:' + color + '18; color:var(--text-secondary); text-decoration:none; margin-right:4px; margin-bottom:4px;">' + escapeHtml(t) + '</a>';
       }).join('');
       // Show "+N" indicator if there are more tags beyond the visible ones
       const moreHtml = extraCount > 0 ? `<span style="font-size:11px; color:var(--text-muted); margin-left:2px;">+${extraCount}</span>` : '';

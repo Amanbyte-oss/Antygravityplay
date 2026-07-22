@@ -243,6 +243,8 @@
   border-radius: var(--radius-full);     /* Pill shape */
   font-size: var(--text-xs);             /* 12px */
   font-weight: 500;                      /* Medium weight */
+  text-decoration: none;                 /* Remove underline from links */
+  cursor: pointer;                       /* Hand cursor for links */
   transition: color var(--transition-fast), background-color var(--transition-fast);  /* Smooth hover */
 }
 
@@ -662,8 +664,8 @@
   opacity: 0;                                  /* Hidden by default */
   transition: opacity 0.35s var(--ease-relax), transform 0.35s var(--ease-spring), background 0.2s;  /* Smooth show/hide and hover */
 }
-/* Show the centre play button when overlay is visible AND button has .show class */
-.player-overlay.visible .player-center-play.show {
+/* Show the centre play button when overlay is visible (shows play icon when paused, pause icon when playing) */
+.player-overlay.visible .player-center-play {
   opacity: 1;
 }
 /* Hover: brighter background and slight scale up */
@@ -1319,11 +1321,15 @@
 }
 
 /* ─── THEATER MODE ─── */
-/* Theater mode: full-width player, no rounded corners or shadow */
+/* Theater mode: full-viewport-width player, centered, no rounded corners or shadow */
 .player-container.theater-mode {
-  max-width: 100%;               /* Stretch to full width */
-  border-radius: 0;              /* Remove rounded corners */
-  box-shadow: none;              /* Remove shadow */
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100vw;
+  max-width: 100vw;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 /* ─── FULLSCREEN MODE ─── */
@@ -1399,9 +1405,6 @@
   .player-controls-right .player-volume-wrap {
     display: none;
   }
-  #player-pip-btn {
-    display: none;
-  }
   .player-btn {
     padding: 4px;
   }
@@ -1463,4 +1466,47 @@
   .player-progress {
     padding: 14px 0;
   }
+}
+
+/* ─── VIDEO REACTIONS BAR (below description) ─── */
+.video-reactions-bar {
+  margin-top: var(--space-lg);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--border-color, rgba(255,255,255,0.1));
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+.reactions-label {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.reactions-emoji-row {
+  display: flex;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+}
+.video-reactions-bar .emoji-btn {
+  background: var(--surface-color, rgba(255,255,255,0.08));
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid var(--border-color, rgba(255,255,255,0.1));
+  border-radius: var(--radius-full);
+  padding: 6px 14px;
+  font-size: var(--text-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: transform 0.2s var(--ease-spring), background 0.2s;
+}
+.video-reactions-bar .emoji-btn:hover {
+  transform: scale(1.12);
+  background: var(--surface-hover, rgba(255,255,255,0.12));
+}
+.video-reactions-bar .emoji-btn:active {
+  transform: scale(0.92);
 }

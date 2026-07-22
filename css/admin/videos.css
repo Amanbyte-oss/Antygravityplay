@@ -70,20 +70,6 @@
   outline: none;
 }
 
-/* --- MANAGEMENT BAR --- */
-.management-left {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-  flex: 1;
-}
-
-.management-right {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-}
-
 /* --- VIDEO CARDS GRID --- */
 .videos-section {
   background-color: var(--bg-secondary);
@@ -119,12 +105,6 @@
   overflow: hidden;
   transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
   position: relative;
-  animation: fadeInUp 0.45s var(--ease-spring) both;
-}
-
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(14px); }
-  to   { opacity: 1; transform: translateY(0); }
 }
 
 .video-card:hover {
@@ -348,28 +328,6 @@
   max-width: 260px;
 }
 
-/* --- BADGE --- */
-.badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 1px 7px;
-  border-radius: var(--radius-full);
-  font-size: 9px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-}
-
-.badge-success {
-  background-color: rgba(30, 215, 96, 0.12);
-  color: var(--success);
-}
-
-.badge-warning {
-  background-color: rgba(255, 164, 43, 0.12);
-  color: var(--warning);
-}
-
 /* --- PAGINATION --- */
 .pagination-container {
   display: flex;
@@ -437,22 +395,6 @@
   pointer-events: none;
 }
 
-/* --- SELECT ALL (used in videos page) --- */
-.select-all-label {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-xs);
-  font-size: var(--text-xs);
-  color: var(--text-muted);
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.select-all-label input {
-  accent-color: var(--accent);
-  cursor: pointer;
-}
-
 /* --- SORTABLE HEADER (used in tags page table) --- */
 .sortable-header {
   cursor: pointer;
@@ -495,7 +437,6 @@
   background-color: var(--bg-secondary);
   border: 1px solid var(--accent);
   border-radius: var(--radius-lg);
-  animation: fadeIn 0.2s ease;
 }
 
 #bulk-actions-bar span {
@@ -505,9 +446,4 @@
   white-space: nowrap;
 }
 
-.delete-btn-sm {
-  padding: 4px var(--space-sm) !important;
-  font-size: var(--text-xs) !important;
-  color: var(--error) !important;
-  border-color: var(--error) !important;
-}
+

@@ -32,82 +32,95 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // If there are no published videos, show an empty state and stop
   if (allVideos.length === 0) {
-    // Find the main content container
     const mainContainer = document.querySelector('main');
     if (mainContainer) {
-      // Replace main content with the empty state component
       mainContainer.innerHTML = window.Components.renderEmptyState('No published videos found.');
     }
     return;
   }
 
-  // ─── 3. RENDER HERO BANNER ───
-  // Find the video with the highest view count to feature in the hero banner
+  // ─── TAG COLOR HELPER ───
+  function tagColor(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) { hash = str.charCodeAt(i) + ((hash << 5) - hash); }
+    var colors = ['#0070f3','#7928ca','#ff0080','#ffa42b','#50e3c2','#539df5','#1db954','#f3727f','#e91e63','#ff5722','#9c27b0','#00bcd4','#ff9800','#4caf50','#f44336','#3f51b5'];
+    return colors[Math.abs(hash) % colors.length];
+  }
+
+  // ─── 3. EXTRACT UNIQUE TAGS FROM VIDEOS ───
+  var allTagStrings = [];
+  var tagCounts = {};
+  allVideos.forEach(function(v) {
+    (v.tags || []).forEach(function(t) {
+      if (tagCounts[t]) { tagCounts[t]++; } else { tagCounts[t] = 1; }
+      if (allTagStrings.indexOf(t) === -1) allTagStrings.push(t);
+    });
+  });
+  allTagStrings.sort();
+
+  // ─── 4. RENDER HERO BANNER ───
   const heroVideo = allVideos.reduce((max, v) => v.views > max.views ? v : max, allVideos[0]);
-  // Setup the hero banner with the most viewed video
-  setupHeroBanner(heroVideo);
+  setupHeroBanner(heroVideo, tagColor);
 
-  // ─── 4. RENDER POPULAR TAGS ───
-  // Display tags sorted by how many published videos use each tag
-  const popularTagsContainer = document.getElementById('popular-tags-container');
+  // ─── 5. POPULATE TAG FILTER BAR ───
+  var filterBar = document.getElementById('tag-filter-bar');
+  var filterTag = '';
+  if (filterBar) {
+    allTagStrings.forEach(function(t) {
+      var btn = document.createElement('button');
+      btn.className = 'tag-filter-pill';
+      btn.dataset.tag = t;
+      btn.textContent = t;
+      filterBar.appendChild(btn);
+    });
+    filterBar.addEventListener('click', function(e) {
+      var btn = e.target.closest('.tag-filter-pill');
+      if (!btn) return;
+      filterBar.querySelectorAll('.tag-filter-pill').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      filterTag = btn.dataset.tag;
+      renderSections(allVideos, filterTag);
+    });
+  }
+
+  // ─── 6. RENDER POPULAR TAGS ───
+  var popularTagsContainer = document.getElementById('popular-tags-container');
   if (popularTagsContainer) {
-    // Get all available tags
-    const tags = window.App.getTags();
-    // Count how many published videos use each tag
-    const tagCounts = {};
-    allVideos.forEach(v => (v.tags || []).forEach(tId => { tagCounts[tId] = (tagCounts[tId] || 0) + 1; }));
-    // Sort tags by count descending
-    const sortedTags = [...tags].sort((a, b) => (tagCounts[b.id] || 0) - (tagCounts[a.id] || 0));
-    // Render each tag as a clickable pill with color, name, and count
-    popularTagsContainer.innerHTML = sortedTags.map(tag => 
-      `<a href="./tag.html?tag=${encodeURIComponent(tag.name)}" class="tag-pill tag-pill-lg" style="border-left: 4px solid ${tag.color}; background-color: ${tag.color}15;">
-        <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:${tag.color}; margin-right:6px;"></span>
-        ${tag.name}
-        <span style="font-size:var(--text-xs); opacity:0.7; margin-left:6px;">(${tagCounts[tag.id] || 0})</span>
-      </a>`
-    ).join('');
+    var sortedByCount = allTagStrings.slice().sort(function(a, b) { return (tagCounts[b] || 0) - (tagCounts[a] || 0); });
+    popularTagsContainer.innerHTML = sortedByCount.map(function(t) {
+      var count = tagCounts[t] || 0;
+      var c = tagColor(t);
+      return '<a href="./tag.html?tag=' + encodeURIComponent(t) + '" class="tag-pill tag-pill-lg" style="border-left:4px solid ' + c + ';background-color:' + c + '15;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background-color:' + c + ';margin-right:6px;"></span>' + escapeHtml(t) + '<span style="font-size:var(--text-xs);opacity:0.7;margin-left:6px;">(' + count + ')</span></a>';
+    }).join('');
   }
 
-  // ─── 5. RENDER BROWSE BY TAG GRID ───
-  // Display all tags with staggered entrance animation (reveal-on-scroll)
-  const browseTagGrid = document.getElementById('browse-tag-grid');
+  // ─── 7. RENDER BROWSE BY TAG GRID ───
+  var browseTagGrid = document.getElementById('browse-tag-grid');
   if (browseTagGrid) {
-    const tags = window.App.getTags();
-    // Count videos per tag again
-    const tagCounts = {};
-    allVideos.forEach(v => (v.tags || []).forEach(tId => { tagCounts[tId] = (tagCounts[tId] || 0) + 1; }));
-    // Render tags with scroll-reveal class and staggered transition-delay
-    browseTagGrid.innerHTML = tags.map((tag, i) => 
-      `<a href="./tag.html?tag=${encodeURIComponent(tag.name)}" class="tag-pill tag-pill-lg reveal-on-scroll" style="border-left: 4px solid ${tag.color}; background-color: ${tag.color}15; transition-delay: ${i * 0.05}s;">
-        <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:${tag.color}; margin-right:6px;"></span>
-        ${tag.name}
-        <span style="font-size:var(--text-xs); opacity:0.7; margin-left:6px;">(${tagCounts[tag.id] || 0})</span>
-      </a>`
-    ).join('');
+    browseTagGrid.innerHTML = allTagStrings.map(function(t, i) {
+      var count = tagCounts[t] || 0;
+      var c = tagColor(t);
+      return '<a href="./tag.html?tag=' + encodeURIComponent(t) + '" class="tag-pill tag-pill-lg reveal-on-scroll" style="border-left:4px solid ' + c + ';background-color:' + c + '15;transition-delay:' + (i * 0.05) + 's;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background-color:' + c + ';margin-right:6px;"></span>' + escapeHtml(t) + '<span style="font-size:var(--text-xs);opacity:0.7;margin-left:6px;">(' + count + ')</span></a>';
+    }).join('');
   }
 
-  // ─── 6. RENDER "TRENDING NOW" ───
-  // Show the top 8 most-viewed videos
-  const trendingContainer = document.getElementById('trending-container');
-  if (trendingContainer) {
-    // Sort by views descending and take the top 8
-    const trendingVideos = [...allVideos].sort((a, b) => b.views - a.views).slice(0, 8);
-    // Render each video using the reusable video card component
-    trendingContainer.innerHTML = trendingVideos.map(vid => 
-      window.Components.renderVideoCard(vid)
-    ).join('');
-  }
+  // ─── 8. RENDER SECTIONS (trending + new releases) ───
+  function renderSections(videos, tag) {
+    var filtered = tag ? videos.filter(function(v) { return (v.tags || []).indexOf(tag) !== -1; }) : videos;
 
-  // ─── 7. RENDER "NEW RELEASES" ───
-  // Show the last 8 videos by publish date (most recent first)
-  const newReleasesContainer = document.getElementById('new-releases-container');
-  if (newReleasesContainer) {
-    // Reverse the array (which roughly orders by oldest first, so reverse gives newest first) and take 8
-    const newVideos = [...allVideos].reverse().slice(0, 8);
-    newReleasesContainer.innerHTML = newVideos.map(vid => 
-      window.Components.renderVideoCard(vid)
-    ).join('');
+    var trendingContainer = document.getElementById('trending-container');
+    if (trendingContainer) {
+      var trending = [...filtered].sort(function(a, b) { return b.views - a.views; }).slice(0, 8);
+      trendingContainer.innerHTML = trending.map(function(v) { return window.Components.renderVideoCard(v); }).join('');
+    }
+
+    var newReleasesContainer = document.getElementById('new-releases-container');
+    if (newReleasesContainer) {
+      var newest = [...filtered].reverse().slice(0, 8);
+      newReleasesContainer.innerHTML = newest.map(function(v) { return window.Components.renderVideoCard(v); }).join('');
+    }
   }
+  renderSections(allVideos, filterTag);
 
   // ─── 8. RE-TRIGGER ANIMATIONS AND LAZY LOADS ───
   // Initialize scroll reveal for any newly added .reveal-on-scroll elements
@@ -123,20 +136,16 @@ document.addEventListener('DOMContentLoaded', () => {
  * a "Watch Now" link, and a like button with state management.
  * @param {Object} video - The video object to feature in the hero
  */
-function setupHeroBanner(video) {
+function setupHeroBanner(video, tagColor) {
   // Find the hero section container in the DOM
   const heroSection = document.getElementById('hero-section');
   // Exit if the container doesn't exist on this page
   if (!heroSection) return;
 
-  // Extract tag names from the video's tag IDs for display
-  const tagNames = video.tags.map(tagId => {
-    // Find the full tag object by ID
-    const t = window.App.getTags().find(tg => tg.id === tagId);
-    return t ? t.name : '';
-  }).filter(Boolean);
-  // Use the first tag name as the badge text, fallback to 'Featured'
-  const badgeText = tagNames.length > 0 ? tagNames[0] : 'Featured';
+  // Use the first tag string directly
+  var tags = video.tags || [];
+  var badgeText = tags.length > 0 ? tags[0] : 'Featured';
+  var badgeColor = tags.length > 0 ? tagColor(tags[0]) : 'var(--accent)';
 
   // Escape user-generated content for safe HTML insertion
   const safeTitle = escapeHtml(video.title);
@@ -147,7 +156,7 @@ function setupHeroBanner(video) {
   heroSection.innerHTML = `
     <div class="hero-banner">
       <div class="hero-content">
-        <span class="hero-tag">${safeBadge}</span>
+        <span class="hero-tag" style="background-color:${badgeColor}18;color:${badgeColor};">${safeBadge}</span>
         <h1 class="hero-title">${safeTitle}</h1>
         <p class="hero-desc">${safeDesc}</p>
         <div class="hero-btns">

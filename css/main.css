@@ -1212,3 +1212,34 @@ main {
     display: none;                       /* Hidden on mobile */
   }
 }
+
+/* ─── GLOBAL SMOOTHNESS ─────────────────────────────────────────── */
+/* Smooth scrolling for the entire page */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Subtle motion on all interactive and visual elements */
+a, button, .btn, input, select, textarea,
+.card, .video-card, .tag-card, .related-card,
+.sidebar-card, .nav-link, .nav-btn,
+.like-btn, .emoji-btn, .player-btn,
+.creator-profile, .watch-title,
+.description-text, .tags-row .tag-badge,
+.navbar-wrapper, .footer-wrapper,
+.watch-grid, .sidebar-title,
+.player-overlay, .player-bottom,
+.player-progress-thumb,
+.player-volume-fill,
+.toast, .modal,
+[data-href] {
+  transition: all 0.25s var(--ease-relax);
+}
+
+/* Heavier transition for large containers (navbar, footer, sidebar) */
+.navbar-wrapper, .footer-wrapper, .now-playing-bar-wrapper,
+.video-description-box, .video-watch-details {
+  transition: transform 0.4s var(--ease-relax), opacity 0.4s var(--ease-relax), background 0.4s var(--ease-relax), box-shadow 0.4s var(--ease-relax);
+}
+
+

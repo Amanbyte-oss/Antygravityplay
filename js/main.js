@@ -15,15 +15,37 @@
   const path = window.location.pathname.replace(/\\/g, '/');
   // Check if the current page is inside the /admin/ directory
   const isAdminPage = path.includes('/admin/');
+  const isLoginPage = path.includes('login.html');
   // Check if an admin session token exists in localStorage
-  const isLoggedIn = localStorage.getItem('admin-session') !== null;
+  const hasLocalSession = localStorage.getItem('admin-session') !== null;
 
-  // If this is an admin page and no session is found, redirect to login
-  if (isAdminPage && !isLoggedIn) {
-    // Path to the login page relative to the admin directory
-    const redirectPath = '../login.html';
-    // Perform the redirect
-    window.location.href = redirectPath;
+  // Quick initial guard using localStorage (sync, works before Supabase loads)
+  if (isAdminPage && !hasLocalSession) {
+    if (!window.__supabasePresent) {
+      window.location.href = '../login.html';
+    }
+  }
+  // If on login page with an active local session, go to admin
+  if (isLoginPage && hasLocalSession) {
+    window.location.href = './admin/index.html';
+  }
+
+  // ─── SUPABASE ROUTE GUARD (async, runs after CDN loads) ───
+  if ((isAdminPage || isLoginPage) && !window.__supabase && !window.__supabaseGuardAttached) {
+    window.__supabaseGuardAttached = true;
+    document.addEventListener('supabase-ready', async function guard() {
+      if (!window.__supabase) return;
+      const { session } = await window.SupabaseAuth.getSession();
+      const isAuthd = !!session;
+
+      if (isAdminPage && !isAuthd && !hasLocalSession) {
+        window.location.href = '../login.html';
+      }
+      // Clear legacy localStorage session if Supabase session exists
+      if (isAuthd && localStorage.getItem('admin-session')) {
+        localStorage.removeItem('admin-session');
+      }
+    });
   }
 
   // ─── DOM CONTENT LOADED ───
@@ -222,34 +244,23 @@
         if (!pairs[i]) continue;
         // Split on '=' to separate key and value
         const pair = pairs[i].split('=');
-        // Decode URI components and store in the params object
-        params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
+        // Decode URI components safely
+        try { params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || ''); } catch (_) {}
       }
       return params;
     },
 
     // ─── LIKED VIDEO CHECK ───
-    /**
-     * Checks if a video has been liked by the user.
-     * @param {string} videoId - The ID of the video to check
-     * @returns {boolean} True if the video is liked, false otherwise
-     */
     isVideoLiked(videoId) {
-      // Retrieve the liked videos array from localStorage, default to empty array
-      const likedVideos = JSON.parse(localStorage.getItem('liked-videos') || '[]');
-      // Return whether the video ID exists in the array
+      let likedVideos = [];
+      try { likedVideos = JSON.parse(localStorage.getItem('liked-videos')) || []; } catch (_) {}
       return likedVideos.includes(videoId);
     },
 
     // ─── LIKE TOGGLE ───
-    /**
-     * Toggles the liked state of a video in localStorage.
-     * @param {string} videoId - The ID of the video to toggle
-     * @returns {boolean} The new liked state (true = liked, false = unliked)
-     */
     toggleLikeVideo(videoId) {
-      // Load existing liked videos from localStorage
-      let likedVideos = JSON.parse(localStorage.getItem('liked-videos') || '[]');
+      let likedVideos = [];
+      try { likedVideos = JSON.parse(localStorage.getItem('liked-videos')) || []; } catch (_) {}
       // Flag to track the new state
       let isLikedNow = false;
       // Check if the video is already liked

@@ -203,6 +203,37 @@
     </div>
   </div>
 
+  <!-- Edit Video Modal -->
+  <div class="modal-overlay" id="edit-video-modal" role="dialog" aria-modal="true">
+    <div class="modal" style="max-width:520px;">
+      <div class="modal-header">
+        <h3 class="modal-title">Edit Video</h3>
+        <button class="modal-close" id="edit-modal-close" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group" style="margin-bottom:12px;">
+          <label class="form-label" for="edit-title-input">Title</label>
+          <input type="text" id="edit-title-input" class="form-input-field" style="width:100%;">
+        </div>
+        <div class="form-group" style="margin-bottom:12px;">
+          <label class="form-label" for="edit-desc-input">Description</label>
+          <textarea id="edit-desc-input" class="textarea-field" style="width:100%;min-height:60px;"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tags</label>
+          <div class="tags-chip-input" id="edit-tags-container">
+            <div id="edit-tags-chips" class="tags-chips"></div>
+            <input type="text" id="edit-tags-input" class="form-input-field" placeholder="Type tag and press comma or Enter" autocomplete="off">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="edit-modal-cancel">Cancel</button>
+        <button class="btn btn-primary" id="edit-modal-save">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
   <style>
     @media (max-width: 896px) {
       .admin-menu-btn { display: flex !important; }
@@ -213,6 +244,9 @@
   <!-- ==================== SCRIPTS ==================== -->
   <!-- mockData.js: Mock data factory for prototype video data and tags -->
   <script src="../js/mockData.js"></script>
+  <!-- supabase.js + supabase-api.js: Backend integration layer (optional) -->
+  <script src="../js/supabase.js"></script>
+  <script src="../js/supabase-api.js"></script>
   <!-- main.js: Core app - theme toggling, toast notifications, URL utilities -->
   <script src="../js/main.js"></script>
   <!-- components.js: UI injectors - sidebar, navbar, footer, pagination -->

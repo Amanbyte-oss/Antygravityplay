@@ -34,14 +34,16 @@ document.addEventListener('DOMContentLoaded', () => {  // Register the DOMConten
       });  // End of the second .then() callback
   }  // End of the if/else protocol check block
   // -------- "Mark All Read" button --------
-  document.getElementById('mark-all-read-btn').addEventListener('click', () => {  // Attach a click event listener to the "Mark All Read" button element
+  var markAllBtn = document.getElementById('mark-all-read-btn');
+  if (markAllBtn) markAllBtn.addEventListener('click', () => {  // Attach a click event listener to the "Mark All Read" button element
     // Set every notification's read flag to true
     state.notifications.forEach(n => n.read = true);  // Iterate over every notification in the state array and set its read property to true (marking it as read)
     window.App.showToast('All notifications marked as read.');  // Display a success toast notification confirming the operation
     renderNotifications(state);  // Re-render the notifications list to reflect the updated read/unread states visually
   });  // End of the "Mark All Read" click event listener callback
   // -------- "Clear All" button (with confirmation) --------
-  document.getElementById('clear-all-btn').addEventListener('click', () => {  // Attach a click event listener to the "Clear All" button element
+  var clearAllBtn = document.getElementById('clear-all-btn');
+  if (clearAllBtn) clearAllBtn.addEventListener('click', () => {  // Attach a click event listener to the "Clear All" button element
     if (state.notifications.length === 0) return;  // Guard: if there are no notifications, exit early and do nothing since there's nothing to clear
     // Show a confirmation modal before deleting all
     window.App.showConfirmModal('Clear All Notifications', 'Are you sure you want to delete all notifications? This cannot be undone.', () => {  // Display a confirmation dialog asking the user to confirm the destructive action
@@ -105,6 +107,7 @@ function initNotifications(state) {  // Define the initialization function that 
  * @param {Object} state - The notifications state object
  */
 function renderNotifications(state) {  // Define the main render function that filters, paginates, and draws the notification list and pagination controls
+  var esc = function(s) { return String(s||'').replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]||c; }); };
   // DOM element references
   const list = document.getElementById('notifications-list');  // Get the DOM element that serves as the container for the notification item list
   const empty = document.getElementById('notifications-empty');  // Get the DOM element that displays the "no notifications" empty state message
@@ -136,13 +139,13 @@ function renderNotifications(state) {  // Define the main render function that f
     const readClass = n.read ? 'read' : 'unread';  // Determine the CSS class: 'read' if the notification's read flag is true, otherwise 'unread' for visual styling
     return `  // Return the HTML template string for a single notification list item using a template literal for dynamic values
       <div class="notification-item ${readClass}" data-id="${n.id}">  // Render the outer notification item div with dynamic class (read/unread) and data-id attribute for identification
-        <div class="notification-icon ${n.type}">${icon}</div>  // Render the notification icon div with the type-specific CSS class and the SVG icon HTML embedded inside
+        <div class="notification-icon ${esc(n.type)}">${icon}</div>  // Render the notification icon div with the type-specific CSS class and the SVG icon HTML embedded inside
         <div class="notification-content">  // Begin the notification content area containing the header and message
           <div class="notification-header">  // Begin the notification header row that holds the title and timestamp side by side
-            <span class="notification-title">${n.title}</span>  // Render the notification title inside a span with the appropriate CSS class
+            <span class="notification-title">${esc(n.title)}</span>  // Render the notification title inside a span with the appropriate CSS class
             <span class="notification-time">${timeAgo}</span>  // Render the human-readable relative time string inside a span
           </div>  // End of the notification header row
-          <div class="notification-message">${n.message}</div>  // Render the notification message text inside a div
+          <div class="notification-message">${esc(n.message)}</div>  // Render the notification message text inside a div
         </div>  // End of the notification content area
         <!-- Unread indicator dot (only visible for unread items) -->  // HTML comment indicating the purpose of the unread dot element
         <div class="notification-unread-dot"></div>  // Render the unread indicator dot that is visually shown when the notification is marked as unread
@@ -218,13 +221,15 @@ function renderPagination(state, totalItems, totalPages) {  // Define the pagina
   `;  // End of the pagination HTML template literal
   // Attach click handlers to prev/next/page buttons
   if (state.currentPage > 1) {  // Check if the current page is greater than 1 (previous page navigation is only possible if we are not on the first page)
-    document.getElementById('notif-prev').addEventListener('click', () => {  // Attach a click listener to the "previous page" button by its element ID
+    var notifPrev = document.getElementById('notif-prev');
+    if (notifPrev) notifPrev.addEventListener('click', () => {  // Attach a click listener to the "previous page" button by its element ID
       state.currentPage--;  // Decrement the current page number by 1 to navigate to the previous page
       renderNotifications(state);  // Re-render the notifications list to show the previous page's content
     });  // End of the previous page button click listener callback
   }  // End of the previous page condition block
   if (state.currentPage < totalPages) {  // Check if the current page is less than the total pages (next page navigation is only possible if we are not on the last page)
-    document.getElementById('notif-next').addEventListener('click', () => {  // Attach a click listener to the "next page" button by its element ID
+    var notifNext = document.getElementById('notif-next');
+    if (notifNext) notifNext.addEventListener('click', () => {  // Attach a click listener to the "next page" button by its element ID
       state.currentPage++;  // Increment the current page number by 1 to navigate to the next page
       renderNotifications(state);  // Re-render the notifications list to show the next page's content
     });  // End of the next page button click listener callback

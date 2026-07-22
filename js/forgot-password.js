@@ -77,6 +77,9 @@
   const subtitle = document.getElementById('fp-subtitle');
   // Reference to the subtitle text element for status updates
 
+  // Bail out if any critical DOM element is missing
+  if (!fullnameInput || !mothernameInput || !newPassInput || !confirmPassInput || !errorMsg || !subtitle) return;
+
   // ─── STEP 1: VERIFY IDENTITY ────────────────────────────
   // Handle the identity verification form submission
   if (verifyForm) {

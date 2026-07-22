@@ -7,25 +7,32 @@
 const TAG_PALETTE = ['#0070f3','#7928ca','#ff0080','#ffa42b','#50e3c2','#539df5','#1db954','#f3727f','#e91e63','#ff5722','#9c27b0','#00bcd4','#ff9800','#4caf50','#f44336','#3f51b5'];
 
 // ============================================================
+// Tag color helper - deterministic color from tag string
+// ============================================================
+function tagColor(str) {
+  var hash = 0;
+  for (var i = 0; i < str.length; i++) { hash = str.charCodeAt(i) + ((hash << 5) - hash); }
+  var colors = ['#0070f3','#7928ca','#ff0080','#ffa42b','#50e3c2','#539df5','#1db954','#f3727f','#e91e63','#ff5722','#9c27b0','#00bcd4','#ff9800','#4caf50','#f44336','#3f51b5'];
+  return colors[Math.abs(hash) % colors.length];
+}
+
+// ============================================================
 // Render tag pill HTML for a given video (used in card display)
 // ============================================================
 /**
- * Generates inline HTML for color-coded tag pills based on a video's tag IDs.
- * Resolves each tag ID to its full tag object to get name and color.
- * @param {Object} video - The video object containing a `tags` array of tag IDs
+ * Generates inline HTML for color-coded tag pills based on a video's tag strings.
+ * Each tag gets a deterministic color from its string.
+ * @param {Object} video - The video object containing a `tags` array of strings
  * @returns {string} HTML string of tag pill spans, or fallback text if no tags
  */
 function renderTagPills(video) {
-  // Fetch all tags from the data store
-  const allTags = window.App.getTags();
-  // Resolve each tag ID in the video's tags array to its corresponding tag object; filter out any that weren't found
-  const resolvedTags = (video.tags || []).map(tId => allTags.find(t => t.id === tId)).filter(Boolean);
-  // If no tags resolved, return an em dash fallback
-  if (resolvedTags.length === 0) return '<span class="tag-none">—</span>';
-  // Map each resolved tag to a colored pill span and join them with spaces
-  return resolvedTags.map(t =>
-    `<span class="card-tag" style="background-color:${t.color}18; color:${t.color};">${t.name}</span>`
-  ).join(' ');
+  var esc = function(s) { return String(s||'').replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]||c; }); };
+  var tags = video.tags || [];
+  if (tags.length === 0) return '<span class="tag-none">—</span>';
+  return tags.map(function(t) {
+    var c = tagColor(t);
+    return '<span class="card-tag" style="background-color:' + c + '18; color:' + c + ';">' + esc(t) + '</span>';
+  }).join(' ');
 }
 
 // ============================================================
@@ -68,6 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
  * @param {Object} state - The central state object for the videos page
  */
 function renderCards(state) {
+  var esc = function(s) { return String(s||'').replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]||c; }); };
   // Get the grid container and the count span from the DOM
   const grid = document.getElementById('videos-grid');
   const countSpan = document.getElementById('table-count-span');
@@ -131,14 +139,14 @@ function renderCards(state) {
 
     // Return the HTML template for a single video card
     return `
-      <div class="video-card" data-video-id="${vid.id}" style="animation-delay:${idx * 0.04}s">
+      <div class="video-card" data-video-id="${vid.id}">
         <!-- Checkbox for bulk selection -->
         <div class="video-card-check">
           <input type="checkbox" class="card-checkbox row-select-checkbox" data-id="${vid.id}" ${isChecked}>
         </div>
         <!-- Thumbnail with stats overlay (views and likes) -->
         <div class="video-card-thumb">
-          <img src="${vid.thumbnail}" alt="${vid.title}" loading="lazy">
+          <img src="${esc(vid.thumbnail)}" alt="${esc(vid.title)}" loading="lazy">
           <div class="video-card-stats">
             <span><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> ${Number(vid.views).toLocaleString()}</span>
             <span><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg> ${Number(vid.likes).toLocaleString()}</span>
@@ -148,7 +156,7 @@ function renderCards(state) {
         <div class="video-card-body">
           <div class="video-card-title">
             <!-- Clickable title that switches to an inline input field for editing -->
-            <div class="inline-editable edit-title" data-id="${vid.id}">${vid.title}</div>
+            <div class="inline-editable edit-title" data-id="${vid.id}">${esc(vid.title)}</div>
           </div>
           <div class="video-card-tags">
             <!-- Clickable tag display that opens an inline tag selector -->
@@ -157,13 +165,19 @@ function renderCards(state) {
           <div class="video-card-meta">
             <span class="video-card-date">${vid.publishDate}</span>
             <!-- Clickable status badge that switches to an inline select dropdown -->
-            <div class="inline-editable edit-status" data-id="${vid.id}" data-value="${vid.status}">
-              <span class="badge ${badgeClass}">${vid.status}</span>
+            <div class="inline-editable edit-status" data-id="${vid.id}" data-value="${esc(vid.status)}">
+              <span class="badge ${badgeClass}">${esc(vid.status)}</span>
             </div>
           </div>
         </div>
-        <!-- Delete action button -->
+        <!-- Action buttons -->
         <div class="video-card-actions">
+          <button class="card-action-btn edit-video-btn" data-id="${vid.id}" aria-label="Edit video" title="Edit">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+          </button>
           <button class="card-action-btn delete-btn" data-id="${vid.id}" aria-label="Delete video">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -241,17 +255,18 @@ function bindCardActions(state) {
   });
 
   // -------- Tags inline edit – single delegated close listener --------
-  // Track the currently active tag selector element so we can close it on outside click
-  let activeTagSelector = null;
-
-  // Global document click listener: if user clicks outside the active tag selector, close it
-  document.addEventListener('click', function closeTagSelector(ev) {
-    if (!activeTagSelector) return;  // No active selector, do nothing
-    if (!activeTagSelector.contains(ev.target)) {
-      renderCards(state);            // Re-render to close the selector
-      activeTagSelector = null;      // Clear the reference
-    }
-  });
+  if (!document._tagSelectorAttached) {
+    document._activeTagSelector = null;
+    document.addEventListener('click', function closeTagSelector(ev) {
+      const sel = document._activeTagSelector;
+      if (!sel) return;
+      if (!sel.contains(ev.target)) {
+        document._activeTagSelector = null;
+        renderCards(state);
+      }
+    });
+    document._tagSelectorAttached = true;
+  }
 
   // Attach click handler to each tag cell display area
   document.querySelectorAll('.tags-cell-display').forEach(el => {
@@ -269,13 +284,13 @@ function bindCardActions(state) {
       // Build the inline tag selector element
       const selector = document.createElement('div');
       selector.className = 'inline-tag-selector';
-      activeTagSelector = selector;  // Store reference for global close handler
+      document._activeTagSelector = selector;  // Store reference for global close handler
       // Generate HTML for each tag as a clickable pill (selected or unselected)
       selector.innerHTML = allTags.map(tag => {
         const isSelected = videoTags.includes(tag.id);
         return `
-          <span class="inline-tag-option ${isSelected ? 'selected' : ''}" data-tag-id="${tag.id}" style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:9999px;font-size:10px;cursor:pointer;border:1px solid ${tag.color};background-color:${isSelected ? tag.color : 'transparent'};color:${isSelected ? '#fff' : 'inherit'};">
-            ${tag.name}
+          <span class="inline-tag-option ${isSelected ? 'selected' : ''}" data-tag-id="${tag.id}" style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:9999px;font-size:10px;cursor:pointer;border:1px solid ${esc(tag.color)};background-color:${isSelected ? esc(tag.color) : 'transparent'};color:${isSelected ? '#fff' : 'inherit'};">
+            ${esc(tag.name)}
           </span>
         `;
       }).join('');
@@ -406,27 +421,53 @@ function bindCardActions(state) {
     });
   });
 
-  // -------- Delete button --------
-  // For each delete button, show a confirmation modal before deleting
+  // -------- Delete button (handles Supabase + localStorage) --------
   document.querySelectorAll('.delete-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
-      e.stopPropagation();  // Prevent event from bubbling up
-      const videoId = btn.dataset.id;  // Get video ID from data attribute
+      e.stopPropagation();
+      const videoId = btn.dataset.id;
       const video = state.videos.find(v => v.id === videoId);
-      // Show confirmation modal with the video title
       window.App.showConfirmModal(
         'Delete Video',
         `Are you sure you want to permanently delete "${video.title}"? This action cannot be undone.`,
-        () => {
-          // Remove the video from state
+        async () => {
+          // Supabase cleanup: delete storage files + DB row
+          if (window.__supabase && video) {
+            // Delete thumbnail from storage
+            if (video.thumbnail_url || video.thumbnail) {
+              const thumbUrl = video.thumbnail_url || video.thumbnail;
+              const thumbPath = window.SupabaseStorage.pathFromUrl('thumbnails', thumbUrl);
+              if (thumbPath) await window.SupabaseStorage.deleteFile('thumbnails', thumbPath);
+            }
+            // Delete video file from storage
+            if (video.video_url || video.videoUrl) {
+              const vidUrl = video.video_url || video.videoUrl;
+              const vidPath = window.SupabaseStorage.pathFromUrl('videos', vidUrl);
+              if (vidPath) await window.SupabaseStorage.deleteFile('videos', vidPath);
+            }
+            // Delete DB row
+            await window.SupabaseVideos.remove(videoId);
+          }
+
+          // Local state cleanup
           state.videos = state.videos.filter(v => v.id !== videoId);
-          window.App.saveVideos(state.videos);  // Persist changes
-          // Also remove from selected IDs if it was selected
+          window.App.saveVideos(state.videos);
           state.selectedIds = state.selectedIds.filter(id => id !== videoId);
           window.App.showToast('Video deleted successfully.');
-          renderCards(state);  // Re-render the grid
+          renderCards(state);
         }
       );
+    });
+  });
+
+  // -------- Edit video button --------
+  document.querySelectorAll('.edit-video-btn').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var videoId = btn.dataset.id;
+      var video = state.videos.find(function(v) { return v.id === videoId; });
+      if (!video) return;
+      openEditModal(video, state);
     });
   });
 
@@ -565,18 +606,33 @@ function setupBulkActions(state) {
   const deleteSelectedBtn = document.getElementById('delete-selected-btn');
   if (!deleteSelectedBtn) return;  // Guard: exit if element not found
   deleteSelectedBtn.addEventListener('click', () => {
-    if (state.selectedIds.length === 0) return;  // Nothing selected, do nothing
-    // Show a confirmation modal before performing the bulk delete
+    if (state.selectedIds.length === 0) return;
     window.App.showConfirmModal(
       'Delete Selected Videos',
       `Are you sure you want to permanently delete the ${state.selectedIds.length} selected videos? This cannot be undone.`,
-      () => {
-        // Filter out all videos whose IDs are in selectedIds
+      async () => {
+        // Supabase cleanup: delete files + DB rows
+        if (window.__supabase) {
+          for (const id of state.selectedIds) {
+            const video = state.videos.find(v => v.id === id);
+            if (!video) continue;
+            if (video.thumbnail_url || video.thumbnail) {
+              const p = window.SupabaseStorage.pathFromUrl('thumbnails', video.thumbnail_url || video.thumbnail);
+              if (p) await window.SupabaseStorage.deleteFile('thumbnails', p);
+            }
+            if (video.video_url || video.videoUrl) {
+              const p = window.SupabaseStorage.pathFromUrl('videos', video.video_url || video.videoUrl);
+              if (p) await window.SupabaseStorage.deleteFile('videos', p);
+            }
+          }
+          await window.SupabaseVideos.removeMany(state.selectedIds);
+        }
+
         state.videos = state.videos.filter(v => !state.selectedIds.includes(v.id));
-        window.App.saveVideos(state.videos);  // Persist the change
-        state.selectedIds = [];                 // Clear selection
+        window.App.saveVideos(state.videos);
+        state.selectedIds = [];
         window.App.showToast('Selected videos deleted successfully.');
-        renderCards(state);  // Re-render the grid
+        renderCards(state);
       }
     );
   });
@@ -631,14 +687,16 @@ function renderPaginationControls(state, totalPages, totalFiltered) {
 
   // Attach click handler to previous page button (only if not on first page)
   if (state.currentPage > 1) {
-    document.getElementById('prev-page-btn').addEventListener('click', () => {
+    var prevBtn = document.getElementById('prev-page-btn');
+    if (prevBtn) prevBtn.addEventListener('click', () => {
       state.currentPage--;          // Decrement page
       renderCards(state);            // Re-render
     });
   }
   // Attach click handler to next page button (only if not on last page)
   if (state.currentPage < totalPages) {
-    document.getElementById('next-page-btn').addEventListener('click', () => {
+    var nextBtn = document.getElementById('next-page-btn');
+    if (nextBtn) nextBtn.addEventListener('click', () => {
       state.currentPage++;          // Increment page
       renderCards(state);            // Re-render
     });
@@ -650,4 +708,117 @@ function renderPaginationControls(state, totalPages, totalFiltered) {
       renderCards(state);                              // Re-render
     });
   });
+}
+
+// ============================================================
+// Edit Video Modal - open, chip input, save, close
+// ============================================================
+
+var _editModalEsc = function(s) { return String(s||'').replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]||c; }); };
+
+function openEditModal(video, state) {
+  var titleInput = document.getElementById('edit-title-input');
+  var descInput = document.getElementById('edit-desc-input');
+  var chipsContainer = document.getElementById('edit-tags-chips');
+  var tagInput = document.getElementById('edit-tags-input');
+  if (!titleInput || !descInput || !chipsContainer || !tagInput) return;
+
+  titleInput.value = video.title || '';
+  descInput.value = video.description || '';
+
+  chipsContainer.innerHTML = '';
+  (video.tags || []).forEach(function(t) {
+    var chip = document.createElement('span');
+    chip.className = 'tag-chip';
+    chip.innerHTML = _editModalEsc(t) + '<span class="tag-chip-remove">&times;</span>';
+    chip.querySelector('.tag-chip-remove').addEventListener('click', function(e) { e.stopPropagation(); chip.remove(); });
+    chipsContainer.appendChild(chip);
+  });
+
+  if (!tagInput._editChipInit) {
+    tagInput._editChipInit = true;
+    var container = document.getElementById('edit-tags-container');
+    if (container) {
+      container.addEventListener('click', function(e) { if (e.target === container) tagInput.focus(); });
+    }
+    tagInput.addEventListener('keydown', function(e) {
+      if (e.key === ',' || e.key === 'Enter') {
+        e.preventDefault();
+        var parts = tagInput.value.split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+        parts.forEach(function(name) {
+          var dup = false;
+          chipsContainer.querySelectorAll('.tag-chip').forEach(function(c) {
+            if (c.dataset.tag === name.toLowerCase()) dup = true;
+          });
+          if (dup) return;
+          var chip = document.createElement('span');
+          chip.className = 'tag-chip';
+          chip.dataset.tag = name.toLowerCase();
+          chip.innerHTML = _editModalEsc(name) + '<span class="tag-chip-remove">&times;</span>';
+          chip.querySelector('.tag-chip-remove').addEventListener('click', function(ev) { ev.stopPropagation(); chip.remove(); });
+          chipsContainer.appendChild(chip);
+        });
+        tagInput.value = '';
+      }
+    });
+  }
+
+  var modal = document.getElementById('edit-video-modal');
+  if (modal) modal.classList.add('active');
+
+  function onSave() {
+    var newTitle = titleInput.value.trim();
+    var newDesc = descInput.value.trim();
+    if (!newTitle) { window.App.showToast('Title is required.', 'error'); return; }
+
+    var newTags = [];
+    chipsContainer.querySelectorAll('.tag-chip').forEach(function(c) {
+      var text = c.firstChild.textContent || '';
+      if (text) newTags.push(text.trim());
+    });
+
+    video.title = newTitle;
+    video.description = newDesc;
+    video.tags = newTags;
+
+    window.App.saveVideos(state.videos);
+
+    if (window.__supabase) {
+      window.SupabaseVideos.update(video.id, { title: newTitle, description: newDesc, tags: newTags })
+        .catch(function(err) { console.error('Supabase update failed:', err); });
+    }
+
+    window.App.showToast('Video updated successfully.', 'success');
+    if (modal) modal.classList.remove('active');
+    renderCards(state);
+  }
+
+  function closeModal() {
+    if (modal) modal.classList.remove('active');
+  }
+
+  var saveBtn = document.getElementById('edit-modal-save');
+  var cancelBtn = document.getElementById('edit-modal-cancel');
+  var closeBtn = document.getElementById('edit-modal-close');
+
+  if (saveBtn) {
+    var newSave = saveBtn.cloneNode(true);
+    saveBtn.parentNode.replaceChild(newSave, saveBtn);
+    newSave.addEventListener('click', onSave);
+  }
+  if (cancelBtn) {
+    var newCancel = cancelBtn.cloneNode(true);
+    cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
+    newCancel.addEventListener('click', closeModal);
+  }
+  if (closeBtn) {
+    var newClose = closeBtn.cloneNode(true);
+    closeBtn.parentNode.replaceChild(newClose, closeBtn);
+    newClose.addEventListener('click', closeModal);
+  }
+  if (modal) {
+    var newModal = modal.cloneNode(true);
+    modal.parentNode.replaceChild(newModal, modal);
+    newModal.addEventListener('click', function(e) { if (e.target === newModal) closeModal(); });
+  }
 }

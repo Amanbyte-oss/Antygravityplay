@@ -41,7 +41,7 @@ function initTabs() {
       tab.classList.add('active');
       tab.setAttribute('aria-selected', 'true');
       const target = tab.dataset.tab;  // e.g., "general", "appearance"
-      document.getElementById('panel-' + target).classList.add('active');
+      var panel = document.getElementById('panel-' + target); if (panel) panel.classList.add('active');
       // Update the URL hash so the tab can be bookmarked
       window.location.hash = '#' + target;
     });
@@ -64,7 +64,8 @@ function initTabs() {
  */
 function loadSettings() {
   // Load main settings object
-  const settings = JSON.parse(localStorage.getItem('admin-settings') || '{}');
+  let settings = {};
+  try { settings = JSON.parse(localStorage.getItem('admin-settings') || '{}'); } catch (_) {}
 
   // -------- Theme selection --------
   // Get the current theme from localStorage, defaulting to 'dark'
@@ -100,13 +101,13 @@ function loadSettings() {
     // Map string names to slider values if needed
     const sizeMap = { small: '0', medium: '1', large: '2' };
     const val = sizeMap[settings.fontSize] !== undefined ? sizeMap[settings.fontSize] : String(settings.fontSize);
-    document.getElementById('font-size-slider').value = val;
+    var fontSizeSlider = document.getElementById('font-size-slider'); if (fontSizeSlider) fontSizeSlider.value = val;
     updateFontSizePreview(val);  // Apply the font size to CSS variables
   }
 
   // -------- Reduced motion toggle --------
   if (settings.reducedMotion !== undefined) {
-    document.getElementById('reduced-motion-toggle').checked = settings.reducedMotion;
+    var reducedMotionToggle = document.getElementById('reduced-motion-toggle'); if (reducedMotionToggle) reducedMotionToggle.checked = settings.reducedMotion;
   }
 
   // -------- Notification toggles --------
@@ -119,15 +120,16 @@ function loadSettings() {
   });
 
   // -------- Admin profile --------
-  const profile = JSON.parse(localStorage.getItem('admin-profile') || '{}');
-  if (profile.name) document.getElementById('admin-name-input').value = profile.name;
-  if (profile.email) document.getElementById('admin-email-input').value = profile.email;
-  if (profile.bio) document.getElementById('admin-bio-input').value = profile.bio;
+  let profile = {};
+  try { profile = JSON.parse(localStorage.getItem('admin-profile') || '{}'); } catch (_) {}
+  if (profile.name) { var el = document.getElementById('admin-name-input'); if (el) el.value = profile.name; }
+  if (profile.email) { var el = document.getElementById('admin-email-input'); if (el) el.value = profile.email; }
+  if (profile.bio) { var el = document.getElementById('admin-bio-input'); if (el) el.value = profile.bio; }
   // If an avatar was saved, display it
   if (profile.avatar) {
-    document.getElementById('avatar-img').src = profile.avatar;
-    document.getElementById('avatar-img').style.display = 'block';
-    document.querySelector('.avatar-placeholder').style.display = 'none';
+    var avatarImg = document.getElementById('avatar-img'); var avatarPlaceholder = document.querySelector('.avatar-placeholder');
+    if (avatarImg) { avatarImg.src = profile.avatar; avatarImg.style.display = 'block'; }
+    if (avatarPlaceholder) avatarPlaceholder.style.display = 'none';
   }
 }
 
@@ -176,18 +178,24 @@ function bindSettingsEvents() {
   });
 
   // -------- Font size slider --------
-  document.getElementById('font-size-slider').addEventListener('input', function() {
-    updateFontSizePreview(this.value);  // Update preview immediately
-    saveSetting('fontSize', this.value);  // Persist
-  });
+  var fontSizeSlider = document.getElementById('font-size-slider');
+  if (fontSizeSlider) {
+    fontSizeSlider.addEventListener('input', function() {
+      updateFontSizePreview(this.value);  // Update preview immediately
+      saveSetting('fontSize', this.value);  // Persist
+    });
+  }
 
   // -------- Reduced motion toggle --------
-  document.getElementById('reduced-motion-toggle').addEventListener('change', function() {
-    saveSetting('reducedMotion', this.checked);
-    // If enabled, set transitions to 0s instantly; otherwise reset to defaults
-    document.documentElement.style.setProperty('--transition-base', this.checked ? '0s' : '');
-    document.documentElement.style.setProperty('--transition-fast', this.checked ? '0s' : '');
-  });
+  var reducedMotionToggle = document.getElementById('reduced-motion-toggle');
+  if (reducedMotionToggle) {
+    reducedMotionToggle.addEventListener('change', function() {
+      saveSetting('reducedMotion', this.checked);
+      // If enabled, set transitions to 0s instantly; otherwise reset to defaults
+      document.documentElement.style.setProperty('--transition-base', this.checked ? '0s' : '');
+      document.documentElement.style.setProperty('--transition-fast', this.checked ? '0s' : '');
+    });
+  }
 
   // -------- Notification type toggles --------
   document.querySelectorAll('.notif-toggle').forEach(toggle => {
@@ -201,60 +209,68 @@ function bindSettingsEvents() {
   });
 
   // -------- Save Profile button --------
-  document.getElementById('save-profile-btn').addEventListener('click', () => {
-    const name = document.getElementById('admin-name-input').value.trim();
-    const email = document.getElementById('admin-email-input').value.trim();
-    const bio = document.getElementById('admin-bio-input').value.trim();
-    // Validate required fields
-    if (!name) {
-      window.App.showToast('Admin name is required.', 'error');
-      return;
-    }
-    if (!email || !email.includes('@')) {
-      window.App.showToast('A valid email is required.', 'error');
-      return;
-    }
-    const profile = JSON.parse(localStorage.getItem('admin-profile') || '{}');
-    profile.name = name;
-    profile.email = email;
-    profile.bio = bio;
-    try {
-      localStorage.setItem('admin-profile', JSON.stringify(profile));
-      localStorage.setItem('admin-name', name);
-      // Also update the mock users data with the new email
-      const users = window.MOCK_USERS;
-      users[0].email = email;
-      localStorage.setItem('mock-users', JSON.stringify(users));
-    } catch (e) {
-      window.App.showToast('Unable to save profile. Storage may be full.', 'error');
-      return;
-    }
-    window.App.showToast('Profile saved successfully.');
-  });
+  var saveProfileBtn = document.getElementById('save-profile-btn');
+  if (saveProfileBtn) {
+    saveProfileBtn.addEventListener('click', () => {
+      var adminNameInput = document.getElementById('admin-name-input'); var adminEmailInput = document.getElementById('admin-email-input'); var adminBioInput = document.getElementById('admin-bio-input');
+      if (!adminNameInput || !adminEmailInput || !adminBioInput) return;
+      const name = adminNameInput.value.trim();
+      const email = adminEmailInput.value.trim();
+      const bio = adminBioInput.value.trim();
+      // Validate required fields
+      if (!name) {
+        window.App.showToast('Admin name is required.', 'error');
+        return;
+      }
+      if (!email || !email.includes('@')) {
+        window.App.showToast('A valid email is required.', 'error');
+        return;
+      }
+      const profile = JSON.parse(localStorage.getItem('admin-profile') || '{}');
+      profile.name = name;
+      profile.email = email;
+      profile.bio = bio;
+      try {
+        localStorage.setItem('admin-profile', JSON.stringify(profile));
+        localStorage.setItem('admin-name', name);
+        // Also update the mock users data with the new email
+        const users = window.MOCK_USERS;
+        users[0].email = email;
+        localStorage.setItem('mock-users', JSON.stringify(users));
+      } catch (e) {
+        window.App.showToast('Unable to save profile. Storage may be full.', 'error');
+        return;
+      }
+      window.App.showToast('Profile saved successfully.');
+    });
+  }
 
   // -------- Avatar file upload --------
-  document.getElementById('avatar-file-input').addEventListener('change', function() {
-    if (this.files.length > 0) {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        // Display the uploaded image as the avatar
-        document.getElementById('avatar-img').src = e.target.result;
-        document.getElementById('avatar-img').style.display = 'block';
-        document.querySelector('.avatar-placeholder').style.display = 'none';
-        // Save the avatar data URL to the profile in localStorage
-        const profile = JSON.parse(localStorage.getItem('admin-profile') || '{}');
-        profile.avatar = e.target.result;
-        try {
-          localStorage.setItem('admin-profile', JSON.stringify(profile));
-        } catch (e) {
-          window.App.showToast('Avatar too large to save.', 'error');
-          return;
-        }
-        window.App.showToast('Avatar updated.');
-      };
-      reader.readAsDataURL(this.files[0]);  // Read as base64 data URL
-    }
-  });
+  var avatarFileInput = document.getElementById('avatar-file-input');
+  if (avatarFileInput) {
+    avatarFileInput.addEventListener('change', function() {
+      if (this.files.length > 0) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          // Display the uploaded image as the avatar
+          var avatarImg = document.getElementById('avatar-img'); var avatarPlaceholder = document.querySelector('.avatar-placeholder');
+          if (avatarImg) { avatarImg.src = e.target.result; avatarImg.style.display = 'block'; }
+          if (avatarPlaceholder) avatarPlaceholder.style.display = 'none';
+          // Save the avatar data URL to the profile in localStorage
+          const profile = JSON.parse(localStorage.getItem('admin-profile') || '{}');
+          profile.avatar = e.target.result;
+          try {
+            localStorage.setItem('admin-profile', JSON.stringify(profile));
+          } catch (e) {
+            window.App.showToast('Avatar too large to save.', 'error');
+            return;
+          }
+          window.App.showToast('Avatar updated.');
+        };
+        reader.readAsDataURL(this.files[0]);  // Read as base64 data URL
+      }
+    });
+  }
 
   // -------- Sync theme radio cards when theme is changed externally (e.g., navbar toggle) --------
   window.addEventListener('themechanged', (e) => {
@@ -289,7 +305,7 @@ function updateFontSizePreview(val) {
   ['--text-xs', '--text-sm', '--text-md', '--text-lg', '--text-xl', '--text-2xl'].forEach(prop => {
     document.documentElement.style.setProperty(prop, sizes[idx]);
   });
-  document.getElementById('font-size-label').textContent = labels[idx];
+  var fontSizeLabel = document.getElementById('font-size-label'); if (fontSizeLabel) fontSizeLabel.textContent = labels[idx];
 }
 
 // ============================================================
@@ -333,41 +349,62 @@ function saveSetting(key, value) {
  */
 function bindDangerZone() {
   // "Clear All Data" button → show the confirmation modal
-  document.getElementById('clear-all-btn').addEventListener('click', () => {
-    const modal = document.getElementById('danger-modal-overlay');
-    modal.classList.add('active');
-    document.getElementById('danger-confirm-input').value = '';  // Reset input
-    document.getElementById('danger-proceed-btn').disabled = true;  // Disable proceed
-  });
+  var clearAllBtn = document.getElementById('clear-all-btn');
+  if (clearAllBtn) {
+    clearAllBtn.addEventListener('click', () => {
+      const modal = document.getElementById('danger-modal-overlay');
+      if (modal) modal.classList.add('active');
+      var confirmInput = document.getElementById('danger-confirm-input'); if (confirmInput) confirmInput.value = '';  // Reset input
+      var proceedBtn = document.getElementById('danger-proceed-btn'); if (proceedBtn) proceedBtn.disabled = true;  // Disable proceed
+    });
+  }
 
   // Confirmation input: enable proceed only when user types "DELETE"
-  document.getElementById('danger-confirm-input').addEventListener('input', function() {
-    document.getElementById('danger-proceed-btn').disabled = this.value !== 'DELETE';
-  });
+  var dangerConfirmInput = document.getElementById('danger-confirm-input');
+  if (dangerConfirmInput) {
+    dangerConfirmInput.addEventListener('input', function() {
+      var proceedBtn = document.getElementById('danger-proceed-btn'); if (proceedBtn) proceedBtn.disabled = this.value !== 'DELETE';
+    });
+  }
 
   // Cancel button → close modal
-  document.getElementById('cancel-danger-btn').addEventListener('click', () => {
-    document.getElementById('danger-modal-overlay').classList.remove('active');
-  });
+  var cancelDangerBtn = document.getElementById('cancel-danger-btn');
+  if (cancelDangerBtn) {
+    cancelDangerBtn.addEventListener('click', () => {
+      var overlay = document.getElementById('danger-modal-overlay'); if (overlay) overlay.classList.remove('active');
+    });
+  }
 
   // Modal X close button → close modal
-  document.getElementById('danger-modal-overlay').querySelector('.modal-close').addEventListener('click', () => {
-    document.getElementById('danger-modal-overlay').classList.remove('active');
-  });
+  var dangerModalOverlay = document.getElementById('danger-modal-overlay');
+  if (dangerModalOverlay) {
+    var modalClose = dangerModalOverlay.querySelector('.modal-close');
+    if (modalClose) {
+      modalClose.addEventListener('click', () => {
+        dangerModalOverlay.classList.remove('active');
+      });
+    }
+  }
 
   // Click on backdrop (outside modal content) → close modal
-  document.getElementById('danger-modal-overlay').addEventListener('click', (e) => {
-    if (e.target === e.currentTarget) document.getElementById('danger-modal-overlay').classList.remove('active');
-  });
+  var dangerModalOverlay2 = document.getElementById('danger-modal-overlay');
+  if (dangerModalOverlay2) {
+    dangerModalOverlay2.addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) dangerModalOverlay2.classList.remove('active');
+    });
+  }
 
   // Proceed button → clear all video and tag data, then reload
-  document.getElementById('danger-proceed-btn').addEventListener('click', () => {
-    localStorage.removeItem('db-videos');  // Remove all videos from localStorage
-    localStorage.removeItem('db-tags');     // Remove all tags from localStorage
-    window.App.showToast('All data cleared successfully. Refreshing...');
-    document.getElementById('danger-modal-overlay').classList.remove('active');
-    setTimeout(() => location.reload(), 1000);  // Reload the page after 1 second
-  });
+  var dangerProceedBtn = document.getElementById('danger-proceed-btn');
+  if (dangerProceedBtn) {
+    dangerProceedBtn.addEventListener('click', () => {
+      localStorage.removeItem('db-videos');  // Remove all videos from localStorage
+      localStorage.removeItem('db-tags');     // Remove all tags from localStorage
+      window.App.showToast('All data cleared successfully. Refreshing...');
+      var overlay = document.getElementById('danger-modal-overlay'); if (overlay) overlay.classList.remove('active');
+      setTimeout(() => location.reload(), 1000);  // Reload the page after 1 second
+    });
+  }
 }
 
 // ============================================================
@@ -379,52 +416,58 @@ function bindDangerZone() {
  */
 function bindImportExport() {
   // -------- Export All Data --------
-  document.getElementById('export-all-btn').addEventListener('click', () => {
-    // Collect all data into one object
-    const data = {
-      videos: window.App.getVideos(),
-      tags: JSON.parse(localStorage.getItem('db-tags') || '[]'),
-      settings: JSON.parse(localStorage.getItem('admin-settings') || '{}'),
-      profile: JSON.parse(localStorage.getItem('admin-profile') || '{}'),
-      exportedAt: new Date().toISOString()  // Timestamp of export
-    };
-    // Create a downloadable Blob and trigger the download
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'antigravity-export.json';
-    a.click();
-    URL.revokeObjectURL(url);  // Clean up the object URL
-    window.App.showToast('All data exported.');
-  });
+  var exportAllBtn = document.getElementById('export-all-btn');
+  if (exportAllBtn) {
+    exportAllBtn.addEventListener('click', () => {
+      // Collect all data into one object
+      const data = {
+        videos: window.App.getVideos(),
+        tags: JSON.parse(localStorage.getItem('db-tags') || '[]'),
+        settings: JSON.parse(localStorage.getItem('admin-settings') || '{}'),
+        profile: JSON.parse(localStorage.getItem('admin-profile') || '{}'),
+        exportedAt: new Date().toISOString()  // Timestamp of export
+      };
+      // Create a downloadable Blob and trigger the download
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'antigravity-export.json';
+      a.click();
+      URL.revokeObjectURL(url);  // Clean up the object URL
+      window.App.showToast('All data exported.');
+    });
+  }
 
   // -------- Import Data --------
-  document.getElementById('import-file-input').addEventListener('change', function() {
-    if (this.files.length === 0) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      try {
-        const data = JSON.parse(e.target.result);  // Parse the uploaded JSON
-        // Validate the data structure
-        if (!data || typeof data !== 'object') throw new Error('Invalid data');
-        // Import videos array if present
-        if (data.videos !== undefined) {
-          if (!Array.isArray(data.videos)) throw new Error('videos must be an array');
-          localStorage.setItem('db-videos', JSON.stringify(data.videos));
+  var importFileInput = document.getElementById('import-file-input');
+  if (importFileInput) {
+    importFileInput.addEventListener('change', function() {
+      if (this.files.length === 0) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = JSON.parse(e.target.result);  // Parse the uploaded JSON
+          // Validate the data structure
+          if (!data || typeof data !== 'object') throw new Error('Invalid data');
+          // Import videos array if present
+          if (data.videos !== undefined) {
+            if (!Array.isArray(data.videos)) throw new Error('videos must be an array');
+            localStorage.setItem('db-videos', JSON.stringify(data.videos));
+          }
+          // Import tags array if present
+          if (data.tags !== undefined) {
+            if (!Array.isArray(data.tags)) throw new Error('tags must be an array');
+            localStorage.setItem('db-tags', JSON.stringify(data.tags));
+          }
+          window.App.showToast('Data imported successfully. Refresh to see changes.');
+        } catch (err) {
+          // Show a user-friendly error message
+          window.App.showToast(err.message === 'Invalid data' || err.message.includes('must be') ? err.message : 'Invalid JSON file.', 'error');
         }
-        // Import tags array if present
-        if (data.tags !== undefined) {
-          if (!Array.isArray(data.tags)) throw new Error('tags must be an array');
-          localStorage.setItem('db-tags', JSON.stringify(data.tags));
-        }
-        window.App.showToast('Data imported successfully. Refresh to see changes.');
-      } catch (err) {
-        // Show a user-friendly error message
-        window.App.showToast(err.message === 'Invalid data' || err.message.includes('must be') ? err.message : 'Invalid JSON file.', 'error');
-      }
-    };
-    reader.readAsText(this.files[0]);  // Read file as text
-    this.value = '';  // Reset the file input so the same file can be re-selected
-  });
+      };
+      reader.readAsText(this.files[0]);  // Read file as text
+      this.value = '';  // Reset the file input so the same file can be re-selected
+    });
+  }
 }

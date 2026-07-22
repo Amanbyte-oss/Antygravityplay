@@ -95,18 +95,6 @@
   margin-top: 2px;
 }
 
-/* --- CANVAS WRAPPER: responsive container for Chart.js canvas --- */
-.chart-canvas-wrapper {
-  position: relative;
-  width: 100%;
-}
-
-/* --- CANVAS: force full width/height for responsive charts --- */
-.chart-canvas-wrapper canvas {
-  width: 100% !important;
-  height: 100% !important;
-}
-
 /* --- CHART LEGEND: row of color-coded label pills below chart --- */
 .chart-legend {
   display: flex;

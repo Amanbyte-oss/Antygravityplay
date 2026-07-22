@@ -244,6 +244,55 @@ const PLATFORMS = {
     getThumbnailUrl() { return null; }
   },
 
+  // -------- Pornhub --------
+  pornhub: {
+    id:'pornhub', name:'Pornhub', icon:'🔥', color:'#FF9900',
+    placeholder:'Paste Pornhub URL… (pornhub.com/view_video.php?viewkey=…)',
+    parseUrl(url) {
+      const m = url.match(/pornhub\.com\/(?:view_video\.php\?viewkey=|embed\/|video\/)([a-zA-Z0-9]+)/);
+      if (m) return m[1];
+      const m2 = url.match(/[?&]viewkey=([a-zA-Z0-9]+)/);
+      return m2 ? m2[1] : null;
+    },
+    getEmbedUrl(id) { return `https://www.pornhub.com/embed/${id}`; },
+    getVideoUrl(id) { return `https://www.pornhub.com/view_video.php?viewkey=${id}`; },
+    getThumbnailUrl() { return null; },
+    fetchMetadata(id, cb) {
+      const url = `https://www.pornhub.com/embed/${id}`;
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.src = url;
+      iframe.onload = function() {
+        try {
+          const doc = iframe.contentDocument || iframe.contentWindow.document;
+          const titleEl = doc.querySelector('meta[property="og:title"]') || doc.querySelector('title');
+          const thumbEl = doc.querySelector('meta[property="og:image"]');
+          const descEl = doc.querySelector('meta[property="og:description"]');
+          cb(null, {
+            title: titleEl ? titleEl.getAttribute('content') || titleEl.textContent : '',
+            thumbnail_url: thumbEl ? thumbEl.getAttribute('content') : '',
+            author_name: 'Pornhub',
+            description: descEl ? descEl.getAttribute('content') : ''
+          });
+        } catch(e) {
+          cb(null, { title: '', thumbnail_url: '', author_name: 'Pornhub', description: '' });
+        }
+        iframe.remove();
+      };
+      iframe.onerror = function() {
+        cb(null, { title: '', thumbnail_url: '', author_name: 'Pornhub', description: '' });
+        iframe.remove();
+      };
+      document.body.appendChild(iframe);
+      setTimeout(function() {
+        if (iframe.parentNode) {
+          iframe.remove();
+          cb(null, { title: '', thumbnail_url: '', author_name: 'Pornhub', description: '' });
+        }
+      }, 5000);
+    }
+  },
+
   // -------- Google Drive --------
   googledrive: {
     id:'googledrive', name:'Google Drive', icon:'▣', color:'#4285F4',
@@ -352,25 +401,20 @@ document.addEventListener('DOMContentLoaded', () => {
   // Inject the admin sidebar, highlighting "upload" as active
   window.Components.injectAdminSidebar('upload');
 
-  // Array to hold selected tag IDs for the current video
-  const selectedTags = [];
-
   // Set up tab switching (e.g., "Upload", "Details", "Tags")
   setupTabs();
   // Render the platform selector buttons (YouTube, Vimeo, etc.)
   renderPlatformSelector();
   // Set up the URL input, load/clear buttons, and paste detection
   setupPlatformInput();
-  // Render clickable existing tag pills and handle their selection
-  setupExistingTags(selectedTags);
-  // Set up the custom tag creator (input + add button)
-  setupCustomTagCreator(selectedTags);
   // Set up the thumbnail file upload box
   setupThumbnailUpload();
   // Render the recently loaded videos history bar
   renderRecentHistory();
+  // Set up the chip-based tag input
+  initTagChips();
   // Set up the final form submission handler
-  setupFormSubmission(selectedTags);
+  setupFormSubmission();
 });
 
 // ============================================================
@@ -430,17 +474,14 @@ function switchPlatform(pid) {
 
   const plat = PLATFORMS[pid];
   const urlSection = document.getElementById('platform-url-section');
-  const iframeSection = document.getElementById('platform-iframe-section');
   const input = document.getElementById('platform-url-input');
 
-  // If the platform is "Embed Code" (iframe), show the textarea; otherwise show the URL input
+  // Hide the URL section for "Embed Code" platform; show for all others
   if (plat.isIframe) {
-    urlSection.style.display = 'none';
-    iframeSection.classList.remove('hidden');
+    if (urlSection) urlSection.style.display = 'none';
   } else {
-    urlSection.style.display = '';
-    iframeSection.classList.add('hidden');
-    input.placeholder = plat.placeholder;  // Set the platform-specific placeholder
+    if (urlSection) urlSection.style.display = '';
+    if (input) input.placeholder = plat.placeholder;
   }
 }
 
@@ -455,6 +496,8 @@ function setupPlatformInput() {
   const clearBtn = document.getElementById('clear-video-btn');       // "Clear" button
   const iframeInput = document.getElementById('iframe-code-input'); // Textarea for iframe embed code
   const loadIframeBtn = document.getElementById('load-iframe-btn');  // "Load" button for iframe
+
+  if (!input || !loadBtn) return;
 
   // Clicking the "Load Video" button triggers loadVideo with the current platform and URL value
   loadBtn.addEventListener('click', () => loadVideo(currentPlatform, input.value));
@@ -471,15 +514,15 @@ function setupPlatformInput() {
   });
 
   // Load iframe embed code when the iframe load button is clicked
-  loadIframeBtn.addEventListener('click', () => loadVideo('iframe', iframeInput.value));
+  if (loadIframeBtn && iframeInput) loadIframeBtn.addEventListener('click', () => loadVideo('iframe', iframeInput.value));
 
   // Ctrl+Enter in the iframe textarea also triggers loading
-  iframeInput.addEventListener('keydown', e => {
+  if (iframeInput) iframeInput.addEventListener('keydown', e => {
     if (e.key === 'Enter' && e.ctrlKey) { e.preventDefault(); loadVideo('iframe', iframeInput.value); }
   });
 
   // Clear button resets the current video state
-  clearBtn.addEventListener('click', clearVideo);
+  if (clearBtn) clearBtn.addEventListener('click', clearVideo);
 
   // Set the initial placeholder text for the URL input based on the default platform
   input.placeholder = PLATFORMS[currentPlatform].placeholder;
@@ -505,6 +548,8 @@ function loadVideo(platformId, rawInput) {
   const input = document.getElementById('platform-url-input');
   const clearBtn = document.getElementById('clear-video-btn');
   const submitBtn = document.getElementById('submit-btn');
+
+  if (!errorEl || !input) return;
 
   // Clear any previous error state
   errorEl.textContent = '';
@@ -538,6 +583,13 @@ function loadVideo(platformId, rawInput) {
 
   // Step 4: Update all module-level state variables with the new video info
   currentPlatform = platformId;
+  // Highlight the active platform button (important when loading via iframe textarea)
+  document.querySelectorAll('.platform-btn').forEach(function(b) {
+    b.classList.toggle('active', b.dataset.platform === platformId);
+  });
+  // Show/hide URL section based on platform type
+  var urlSec = document.getElementById('platform-url-section');
+  if (urlSec) urlSec.style.display = plat.isIframe ? 'none' : '';
   currentVideoId = parsed;
   currentEmbedUrl = embedUrl;
   currentVideoUrl = plat.getVideoUrl(parsed, rawInput.trim()) || embedUrl;
@@ -547,15 +599,17 @@ function loadVideo(platformId, rawInput) {
   // Step 5: Render the embed preview (iframe or fallback for file:// protocol)
   renderEmbed(embedUrl);
   // Show the clear button and enable the submit button
-  clearBtn.classList.remove('hidden');
-  submitBtn.disabled = false;
+  if (clearBtn) clearBtn.classList.remove('hidden');
+  if (submitBtn) submitBtn.disabled = false;
 
   // Step 6: Auto-fill the title input with a fallback name
   const titleInput = document.getElementById('title-input');
-  if (platformId === 'iframe') {
-    titleInput.value = `Embedded Content (${parsed.substring(0,60)})`;
-  } else {
-    titleInput.value = `${plat.name} Video (${parsed})`;
+  if (titleInput) {
+    if (platformId === 'iframe') {
+      titleInput.value = `Embedded Content (${parsed.substring(0,60)})`;
+    } else {
+      titleInput.value = `${plat.name} Video (${parsed})`;
+    }
   }
 
   // Step 7: Fetch and display metadata via oEmbed (if the platform supports it)
@@ -563,7 +617,7 @@ function loadVideo(platformId, rawInput) {
   const metaTitle = document.getElementById('meta-title');
   const metaChannel = document.getElementById('meta-channel');
   const metaThumb = document.getElementById('meta-thumbnail');
-  metaEl.classList.add('hidden');  // Hide metadata panel until data loads
+  if (metaEl) metaEl.classList.add('hidden');  // Hide metadata panel until data loads
 
   // Auto-fill description
   const descriptionInput = document.getElementById('description-input');
@@ -613,11 +667,14 @@ function loadVideo(platformId, rawInput) {
  * @param {string} embedUrl - The embed URL to display in the iframe
  */
 function renderEmbed(embedUrl) {
+  var esc = function(s) { return String(s||'').replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]||c; }); };
   // DOM element references
   const container = document.getElementById('embed-container');
   const player = document.getElementById('embed-player');
   const loader = document.getElementById('embed-loader');
   const fallback = document.getElementById('embed-fallback');
+
+  if (!container || !player || !loader || !fallback) return;
 
   // Show the embed container and loading spinner, hide fallback, clear previous player
   container.classList.remove('hidden');
@@ -632,7 +689,7 @@ function renderEmbed(embedUrl) {
     fallback.classList.remove('hidden');
     fallback.innerHTML = `
       <p style="margin-bottom:8px;">⚠️ Embedded preview unavailable on local files.</p>
-      <a href="${embedUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block; padding:8px 20px; background:var(--accent); color:#fff; border-radius:var(--radius-full); text-decoration:none; font-weight:600; font-size:var(--text-sm);">
+      <a href="${esc(embedUrl)}" target="_blank" rel="noopener noreferrer" style="display:inline-block; padding:8px 20px; background:var(--accent); color:#fff; border-radius:var(--radius-full); text-decoration:none; font-weight:600; font-size:var(--text-sm);">
         Open video directly ↗
       </a>
     `;
@@ -704,6 +761,10 @@ function clearVideo() {
   if (errorEl) errorEl.textContent = '';               // Clear any error message
   if (input) { input.classList.remove('has-error'); input.value = ''; }  // Clear URL input
   if (iframeInput) iframeInput.value = '';             // Clear iframe code textarea
+
+  // Reset thumbnail URL input
+  var thumbUrlInput = document.getElementById('thumbnail-url-input');
+  if (thumbUrlInput) thumbUrlInput.value = '';
 }
 
 // ============================================================
@@ -755,9 +816,11 @@ function saveToHistory(platformId, parsed, embedUrl) {
  * Clicking a chip switches to that platform and loads the video.
  */
 function renderRecentHistory() {
+  var esc = function(s) { return String(s||'').replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]||c; }); };
   const container = document.getElementById('recent-history');
   const history = getHistory();
   // If no history, hide the container
+  if (!container) return;
   if (history.length === 0) {
     container.classList.add('hidden');
     return;
@@ -766,10 +829,10 @@ function renderRecentHistory() {
   container.classList.remove('hidden');
   container.innerHTML = `<span class="recent-history-label">Recently Loaded</span>` +
     history.map(h => `
-      <span class="recent-history-chip" data-platform="${h.platform}" data-id="${h.id}">
+      <span class="recent-history-chip" data-platform="${esc(h.platform)}" data-id="${esc(h.id)}">
         <!-- Show thumbnail image if available, otherwise show a platform icon -->
-        ${h.thumbnail ? `<img src="${h.thumbnail}" alt="" loading="lazy" onerror="this.style.display='none'">` : `<span class="chip-platform-icon">${(PLATFORMS[h.platform]||{}).icon||'▸'}</span>`}
-        <span>${h.title}</span>
+        ${h.thumbnail ? `<img src="${esc(h.thumbnail)}" alt="" loading="lazy" onerror="this.style.display='none'">` : `<span class="chip-platform-icon">${(PLATFORMS[h.platform]||{}).icon||'▸'}</span>`}
+        <span>${esc(h.title)}</span>
       </span>
     `).join('');
 
@@ -823,6 +886,7 @@ function setupThumbnailUpload() {
   const thumbBox = document.getElementById('thumbnail-box');            // Clickable upload box
   const thumbPreview = document.getElementById('thumbnail-preview');    // <img> preview element
   const thumbPlaceholder = document.getElementById('thumbnail-placeholder'); // SVG placeholder
+  const thumbUrlInput = document.getElementById('thumbnail-url-input'); // URL text input
 
   if (!thumbBox || !thumbInput) return;
 
@@ -842,285 +906,227 @@ function setupThumbnailUpload() {
       reader.readAsDataURL(file);  // Read file as base64 data URL
     }
   });
-}
 
-// ============================================================
-// Tag System - existing tag selection, custom tag creation, selected tag display
-// ============================================================
-
-/**
- * Counts how many videos use a specific tag.
- * @param {string} tagId - The tag ID to count
- * @returns {number} Number of videos that include this tag
- */
-function getTagVideoCount(tagId) {
-  const videos = window.App.getVideos();
-  return videos.reduce((c, v) => c + ((v.tags || []).includes(tagId) ? 1 : 0), 0);
-}
-
-/**
- * Renders all existing tags as clickable pills that toggle selection.
- * Selected pills are filled with the tag's color; unselected are outlined.
- * Each pill shows the tag name and its usage count.
- * @param {string[]} selectedTags - Array of currently selected tag IDs
- */
-function renderExistingTags(selectedTags) {
-  const container = document.getElementById('existing-tags-container');
-  if (!container) return;
-  const allTags = window.App.getTags();
-  container.innerHTML = allTags.map(tag => {
-    const isSelected = selectedTags.includes(tag.id);
-    return `
-      <button type="button" class="tag-checkable-pill ${isSelected ? 'selected' : ''}" data-tag-id="${tag.id}" style="display:inline-flex; align-items:center; gap:4px; padding:4px 12px; border-radius:9999px; font-size:var(--text-xs); font-weight:500; border:1px solid ${tag.color}; background-color:${isSelected ? tag.color : 'transparent'}; color:${isSelected ? '#fff' : 'inherit'}; cursor:pointer; transition:all var(--transition-fast);">
-        <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background-color:${tag.color};"></span>
-        ${tag.name}
-        <!-- Usage count shown in parentheses -->
-        <span style="opacity:0.6; font-size:10px;">(${getTagVideoCount(tag.id)})</span>
-      </button>
-    `;
-  }).join('');
-}
-
-/**
- * Sets up the delegate click listener on the existing tags container.
- * Clicking a tag pill toggles its selection (max 10 tags per video).
- * Re-renders both the existing tags and the selected chips display.
- * @param {string[]} selectedTags - Array of currently selected tag IDs (mutated in place)
- */
-function setupExistingTags(selectedTags) {
-  const container = document.getElementById('existing-tags-container');
-  if (!container) return;
-  renderExistingTags(selectedTags);  // Initial render
-
-  container.addEventListener('click', (e) => {
-    const btn = e.target.closest('.tag-checkable-pill');
-    if (!btn) return;  // Click wasn't on a tag pill
-    const tagId = btn.dataset.tagId;
-    const idx = selectedTags.indexOf(tagId);
-    if (idx !== -1) {
-      // Tag is already selected → remove it
-      selectedTags.splice(idx, 1);
-    } else {
-      // Tag is not selected → add it (enforce max 10 limit)
-      if (selectedTags.length >= 10) {
-        window.App.showToast('Maximum 10 tags per video.', 'error');
-        return;
-      }
-      selectedTags.push(tagId);
-    }
-    renderExistingTags(selectedTags);  // Re-render all tag pills
-    renderSelectedChips(selectedTags); // Re-render selected chips bar
-  });
-}
-
-/**
- * Sets up the custom tag creator: an input field + "Add" button.
- * On submit (Enter key or button click), finds or creates the tag,
- * adds it to the selected tags list, and re-renders the UI.
- * @param {string[]} selectedTags - Array of currently selected tag IDs (mutated in place)
- */
-function setupCustomTagCreator(selectedTags) {
-  const input = document.getElementById('custom-tag-input');
-  const addBtn = document.getElementById('add-custom-tag-btn');
-  if (!input) return;
-
-  // Inner function to handle adding a custom tag
-  const addCustomTag = () => {
-    const name = input.value.trim();
-    if (!name) return;  // Ignore empty input
-
-    // Enforce max 10 tags
-    if (selectedTags.length >= 10) {
-      window.App.showToast('Maximum 10 tags per video.', 'error');
-      return;
-    }
-
-    const allTags = window.App.getTags();
-    // Check if a tag with this name already exists (case-insensitive)
-    const existingTag = allTags.find(t => t.name.toLowerCase() === name.toLowerCase());
-    if (existingTag) {
-      // Tag exists but might not be selected yet
-      if (selectedTags.includes(existingTag.id)) {
-        window.App.showToast('Tag already selected.', 'error');
-        input.value = '';
-        return;
-      }
-      selectedTags.push(existingTag.id);  // Select the existing tag
-    } else {
-      // Tag doesn't exist → create a new one with a random color
-      const newId = 'tag-' + Date.now();
-      const color = TAG_COLORS[Math.floor(Math.random() * TAG_COLORS.length)];
-      allTags.push({ id: newId, name, color, usageCount: 0 });
-      window.App.saveTags(allTags);  // Persist new tag
-      selectedTags.push(newId);       // Select the newly created tag
-      renderExistingTags(selectedTags);  // Re-render tag pills
-    }
-    input.value = '';                     // Clear the input
-    renderSelectedChips(selectedTags);     // Re-render selected chips
-    window.App.showToast(`Tag "${name}" added.`);
-  };
-
-  // Add tag on Enter key press
-  input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') { e.preventDefault(); addCustomTag(); }
-  });
-  // Add tag on button click
-  if (addBtn) addBtn.addEventListener('click', addCustomTag);
-}
-
-/**
- * Renders the selected tags as removable chips (pill-shaped with an X button).
- * Also updates the selected count badge.
- * @param {string[]} selectedTags - Array of currently selected tag IDs
- */
-function renderSelectedChips(selectedTags) {
-  const display = document.getElementById('selected-tags-display');  // Container for chips
-  const countEl = document.getElementById('selected-tags-count');    // Badge showing count
-  if (!display) return;
-  if (countEl) countEl.innerText = selectedTags.length;
-
-  // If no tags selected, show an empty state message
-  if (selectedTags.length === 0) {
-    display.innerHTML = '<span style="color:var(--text-muted); font-size:var(--text-sm);">No tags selected</span>';
-    return;
-  }
-
-  const allTags = window.App.getTags();
-  display.innerHTML = selectedTags.map(tagId => {
-    const tag = allTags.find(t => t.id === tagId);
-    if (!tag) return '';  // Skip if tag not found (shouldn't happen)
-    return `
-      <span class="tag-chip" style="display:inline-flex; align-items:center; gap:4px; padding:4px 10px; border-radius:9999px; font-size:var(--text-xs); font-weight:500; background-color:${tag.color}20; border:1px solid ${tag.color};">
-        <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background-color:${tag.color};"></span>
-        ${tag.name}
-        <!-- Remove (X) button -->
-        <span class="tag-chip-remove" data-tag-id="${tagId}" style="cursor:pointer; margin-left:2px; opacity:0.7; font-size:14px; line-height:1;">&times;</span>
-      </span>
-    `;
-  }).join('');
-
-  // Attach click handler to each remove button
-  display.querySelectorAll('.tag-chip-remove').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const tagId = btn.dataset.tagId;
-      const idx = selectedTags.indexOf(tagId);
-      if (idx !== -1) {
-        selectedTags.splice(idx, 1);                // Remove from selected
-        renderSelectedChips(selectedTags);           // Re-render chips
-        renderExistingTags(selectedTags);             // Re-render the existing tag pills to reflect deselection
+  // When a thumbnail URL is pasted/typed, update preview
+  if (thumbUrlInput) {
+    thumbUrlInput.addEventListener('input', function() {
+      var val = this.value.trim();
+      if (val && /^https?:\/\//.test(val)) {
+        thumbPreview.src = val;
+        thumbPreview.style.display = 'block';
+        thumbPlaceholder.style.display = 'none';
       }
     });
-  });
+  }
 }
 
 // ============================================================
-// Form Submission - validate, construct video object, save, and redirect
+// Tag Chip Input - comma-separated tags with removable chips
 // ============================================================
 
+var _tagEsc = function(s) { return String(s||'').replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]||c; }); };
+
 /**
- * Sets up the submit event handler for the upload video form.
- * Validates all required fields (video loaded, title, tags, duration format),
- * constructs a new video object, persists it, and redirects to the videos page.
- * @param {string[]} selectedTags - Array of tag IDs selected for this video
+ * Initializes the chip-based tag input.
+ * Typing a tag and pressing comma or Enter adds it as a chip.
+ * Chips can be removed by clicking the X button.
+ * The final array is read via getTagChips() for form submission.
  */
-function setupFormSubmission(selectedTags) {
+function initTagChips() {
+  var container = document.getElementById('tags-input-container');
+  var input = document.getElementById('tags-input');
+  if (!container || !input) return;
+
+  // Focus the input when clicking anywhere in the container
+  container.addEventListener('click', function(e) {
+    if (e.target === container) input.focus();
+  });
+
+  // Listen for comma (,) or Enter to add a tag
+  input.addEventListener('keydown', function(e) {
+    if (e.key === ',' || e.key === 'Enter') {
+      e.preventDefault();
+      addTagChip(input.value);
+    }
+  });
+
+  // Also add on blur (when clicking away) if there's content
+  input.addEventListener('blur', function() {
+    if (input.value.trim()) addTagChip(input.value);
+  });
+}
+
+/**
+ * Adds a tag chip to the display and clears the input.
+ * @param {string} raw - Raw input value (comma-separated possible)
+ */
+function addTagChip(raw) {
+  var input = document.getElementById('tags-input');
+  var display = document.getElementById('tags-chips-display');
+  if (!input || !display) return;
+
+  // Support typing comma within a word: "tech, tutorial" -> two tags
+  var parts = raw.split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+  if (parts.length === 0) return;
+
+  parts.forEach(function(name) {
+    // Check for duplicates among existing chips
+    var existing = display.querySelectorAll('.tag-chip');
+    var dup = false;
+    existing.forEach(function(chip) {
+      if (chip.dataset.tag === name.toLowerCase()) dup = true;
+    });
+    if (dup) return;
+
+    var chip = document.createElement('span');
+    chip.className = 'tag-chip';
+    chip.dataset.tag = name.toLowerCase();
+    chip.innerHTML = _tagEsc(name) + '<span class="tag-chip-remove">&times;</span>';
+
+    chip.querySelector('.tag-chip-remove').addEventListener('click', function(e) {
+      e.stopPropagation();
+      chip.remove();
+    });
+
+    display.appendChild(chip);
+  });
+
+  input.value = '';
+  input.focus();
+}
+
+/**
+ * Returns the array of tag strings from the current chips.
+ * @returns {string[]}
+ */
+function getTagChips() {
+  var display = document.getElementById('tags-chips-display');
+  if (!display) return [];
+  var arr = [];
+  display.querySelectorAll('.tag-chip').forEach(function(chip) {
+    var text = chip.firstChild.textContent || '';
+    if (text) arr.push(text.trim());
+  });
+  return arr;
+}
+
+// ============================================================
+// Form Submission - validate, construct video object, save to Supabase + localStorage, and redirect
+// ============================================================
+
+async function submitToSupabase(videoObj, thumbnailFile) {
+  if (!window.__supabase) return false;
+  try {
+    let thumbnailUrl = videoObj.thumbnail;
+
+    // Upload thumbnail if a file was selected
+    if (thumbnailFile) {
+      const ext = thumbnailFile.name.split('.').pop() || 'jpg';
+      const thumbPath = 'thumbnails/' + Date.now() + '.' + ext;
+      const publicUrl = await window.SupabaseStorage.uploadFile('thumbnails', thumbPath, thumbnailFile);
+      if (publicUrl) thumbnailUrl = publicUrl;
+    }
+
+    // Upload video file if a local video URL points to a File object
+    // (The current form handles embed URLs; video files are uploaded via a separate flow)
+
+    const result = await window.SupabaseVideos.insert({
+      ...videoObj,
+      thumbnail: thumbnailUrl,
+      thumbnail_url: thumbnailUrl
+    });
+    if (result) return result;
+    window.App.showToast('Supabase save failed, falling back to local storage.', 'warning');
+    return null;
+  } catch (e) {
+    console.error('Supabase submit error:', e);
+    window.App.showToast('Upload failed: ' + e.message, 'error');
+    return false;
+  }
+}
+
+function setupFormSubmission() {
   const form = document.getElementById('upload-video-form');
   const submitBtn = document.getElementById('submit-btn');
-  if (!form) return;  // Guard: exit if form element not found
+  if (!form || !submitBtn) return;
 
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();  // Prevent default form submission (page reload)
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-    // -------- Validation Step 1: Ensure a video is loaded --------
     if (!currentVideoId || !currentEmbedUrl) {
       window.App.showToast('Please load a video first.', 'error');
       return;
     }
-
-    // -------- Validation Step 2: Ensure embed URL is valid (starts with http/https) --------
     if (!/^https?:\/\//.test(currentEmbedUrl)) {
       window.App.showToast('Invalid embed URL. Please reload the video.', 'error');
       return;
     }
-
-    // -------- Validation Step 3: Get and validate the title --------
     const title = document.getElementById('title-input').value.trim();
-    if (!title) {
-      window.App.showToast('Video title is required.', 'error');
-      return;
-    }
-
-    // -------- Validation Step 4: Get description (optional) --------
+    if (!title) { window.App.showToast('Video title is required.', 'error'); return; }
     const description = document.getElementById('description-input').value.trim();
-
-    // -------- Validation Step 5: Get and validate duration --------
     let duration = document.getElementById('duration-input').value.trim();
-    if (!duration) duration = '5:00';  // Default duration if left empty
-    // Regex: supports "mm:ss" or "hh:mm:ss" format (with valid minutes/seconds ranges)
-    const durValid = /^[0-9]+:[0-5]?[0-9]:[0-5][0-9]$|^[0-9]+:[0-5][0-9]$/.test(duration);
-    if (!durValid) {
-      window.App.showToast('Invalid duration format. Use mm:ss or hh:mm:ss.', 'error');
-      return;
+    if (!duration) duration = '5:00';
+    if (!/^[0-9]+:[0-5]?[0-9]:[0-5][0-9]$|^[0-9]+:[0-5][0-9]$/.test(duration)) {
+      window.App.showToast('Invalid duration. Use mm:ss or hh:mm:ss.', 'error'); return;
     }
 
-    // -------- Validation Step 6: At least one tag is required --------
-    if (selectedTags.length === 0) {
-      window.App.showToast('Please select or create at least one tag.', 'error');
-      return;
-    }
+    var tagsArr = getTagChips();
 
-    // -------- Determine the publish status from the toggle --------
     const publishToggle = document.getElementById('publish-toggle').checked;
-    // true → "published", false → "draft"
-
-    // -------- Determine the thumbnail source --------
     const thumbnailImg = document.getElementById('thumbnail-preview');
-    // SVG placeholder for when no thumbnail is available
+    const thumbnailFileInput = document.getElementById('thumbnail-file-input');
+    const thumbnailFile = thumbnailFileInput && thumbnailFileInput.files.length > 0 ? thumbnailFileInput.files[0] : null;
+    const thumbnailUrlInput = document.getElementById('thumbnail-url-input');
+    const manualThumbnailUrl = thumbnailUrlInput ? thumbnailUrlInput.value.trim() : '';
     const placeholderThumb = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 9%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%231f1f1f%22/%3E%3Ctext x=%228%22 y=%225%22 text-anchor=%22middle%22 fill=%22%23666%22 font-size=%221%22%3ENo Thumbnail%3C/text%3E%3C/svg%3E';
-    // Priority: 1) uploaded preview, 2) platform template URL, 3) placeholder
-    const thumbnailSrc = thumbnailImg.style.display === 'block'
-      ? thumbnailImg.src
-      : (currentThumbnailUrl || (plat && plat.getThumbnailUrl ? plat.getThumbnailUrl(currentVideoId) : null) || placeholderThumb);
-
-    // -------- Disable submit button to prevent double-submission --------
-    submitBtn.disabled = true;
-
-    // -------- Get the platform definition for the current platform --------
     const plat = PLATFORMS[currentPlatform];
+    const thumbnailSrc = manualThumbnailUrl
+      ? manualThumbnailUrl
+      : (thumbnailImg.style.display === 'block'
+        ? thumbnailImg.src
+        : (currentThumbnailUrl || (plat && plat.getThumbnailUrl ? plat.getThumbnailUrl(currentVideoId) : null) || placeholderThumb));
 
-    // -------- Construct the new video object --------
-    const dbVideos = window.App.getVideos();
-    const nextId = 'vid-' + Date.now();  // Unique ID based on timestamp
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Publishing...';
 
     const newVideoObj = {
-      id: nextId,
       title,
       description,
-      videoUrl: currentVideoUrl || currentEmbedUrl,  // Fallback to embed URL if video URL not available
+      videoUrl: currentVideoUrl || currentEmbedUrl,
       embedUrl: currentEmbedUrl,
       thumbnail: thumbnailSrc,
       platform: currentPlatform,
       platformLabel: plat ? plat.name : currentPlatform,
       views: 0,
       likes: 0,
-      tags: [...selectedTags],       // Clone the selected tags array
+      tags: tagsArr,
       duration,
-      publishDate: new Date().toISOString().split('T')[0],  // Today's date in YYYY-MM-DD format
+      publishDate: new Date().toISOString().split('T')[0],
       status: publishToggle ? 'published' : 'draft',
       creator: 'Administrator'
     };
 
-    // -------- Save the new video to the data store --------
+    // Try Supabase first
+    if (window.__supabase) {
+      const inserted = await submitToSupabase(newVideoObj, thumbnailFile);
+      if (inserted) {
+        window.SupabaseVideos.invalidateCache();
+        // Also save to localStorage so the video shows immediately on next page load
+        const dbVideos = window.App.getVideos();
+        dbVideos.push(inserted);
+        window.App.saveVideos(dbVideos);
+        window.App.showToast('Video published successfully!', 'success');
+        setTimeout(() => { window.location.href = './videos.html'; }, 1000);
+        return;
+      }
+    }
+
+    // Fallback: save to localStorage
+    const dbVideos = window.App.getVideos();
+    newVideoObj.id = 'vid-' + Date.now();
     dbVideos.push(newVideoObj);
     window.App.saveVideos(dbVideos);
-
-    // Show success toast notification
-    window.App.showToast('Video published successfully!', 'success');
-
-    // -------- Redirect to the videos page after a 1-second delay --------
-    setTimeout(() => {
-      window.location.href = './videos.html';
-    }, 1000);
+    window.App.showToast('Video published successfully (local storage).', 'success');
+    setTimeout(() => { window.location.href = './videos.html'; }, 1000);
   });
 }

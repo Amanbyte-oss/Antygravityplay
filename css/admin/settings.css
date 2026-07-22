@@ -97,64 +97,6 @@
   flex-shrink: 0;
 }
 
-/* --- FORM GROUP: spacing wrapper around label + input --- */
-.form-group {
-  margin-bottom: var(--space-lg);
-}
-
-/* --- FORM LABEL: block label above input fields --- */
-.form-label {
-  display: block;
-  font-size: var(--text-sm);
-  font-weight: 500;
-  margin-bottom: var(--space-xs);
-  color: var(--text-primary);
-}
-
-/* --- TEXT INPUT: standard admin form text field --- */
-.form-input-field {
-  width: 100%;
-  height: 42px;
-  padding: 0 var(--space-md);
-  background-color: var(--bg-elevated);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  font-size: var(--text-sm);
-  color: var(--text-primary);
-  transition: border-color 0.2s, box-shadow 0.2s;
-  box-sizing: border-box;
-}
-
-/* --- FOCUS: accent ring on text input --- */
-.form-input-field:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
-  outline: none;
-}
-
-/* --- TEXTAREA: multi-line input for bio, description, etc. --- */
-.textarea-field {
-  width: 100%;
-  min-height: 80px;
-  padding: var(--space-md);
-  background-color: var(--bg-elevated);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  font-size: var(--text-sm);
-  color: var(--text-primary);
-  resize: vertical;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  box-sizing: border-box;
-  font-family: var(--font-sans);
-}
-
-/* --- FOCUS: accent ring on textarea --- */
-.textarea-field:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
-  outline: none;
-}
-
 /* --- AVATAR UPLOAD ROW: preview circle + upload button side by side --- */
 .avatar-upload {
   display: flex;
@@ -412,60 +354,6 @@
   margin-bottom: var(--space-2xl);
 }
 
-/* --- TABS CONTAINER: base wrapper for tab navigation and panels --- */
-.tabs-container {
-  width: 100%;
-}
-
-/* --- TAB NAV: horizontal row of clickable tab labels --- */
-.tabs-nav {
-  display: flex;
-  gap: var(--space-xs);
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 0;
-  overflow-x: auto;
-}
-
-/* --- SINGLE TAB: clickable tab label with bottom-border transition --- */
-.tabs-tab {
-  padding: var(--space-sm) var(--space-xl);
-  font-size: var(--text-sm);
-  font-weight: 500;
-  color: var(--text-secondary);
-  border-bottom: 2px solid transparent;
-  transition: all var(--transition-fast);
-  white-space: nowrap;
-  background: none;
-  cursor: pointer;
-}
-
-/* --- HOVER: brighter text color --- */
-.tabs-tab:hover {
-  color: var(--text-primary);
-}
-
-/* --- ACTIVE: accent bottom border + bold weight --- */
-.tabs-tab.active {
-  color: var(--accent);
-  border-bottom-color: var(--accent);
-  font-weight: 600;
-}
-
-/* --- PANELS WRAPPER: container for all tab content sections --- */
-.tabs-panels {
-  margin-top: var(--space-xl);
-}
-
-/* --- INDIVIDUAL PANEL: hidden by default, shown when active --- */
-.tabs-panel {
-  display: none;
-  animation: fadeIn var(--transition-base) forwards;
-}
-
-.tabs-panel.active {
-  display: block;
-}
-
 /* --- UTILITY BUTTONS: import/export/clear — small size --- */
 #import-btn, #clear-all-btn, .import-btn, .export-all-btn {
   padding: var(--space-xs) var(--space-md) !important;
@@ -495,61 +383,4 @@
   cursor: not-allowed;
 }
 
-/* --- TOGGLE SWITCH: on/off slider for binary settings --- */
-.toggle-switch {
-  position: relative;
-  display: inline-block;
-  width: 44px;
-  height: 24px;
-}
 
-/* --- HIDE native checkbox; toggle-slider acts as visual --- */
-.toggle-switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-/* --- SLIDER BACKGROUND: gray track with rounded ends --- */
-.toggle-slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: var(--bg-elevated);
-  border: 1px solid var(--border);
-  transition: .3s;
-  border-radius: var(--radius-full);
-}
-
-/* --- SLIDER KNOB: circular handle that slides left/right --- */
-.toggle-slider:before {
-  position: absolute;
-  content: "";
-  height: 16px;
-  width: 16px;
-  left: 3px;
-  bottom: 3px;
-  background-color: var(--text-secondary);
-  transition: .3s;
-  border-radius: 50%;
-}
-
-/* --- CHECKED: accent background when toggle is on --- */
-.toggle-switch input:checked + .toggle-slider {
-  background-color: var(--accent);
-  border-color: var(--accent);
-}
-
-/* --- KNOB SLIDE: move knob to right when checked --- */
-.toggle-switch input:checked + .toggle-slider:before {
-  transform: translateX(20px);
-  background-color: #000;
-}
-
-/* --- LIGHT THEME: white knob on accent background --- */
-[data-theme="light"] .toggle-switch input:checked + .toggle-slider:before {
-  background-color: #fff;
-}

@@ -202,3 +202,40 @@
   gap: var(--space-md);     /* 12px gaps */
   flex-wrap: wrap;          /* Wrap on overflow */
 }
+
+/* Horizontal scrollable tag filter bar */
+.tag-filter-bar {
+  display: flex;
+  gap: var(--space-sm);
+  overflow-x: auto;
+  white-space: nowrap;
+  padding-bottom: var(--space-sm);
+  scrollbar-width: thin;
+  -ms-overflow-style: none;
+}
+.tag-filter-bar::-webkit-scrollbar { height: 4px; }
+.tag-filter-bar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.tag-filter-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 16px;
+  border-radius: 9999px;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+.tag-filter-pill:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.tag-filter-pill.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}

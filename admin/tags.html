@@ -63,7 +63,7 @@
   </div>
 
   <!--
-    DELETE TAG MODAL: Specialized confirmation dialog for tag deletion.
+    DELETE TAG MODAL: Specialized confirmation dialog for single tag deletion.
     Shows a warning about the number of videos affected by deleting
     the tag. Has Cancel and Delete buttons. The Delete button is styled
     with error (red) color for visual emphasis of the destructive action.
@@ -81,6 +81,28 @@
       <div class="modal-footer">
         <button class="btn btn-secondary" id="cancel-delete-btn">Cancel</button>
         <button class="btn btn-primary" id="confirm-delete-btn" style="background-color:var(--error);color:#fff;">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!--
+    BULK DELETE TAG MODAL: Confirmation dialog for bulk tag deletion.
+    Shows how many tags will be deleted and how many videos are affected.
+  -->
+  <div class="modal-overlay" id="confirm-bulk-delete-overlay" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Delete Selected Tags</h3>
+        <button class="modal-close" aria-label="Close dialog">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete the selected tags?</p>
+        <p style="margin-top:var(--space-sm);font-weight:500;color:var(--warning);" id="bulk-delete-warning-text"></p>
+        <p style="margin-top:var(--space-sm);font-size:var(--text-xs);color:var(--text-muted);">Tags will be removed from all videos. This action cannot be undone.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancel-bulk-delete-btn">Cancel</button>
+        <button class="btn btn-primary" id="confirm-bulk-delete-btn" style="background-color:var(--error);color:#fff;">Delete All</button>
       </div>
     </div>
   </div>
@@ -142,7 +164,11 @@
         <!-- ─── SECTION: Inline Add Tag ────────── -->
         <div class="inline-add-tag">
           <input type="text" id="add-tag-input" placeholder="Type tag name and press Enter to create..." autocomplete="off">
-          <span class="text-xs-muted">Press Enter to add</span>
+          <div class="add-tag-color-wrap">
+            <input type="color" id="add-tag-color" value="#0070f3" title="Pick tag color">
+          </div>
+          <button type="button" id="add-tag-btn" class="btn btn-primary" style="padding:var(--space-xs) var(--space-md);font-size:var(--text-xs);">Add Tag</button>
+          <span class="text-xs-muted">Press Enter or click Add Tag</span>
         </div>
 
         <!--
@@ -165,6 +191,8 @@
           <span style="font-size:var(--text-sm);">Merge <strong id="merge-count">0</strong> selected tags into:</span>
           <select id="merge-target-select"></select>
           <button class="btn btn-primary" id="merge-btn" style="padding:var(--space-xs) var(--space-md);font-size:var(--text-xs);">Merge Selected</button>
+          <span style="flex:1;"></span>
+          <button class="btn btn-primary" id="bulk-delete-btn" style="padding:var(--space-xs) var(--space-md);font-size:var(--text-xs);background-color:var(--error);color:#fff;border-color:var(--error);">Delete Selected</button>
         </div>
 
         <!--
@@ -232,6 +260,9 @@
   <!-- ==================== SCRIPTS ==================== -->
   <!-- mockData.js: Mock data factory for prototype tags and usage data -->
   <script src="../js/mockData.js"></script>
+  <!-- supabase.js + supabase-api.js: Backend integration layer (optional) -->
+  <script src="../js/supabase.js"></script>
+  <script src="../js/supabase-api.js"></script>
   <!-- main.js: Core app - theme toggling, toast API, utility functions -->
   <script src="../js/main.js"></script>
   <!-- components.js: UI injectors - sidebar, navbar, footer, pagination -->

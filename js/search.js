@@ -88,8 +88,8 @@ function renderFilterChips() {
   const tags = window.App.getTags();
   // Render each tag as a button chip with its name prefixed by #
   container.innerHTML = tags.map(tag => `
-    <button class="filter-chip-btn" data-tag-id="${tag.id}" type="button">
-      #${tag.name}
+    <button class="filter-chip-btn" data-tag-id="${escapeHtml(tag.id)}" type="button">
+      #${escapeHtml(tag.name)}
     </button>
   `).join('');
 
@@ -250,25 +250,20 @@ function renderSearchResults(videos, query) {
 
   // ─── RENDER VIDEO CARDS ───
   gridEl.innerHTML = videos.map(vid => {
-    // Start with the original title
-    let titleHtml = vid.title;
-    // If there's a search query, highlight matching text in the title
+    const escTitle = escapeHtml(vid.title);
+    let titleHtml = escTitle;
     if (query) {
-      // Create a case-insensitive regex from the query (escaping special chars)
-      const regex = new RegExp(`(${escapeRegExp(query)})`, 'gi');
-      // Wrap matched text in a highlight span
-      titleHtml = vid.title.replace(regex, '<span class="highlight-text">$1</span>');
+      const regex = new RegExp(`(${escapeRegExp(escapeHtml(query))})`, 'gi');
+      titleHtml = escTitle.replace(regex, '<span class="highlight-text">$1</span>');
     }
 
-    // Build the watch page URL
     const href = `./watch.html?id=${encodeURIComponent(vid.id)}`;
-    // Return the video card HTML with lazy thumbnail, duration, and hover play button
     return `
-      <article class="video-card" data-video-id="${vid.id}" data-href="${href}">
+      <article class="video-card" data-video-id="${escapeHtml(vid.id)}" data-href="${href}">
         <div class="thumbnail-container">
-          <img class="lazy" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9'%3E%3Crect width='100%25' height='100%25' fill='%231f1f1f'/%3E%3C/svg%3E" data-src="${vid.thumbnail}" alt="${vid.title} Preview">
-          <span class="duration-badge">${vid.duration}</span>
-          <button class="play-hover-btn" data-href="${href}" aria-label="Play video">
+          <img class="lazy" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9'%3E%3Crect width='100%25' height='100%25' fill='%231f1f1f'/%3E%3C/svg%3E" data-src="${escapeHtml(vid.thumbnail || '')}" alt="${escTitle} Preview">
+          <span class="duration-badge">${escapeHtml(vid.duration)}</span>
+          <button class="play-hover-btn" data-href="${href}" aria-label="Play ${escTitle}">
             <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
               <polygon points="8,5 19,12 8,19"></polygon>
             </svg>
@@ -277,8 +272,8 @@ function renderSearchResults(videos, query) {
         <div class="video-info">
           <h3 class="video-title">${titleHtml}</h3>
           <div class="video-meta">
-            <div class="video-creator">${vid.creator}</div>
-            <div>${Number(vid.views).toLocaleString()} views &bull; ${vid.publishDate}</div>
+            <div class="video-creator">${escapeHtml(vid.creator)}</div>
+            <div>${Number(vid.views).toLocaleString()} views &bull; ${escapeHtml(vid.publishDate)}</div>
           </div>
         </div>
       </article>
@@ -292,13 +287,9 @@ function renderSearchResults(videos, query) {
   if (window.refreshLazyLoading) window.refreshLazyLoading();
 }
 
+function escapeHtml(s) { return String(s||'').replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]||c; }); }
+
 // ─── REGEX ESCAPE UTILITY ───
-/**
- * Escapes special characters in a string so it can be safely used in a RegExp constructor.
- * @param {string} string - The string to escape
- * @returns {string} The escaped string safe for use in regex
- */
 function escapeRegExp(string) {
-  // Escape each regex special character with a backslash
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }

@@ -70,6 +70,14 @@
   <!-- Hero Banner: featured video area populated by home.js -->
   <section id="hero-section" aria-label="Featured Video"></section>
 
+  <!-- Tag Filter Bar: horizontal scrollable pills -->
+  <section class="row-section" style="padding-top:var(--space-md);padding-bottom:0;">
+    <div class="tag-filter-bar" id="tag-filter-bar">
+      <button class="tag-filter-pill active" data-tag="" id="tag-filter-all">All</button>
+      <!-- Tags populated by home.js -->
+    </div>
+  </section>
+
   <!-- Popular Tags Row: pill-style tag buttons -->
   <section class="row-section" aria-labelledby="tags-heading">
     <h2 id="tags-heading" class="row-title row-title-mb">Popular Tags</h2>
@@ -128,6 +136,9 @@
 <script src="./js/main.js"></script>
 <script src="./js/components.js"></script>
 <script src="./js/animations.js"></script>
+<!-- supabase.js + supabase-api.js: Backend integration layer (optional) -->
+<script src="./js/supabase.js"></script>
+<script src="./js/supabase-api.js"></script>
 <!-- home.js: Home page initialization — populates hero, tags, trending,
      new releases, and browse-by-tag sections from mock data -->
 <script src="./js/home.js"></script>

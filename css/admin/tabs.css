@@ -54,7 +54,6 @@
 /* --- TAB PANEL: content section hidden until its tab is active --- */
 .tab-panel {
   display: none;
-  animation: fadeIn 0.25s ease;
 }
 
 .tab-panel.active {

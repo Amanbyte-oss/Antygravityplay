@@ -62,10 +62,10 @@ function computeStats(videos, tags) {
   const totalTags = tags.length;
 
   // Update the DOM elements with the computed statistics
-  document.getElementById('stat-total-videos').innerText = totalVideos;
-  document.getElementById('stat-total-views').innerText = totalViews.toLocaleString();   // Format with locale commas
-  document.getElementById('stat-total-likes').innerText = totalLikes.toLocaleString();   // Format with locale commas
-  document.getElementById('stat-total-tags').innerText = totalTags;
+  var el; (el = document.getElementById('stat-total-videos')) && (el.innerText = totalVideos);
+  (el = document.getElementById('stat-total-views')) && (el.innerText = totalViews.toLocaleString());
+  (el = document.getElementById('stat-total-likes')) && (el.innerText = totalLikes.toLocaleString());
+  (el = document.getElementById('stat-total-tags')) && (el.innerText = totalTags);
 }
 
 // ============================================================
@@ -94,49 +94,43 @@ function renderRecentUploadsTable(videos, tags) {
     return;
   }
 
+  var esc = function(s) { return String(s||'').replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]||c; }); };
   // Build HTML for each video card and join them into a single string
   grid.innerHTML = sortedRecent.map((vid, idx) => {
-    // Safely get the tags array; default to empty array if missing or not an array
-    const safeTags = Array.isArray(vid.tags) ? vid.tags : [];
-    // Resolve each tag ID to the full tag object by looking it up in the tags array
-    const resolvedTags = safeTags.map(tId => tags.find(t => t && t.id === tId)).filter(Boolean);
-    // Generate HTML for up to 3 tag pills; show a "+N more" indicator if there are more than 3
-    const tagHtml = resolvedTags.length > 0
-      ? resolvedTags.slice(0, 3).map(t =>
-          `<span class="upload-tag" style="background-color:${t.color}18; color:${t.color};">${t.name}</span>`
-        ).join('') + (resolvedTags.length > 3 ? `<span class="upload-tag-more">+${resolvedTags.length - 3}</span>` : '')
-      : '<span class="upload-tag-none">—</span>';  // Fallback: em dash if no tags
+    var safeTags = Array.isArray(vid.tags) ? vid.tags : [];
+    var resolvedTags = safeTags.map(function(t) {
+      var found = tags.find(function(at) { return at && at.id === t; });
+      if (found) return { name: found.name, color: found.color };
+      return { name: t, color: 'var(--accent)' };
+    }).filter(Boolean);
+    var tagHtml = resolvedTags.length > 0
+      ? resolvedTags.slice(0, 3).map(function(t) {
+          return '<span class="upload-tag" style="background-color:' + esc(t.color) + '18; color:' + esc(t.color) + ';">' + esc(t.name) + '</span>';
+        }).join('') + (resolvedTags.length > 3 ? '<span class="upload-tag-more">+' + (resolvedTags.length - 3) + '</span>' : '')
+      : '<span class="upload-tag-none">—</span>';
 
-    // Determine the CSS class for the status badge (green for published, yellow for draft)
     const badgeClass = vid.status === 'published' ? 'badge-success' : 'badge-warning';
-    // Use the video's thumbnail URL or a dark placeholder SVG if none is set
     const thumbSrc = vid.thumbnail || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 9%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%231f1f1f%22/%3E%3C/svg%3E';
 
-    // Return the HTML template string for a single upload card
     return `
-      <div class="upload-card" style="animation-delay:${idx * 0.06}s">
+      <div class="upload-card">
         <div class="upload-card-thumb">
-          <!-- Thumbnail image with lazy loading; falls back to placeholder on error -->
-          <img src="${thumbSrc}" alt="${vid.title || ''}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 9%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%231f1f1f%22/%3E%3C/svg%3E'">
+          <img src="${esc(thumbSrc)}" alt="${esc(vid.title)}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 9%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%231f1f1f%22/%3E%3C/svg%3E'">
           <div class="upload-card-overlay">
-            <!-- Views count with an eye icon SVG -->
             <span class="upload-card-views">
               <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               ${Number(vid.views || 0).toLocaleString()}
             </span>
-            <!-- Status badge (published = green, otherwise draft = yellow) -->
-            <span class="badge ${badgeClass}">${vid.status || 'draft'}</span>
+            <span class="badge ${badgeClass}">${esc(vid.status || 'draft')}</span>
           </div>
         </div>
         <div class="upload-card-body">
-          <!-- Video title (fallback to "Untitled" if missing) -->
-          <h3 class="upload-card-title">${vid.title || 'Untitled'}</h3>
-          <!-- Tag pills row -->
+          <h3 class="upload-card-title">${esc(vid.title) || 'Untitled'}</h3>
           <div class="upload-card-tags">${tagHtml}</div>
         </div>
       </div>
     `;
-  }).join('');  // Join the array of HTML strings into one string for innerHTML
+  }).join('');
 }
 
 // ============================================================
@@ -161,19 +155,18 @@ function renderUpNextSelector(videos, tags) {
   // Find the corresponding video object from published list, or null if not found
   const selectedVideo = savedId ? published.find(v => v.id === savedId) : null;
 
-  // Inject the complete Up Next card HTML into the container
+  var esc = function(s) { return String(s||'').replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]||c; }); };
   container.innerHTML = `
     <div class="upnext-card">
       <div class="upnext-card-body">
         <div class="upnext-current">
           <span class="upnext-label">Currently pinned:</span>
-          <!-- If a video is pinned, show its thumbnail, title, and creator; otherwise show a "none" message -->
           ${selectedVideo
             ? `<div class="upnext-selected-video">
-                <img src="${selectedVideo.thumbnail || ''}" alt="" class="upnext-thumb">
+                <img src="${esc(selectedVideo.thumbnail || '')}" alt="" class="upnext-thumb">
                 <div class="upnext-info">
-                  <span class="upnext-title">${selectedVideo.title}</span>
-                  <span class="upnext-creator">${selectedVideo.creator}</span>
+                  <span class="upnext-title">${esc(selectedVideo.title)}</span>
+                  <span class="upnext-creator">${esc(selectedVideo.creator)}</span>
                 </div>
               </div>`
             : '<span class="upnext-none">None selected — showing auto-matched related videos</span>'
@@ -182,16 +175,14 @@ function renderUpNextSelector(videos, tags) {
         <div class="upnext-form">
           <label for="upnext-select" class="upnext-select-label">Select a video to pin as "Up Next":</label>
           <div class="upnext-select-row">
-            <!-- Dropdown listing all published videos; pre-select the previously saved one -->
             <select id="upnext-select" class="upnext-select">
               <option value="">— Auto (no pin) —</option>
               ${published.map(v => `
-                <option value="${v.id}" ${v.id === savedId ? 'selected' : ''}>
-                  ${v.title} (${v.creator})
+                <option value="${esc(v.id)}" ${v.id === savedId ? 'selected' : ''}>
+                  ${esc(v.title)} (${esc(v.creator)})
                 </option>
               `).join('')}
             </select>
-            <!-- Save button to persist the selection -->
             <button id="upnext-save-btn" class="btn btn-primary" style="white-space:nowrap; flex-shrink:0;">Save</button>
           </div>
         </div>
@@ -199,23 +190,21 @@ function renderUpNextSelector(videos, tags) {
     </div>
   `;
 
-  // Attach click event listener to the Save button (freshly created in the HTML above)
-  document.getElementById('upnext-save-btn').addEventListener('click', () => {
-    // Get the dropdown element and its currently selected value
-    const select = document.getElementById('upnext-select');
-    const val = select.value;
-    // If a video was selected, save its ID to localStorage
-    if (val) {
-      localStorage.setItem('up-next-video-id', val);
-      window.App.showToast('Up Next video pinned successfully!');
-    } else {
-      // If "Auto" was selected (empty value), remove the saved pin from localStorage
-      localStorage.removeItem('up-next-video-id');
-      window.App.showToast('Up Next pin removed. Auto-matching will be used.');
-    }
-    // Re-render the selector to reflect the updated selection
-    renderUpNextSelector(videos, tags);
-  });
+  var saveBtn = document.getElementById('upnext-save-btn');
+  var select = document.getElementById('upnext-select');
+  if (saveBtn && select) {
+    saveBtn.addEventListener('click', () => {
+      const val = select.value;
+      if (val) {
+        localStorage.setItem('up-next-video-id', val);
+        window.App.showToast('Up Next video pinned successfully!');
+      } else {
+        localStorage.removeItem('up-next-video-id');
+        window.App.showToast('Up Next pin removed. Auto-matching will be used.');
+      }
+      renderUpNextSelector(videos, tags);
+    });
+  }
 }
 
 // ============================================================

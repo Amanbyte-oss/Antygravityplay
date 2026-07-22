@@ -24,70 +24,153 @@ document.addEventListener('DOMContentLoaded', () => {
 
   renderTags(state);  // Initial render
 
-  // -------- Add tag input (Enter key) --------
-  document.getElementById('add-tag-input').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      const name = e.target.value.trim();
-      if (!name) return;  // Ignore empty input
-      // Check for duplicate tag names (case-insensitive)
-      if (state.tags.some(t => t.name.toLowerCase() === name.toLowerCase())) {
-        window.App.showToast('Tag already exists.', 'warning');
-        return;
-      }
-      // Create a new tag with a unique ID and random color
-      const id = 'tag-' + Date.now();
-      const color = TAG_PALETTE[Math.floor(Math.random() * TAG_PALETTE.length)];
-      state.tags.push({ id, name, color, usageCount: 0, createdDate: new Date().toISOString().split('T')[0] });
-      window.App.saveTags(state.tags);  // Persist
-      e.target.value = '';  // Clear the input
-      window.App.showToast('Tag added successfully.');
-      renderTags(state);  // Re-render
+  function addTagFromInput() {
+    const input = document.getElementById('add-tag-input');
+    const colorInput = document.getElementById('add-tag-color');
+    if (!input) return;
+    const name = input.value.trim();
+    if (!name) {
+      window.App.showToast('Please enter a tag name.', 'warning');
+      return;
     }
-  });
+    if (state.tags.some(t => t.name.toLowerCase() === name.toLowerCase())) {
+      window.App.showToast('Tag already exists.', 'warning');
+      return;
+    }
+    const id = 'tag-' + Date.now();
+    const color = colorInput ? colorInput.value : TAG_PALETTE[Math.floor(Math.random() * TAG_PALETTE.length)];
+    state.tags.push({ id, name, color, usageCount: 0, createdDate: new Date().toISOString().split('T')[0] });
+    window.App.saveTags(state.tags);
+    input.value = '';
+    window.App.showToast('Tag added successfully.');
+    renderTags(state);
+  }
+
+  // -------- Add tag input (Enter key) --------
+  const addTagInput = document.getElementById('add-tag-input');
+  if (addTagInput) {
+    addTagInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); addTagFromInput(); }
+    });
+  }
+
+  // -------- Add tag button click --------
+  const addTagBtn = document.getElementById('add-tag-btn');
+  if (addTagBtn) {
+    addTagBtn.addEventListener('click', addTagFromInput);
+  }
 
   // -------- Search input --------
   const searchInput = document.getElementById('table-search-input');
-  searchInput.addEventListener('input', () => {
-    state.searchQuery = searchInput.value.trim().toLowerCase();
-    state.currentPage = 1;  // Reset to first page
-    renderTags(state);
-  });
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      state.searchQuery = searchInput.value.trim().toLowerCase();
+      state.currentPage = 1;
+      renderTags(state);
+    });
+  }
 
   // -------- Sort dropdown --------
-  document.getElementById('sort-select').addEventListener('change', function() {
-    const [field, order] = this.value.split('-');  // e.g., "name-asc"
-    state.sortBy = field;
-    state.sortOrder = order;
-    state.currentPage = 1;
-    renderTags(state);
-  });
+  const sortSelect = document.getElementById('sort-select');
+  if (sortSelect) {
+    sortSelect.addEventListener('change', function() {
+      const [field, order] = this.value.split('-');
+      state.sortBy = field;
+      state.sortOrder = order;
+      state.currentPage = 1;
+      renderTags(state);
+    });
+  }
 
   // -------- Merge button --------
-  document.getElementById('merge-btn').addEventListener('click', () => mergeTags(state));
+  const mergeBtn = document.getElementById('merge-btn');
+  if (mergeBtn) mergeBtn.addEventListener('click', () => mergeTags(state));
 
   // -------- Header "select all" checkbox --------
-  document.getElementById('header-checkbox').addEventListener('change', function() {
-    document.querySelectorAll('.tag-card-checkbox').forEach(cb => {
-      cb.checked = this.checked;
-      const id = cb.dataset.id;
-      if (this.checked) {
-        if (!state.selectedIds.includes(id)) state.selectedIds.push(id);
-      } else {
-        state.selectedIds = state.selectedIds.filter(v => v !== id);
-      }
+  const headerCheckbox = document.getElementById('header-checkbox');
+  if (headerCheckbox) {
+    headerCheckbox.addEventListener('change', function() {
+      document.querySelectorAll('.tag-card-checkbox').forEach(cb => {
+        cb.checked = this.checked;
+        const id = cb.dataset.id;
+        if (this.checked) {
+          if (!state.selectedIds.includes(id)) state.selectedIds.push(id);
+        } else {
+          state.selectedIds = state.selectedIds.filter(v => v !== id);
+        }
+      });
+      updateMergeBar(state);
     });
-    updateMergeBar(state);  // Show/hide the merge bar
-  });
+  }
 
   // -------- Delete confirmation modal close handlers --------
-  document.getElementById('confirm-delete-overlay').querySelector('.modal-close').addEventListener('click', () => closeModal('confirm-delete-overlay'));
-  document.getElementById('cancel-delete-btn').addEventListener('click', () => closeModal('confirm-delete-overlay'));
-  document.getElementById('confirm-delete-overlay').addEventListener('click', (e) => {
-    if (e.target === e.currentTarget) closeModal('confirm-delete-overlay');  // Click on backdrop closes
-  });
-  // Escape key closes the modal
+  const deleteOverlay = document.getElementById('confirm-delete-overlay');
+  if (deleteOverlay) {
+    const modalClose = deleteOverlay.querySelector('.modal-close');
+    if (modalClose) modalClose.addEventListener('click', () => closeModal('confirm-delete-overlay'));
+    deleteOverlay.addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) closeModal('confirm-delete-overlay');
+    });
+  }
+  const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+  if (cancelDeleteBtn) cancelDeleteBtn.addEventListener('click', () => closeModal('confirm-delete-overlay'));
+
+  // -------- Bulk delete modal close handlers --------
+  const bulkDeleteOverlay = document.getElementById('confirm-bulk-delete-overlay');
+  if (bulkDeleteOverlay) {
+    const bdClose = bulkDeleteOverlay.querySelector('.modal-close');
+    if (bdClose) bdClose.addEventListener('click', () => closeModal('confirm-bulk-delete-overlay'));
+    bulkDeleteOverlay.addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) closeModal('confirm-bulk-delete-overlay');
+    });
+  }
+  const cancelBulkDeleteBtn = document.getElementById('cancel-bulk-delete-btn');
+  if (cancelBulkDeleteBtn) cancelBulkDeleteBtn.addEventListener('click', () => closeModal('confirm-bulk-delete-overlay'));
+
+  // -------- Bulk delete button in merge bar --------
+  const bulkDeleteBtn = document.getElementById('bulk-delete-btn');
+  var bulkDeleteWarningText = document.getElementById('bulk-delete-warning-text');
+  var confirmBulkDeleteBtn = document.getElementById('confirm-bulk-delete-btn');
+  if (bulkDeleteBtn && confirmBulkDeleteBtn) {
+    bulkDeleteBtn.addEventListener('click', function() {
+      if (state.selectedIds.length === 0) return;
+      var names = state.selectedIds.map(function(id) {
+        var t = state.tags.find(function(tg) { return tg.id === id; });
+        return t ? t.name : id;
+      });
+      var affectedVids = 0;
+      var allVids = window.App.getVideos();
+      state.selectedIds.forEach(function(id) {
+        affectedVids += allVids.filter(function(v) { return v.tags && v.tags.includes(id); }).length;
+      });
+      if (bulkDeleteWarningText) {
+        bulkDeleteWarningText.textContent = 'Delete ' + state.selectedIds.length + ' tag' + (state.selectedIds.length !== 1 ? 's' : '') + ' (' + names.join(', ') + ')? ' + affectedVids + ' video' + (affectedVids !== 1 ? 's are' : ' is') + ' affected.';
+      }
+      openModal('confirm-bulk-delete-overlay');
+    });
+
+    confirmBulkDeleteBtn.addEventListener('click', function() {
+      var idsToDelete = state.selectedIds.slice();
+      var allVids = window.App.getVideos();
+      // Remove tags from all videos
+      allVids.forEach(function(v) {
+        if (v.tags) {
+          v.tags = v.tags.filter(function(t) { return idsToDelete.indexOf(t) === -1; });
+        }
+      });
+      // Remove tags from state
+      state.tags = state.tags.filter(function(t) { return idsToDelete.indexOf(t.id) === -1; });
+      window.App.saveVideos(allVids);
+      window.App.saveTags(state.tags);
+      state.selectedIds = [];
+      closeModal('confirm-bulk-delete-overlay');
+      window.App.showToast('Deleted ' + idsToDelete.length + ' tag' + (idsToDelete.length !== 1 ? 's' : '') + '.');
+      renderTags(state);
+    });
+  }
+
   window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeModal('confirm-delete-overlay');
+    if (e.key === 'Escape') { closeModal('confirm-delete-overlay'); closeModal('confirm-bulk-delete-overlay'); }
   });
 });
 
@@ -172,6 +255,7 @@ function getMaxUsage(tags) {
  * @param {Object} state - The central state object
  */
 function renderTags(state) {
+  var esc = function(s) { return String(s||'').replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]||c; }); };
   // Step 1: Render the tag chips bar at the top
   renderTagChips(state);
 
@@ -206,7 +290,7 @@ function renderTags(state) {
 
   // Step 5: Update the count display
   const totalItems = filtered.length;
-  countSpan.textContent = `${totalItems} tag${totalItems !== 1 ? 's' : ''}`;
+  if (countSpan) countSpan.textContent = `${totalItems} tag${totalItems !== 1 ? 's' : ''}`;
 
   // Step 6: Paginate
   const totalPages = Math.ceil(totalItems / state.itemsPerPage) || 1;
@@ -230,10 +314,10 @@ function renderTags(state) {
     const usagePercent = Math.round((usageCount / maxUsage) * 100);
     // Check if this tag is selected for merge
     const isChecked = state.selectedIds.includes(tag.id) ? 'checked' : '';
-    const color = tag.color || '#888';  // Fallback color
+    const color = esc(tag.color || '#888');  // Fallback color
 
     return `
-      <div class="tag-card" data-id="${tag.id}" style="animation-delay:${idx * 0.05}s; --tag-color:${color};">
+      <div class="tag-card" data-id="${tag.id}" style="--tag-color:${color};">
         <!-- Color accent bar at the top of the card -->
         <div class="tag-card-accent" style="background:linear-gradient(90deg, ${color}, ${color}44);"></div>
         <!-- Checkbox for merge selection -->
@@ -243,8 +327,11 @@ function renderTags(state) {
         <div class="tag-card-body">
           <!-- Tag name row with color dot and clickable name (inline edit) -->
           <div class="tag-card-name-row">
-            <span class="tag-card-dot" style="background-color:${color};"></span>
-            <span class="tag-card-name" data-id="${tag.id}">${tag.name}</span>
+            <span class="tag-card-dot-wrap" data-id="${tag.id}">
+              <span class="tag-card-dot" style="background-color:${color};"></span>
+              <input type="color" class="tag-color-picker" value="${color}" title="Change tag color">
+            </span>
+            <span class="tag-card-name" data-id="${tag.id}">${esc(tag.name)}</span>
           </div>
           <!-- Usage count with proportional bar -->
           <div class="tag-card-usage">
@@ -254,7 +341,7 @@ function renderTags(state) {
             </div>
           </div>
           <!-- Created date -->
-          <div class="tag-card-date">${tag.createdDate || '—'}</div>
+          <div class="tag-card-date">${esc(tag.createdDate || '—')}</div>
         </div>
         <!-- Action buttons: edit (rename) and delete -->
         <div class="tag-card-actions">
@@ -355,27 +442,46 @@ function bindTagCardActions(state) {
       const videos = window.App.getVideos();
       const usageCount = videos.filter(v => v.tags && v.tags.includes(tag.id)).length;
       // Update the modal warning text
-      document.getElementById('delete-warning-text').textContent = usageCount > 0
+      var warningText = document.getElementById('delete-warning-text');
+      if (warningText) warningText.textContent = usageCount > 0
         ? `This tag is used in ${usageCount} video${usageCount !== 1 ? 's' : ''}.`
         : 'This tag is not used in any videos.';
 
       // Clone the confirm button to remove any previously attached event listeners
-      document.getElementById('confirm-delete-btn').replaceWith(
-        document.getElementById('confirm-delete-btn').cloneNode(true)
-      );
-      // Attach fresh click handler to the cloned confirm button
-      document.getElementById('confirm-delete-btn').addEventListener('click', () => {
-        // Remove the tag from state
-        state.tags = state.tags.filter(t => t.id !== tag.id);
-        window.App.saveTags(state.tags);  // Persist
-        // Also remove from selectedIds if it was selected
-        state.selectedIds = state.selectedIds.filter(id => id !== tag.id);
-        window.App.showToast('Tag deleted.');
-        closeModal('confirm-delete-overlay');  // Close the modal
-        renderTags(state);  // Re-render
-      });
+      var confirmBtn = document.getElementById('confirm-delete-btn');
+      if (confirmBtn) {
+        confirmBtn.replaceWith(confirmBtn.cloneNode(true));
+        // Attach fresh click handler to the cloned confirm button
+        var clonedBtn = document.getElementById('confirm-delete-btn');
+        if (clonedBtn) clonedBtn.addEventListener('click', () => {
+          // Remove the tag from state
+          state.tags = state.tags.filter(t => t.id !== tag.id);
+          window.App.saveTags(state.tags);  // Persist
+          // Also remove from selectedIds if it was selected
+          state.selectedIds = state.selectedIds.filter(id => id !== tag.id);
+          window.App.showToast('Tag deleted.');
+          closeModal('confirm-delete-overlay');  // Close the modal
+          renderTags(state);  // Re-render
+        });
 
-      openModal('confirm-delete-overlay');  // Show the modal
+        openModal('confirm-delete-overlay');  // Show the modal
+      }
+    });
+  });
+
+  // -------- Inline color picker change (tag color dot) --------
+  document.querySelectorAll('.tag-color-picker').forEach(function(picker) {
+    picker.addEventListener('input', function() {
+      var wrap = this.closest('.tag-card-dot-wrap');
+      if (!wrap) return;
+      var id = wrap.dataset.id;
+      var tag = state.tags.find(function(t) { return t.id === id; });
+      if (!tag) return;
+      tag.color = this.value;
+      // Update the dot color immediately
+      var dot = wrap.querySelector('.tag-card-dot');
+      if (dot) dot.style.backgroundColor = this.value;
+      window.App.saveTags(state.tags);
     });
   });
 
@@ -456,11 +562,13 @@ function renderPagination(state, totalItems, totalPages) {
 
   // Previous page button (disabled on first page)
   if (state.currentPage > 1) {
-    document.getElementById('prev-page').addEventListener('click', () => { state.currentPage--; renderTags(state); });
+    var prevBtn = document.getElementById('prev-page');
+    if (prevBtn) prevBtn.addEventListener('click', () => { state.currentPage--; renderTags(state); });
   }
   // Next page button (disabled on last page)
   if (state.currentPage < totalPages) {
-    document.getElementById('next-page').addEventListener('click', () => { state.currentPage++; renderTags(state); });
+    var nextBtn = document.getElementById('next-page');
+    if (nextBtn) nextBtn.addEventListener('click', () => { state.currentPage++; renderTags(state); });
   }
   // Page number buttons
   container.querySelectorAll('[data-page]').forEach(btn => {
@@ -481,6 +589,8 @@ function updateMergeBar(state) {
   const countSpan = document.getElementById('merge-count');
   const select = document.getElementById('merge-target-select');
 
+  if (!bar) return;
+
   // Need at least 2 tags selected to enable merging
   if (state.selectedIds.length < 2) {
     bar.classList.add('hidden');  // Hide the merge bar
@@ -488,11 +598,11 @@ function updateMergeBar(state) {
   }
 
   bar.classList.remove('hidden');  // Show the merge bar
-  countSpan.textContent = state.selectedIds.length;  // Update selected count
+  if (countSpan) countSpan.textContent = state.selectedIds.length;  // Update selected count
 
   // Populate the target dropdown with the currently selected tags
   const selectedTags = state.tags.filter(t => state.selectedIds.includes(t.id));
-  select.innerHTML = selectedTags.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+  select.innerHTML = selectedTags.map(t => `<option value="${t.id}">${esc(t.name)}</option>`).join('');
 }
 
 // ============================================================
@@ -506,7 +616,9 @@ function updateMergeBar(state) {
  */
 function mergeTags(state) {
   // Get the target tag ID from the dropdown
-  const targetId = document.getElementById('merge-target-select').value;
+  var targetSelect = document.getElementById('merge-target-select');
+  if (!targetSelect) return;
+  const targetId = targetSelect.value;
   if (!targetId) return;  // No target selected
 
   // IDs to merge = all selected IDs except the target
@@ -550,10 +662,10 @@ function mergeTags(state) {
  * Opens a modal overlay by adding the "active" class.
  * @param {string} id - The ID of the modal overlay element
  */
-function openModal(id) { document.getElementById(id).classList.add('active'); }
+function openModal(id) { var el = document.getElementById(id); if (el) el.classList.add('active'); }
 
 /**
  * Closes a modal overlay by removing the "active" class.
  * @param {string} id - The ID of the modal overlay element
  */
-function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+function closeModal(id) { var el = document.getElementById(id); if (el) el.classList.remove('active'); }

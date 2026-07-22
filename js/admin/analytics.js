@@ -46,7 +46,8 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // -------- Export data button --------
-  document.getElementById('export-data-btn').addEventListener('click', () => {
+  var exportBtn = document.getElementById('export-data-btn');
+  if (exportBtn) exportBtn.addEventListener('click', () => {
     if (!analyticsData) return;  // No data to export
     // Create a JSON blob and trigger a download
     const blob = new Blob([JSON.stringify(analyticsData, null, 2)], { type: 'application/json' });
@@ -174,10 +175,14 @@ function initAnalytics(data, range) {
     const sliced = data.viewsByDay.slice(-days);
 
     // -------- Update summary stat cards --------
-    document.getElementById('stat-total-views').textContent = data.totalViews.toLocaleString();
-    document.getElementById('stat-total-likes').textContent = data.totalLikes.toLocaleString();
-    document.getElementById('stat-total-videos').textContent = data.totalVideos;
-    document.getElementById('stat-avg-watch').textContent = data.avgWatchTime;
+    var statViews = document.getElementById('stat-total-views');
+    var statLikes = document.getElementById('stat-total-likes');
+    var statVideos = document.getElementById('stat-total-videos');
+    var statAvg = document.getElementById('stat-avg-watch');
+    if (statViews) statViews.textContent = data.totalViews.toLocaleString();
+    if (statLikes) statLikes.textContent = data.totalLikes.toLocaleString();
+    if (statVideos) statVideos.textContent = data.totalVideos;
+    if (statAvg) statAvg.textContent = data.avgWatchTime;
 
     // -------- Calculate views change (recent half vs previous half) --------
     const half = Math.floor(sliced.length / 2);
@@ -189,7 +194,8 @@ function initAnalytics(data, range) {
       ? '<polyline points="18 15 12 9 6 15"></polyline>'
       : '<polyline points="6 9 12 15 18 9"></polyline>';
     // Update the views change indicator in the DOM
-    document.getElementById('stat-views-change').innerHTML = `
+    var viewsChange = document.getElementById('stat-views-change');
+    if (viewsChange) viewsChange.innerHTML = `
       <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">${arrow}</svg>
       <span>${change >= 0 ? '+' : ''}${change}% vs last period</span>
     `;
@@ -595,7 +601,8 @@ function drawBarChart(canvasId, data) {
     // Show tooltip if hovering a bar
     if (found !== -1) {
       const d = data[found];
-      let label = d.title;
+      var esc = function(s) { return String(s||'').replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]||c; }); };
+      let label = esc(d.title);
       if (label.length > 30) label = label.slice(0, 28) + '...';
       tooltip.innerHTML = `<strong>${label}</strong>: ${d.views.toLocaleString()} views`;
       tooltip.style.left = (e.clientX + 12) + 'px';
@@ -762,7 +769,7 @@ function drawPieChart(canvasId, data) {
       hoveredSeg = seg;
     }
     if (seg !== -1) {
-      tooltip.innerHTML = `<strong>${data[seg].name}</strong>: ${data[seg].percentage}% of content`;
+      tooltip.innerHTML = `<strong>${esc(data[seg].name)}</strong>: ${data[seg].percentage}% of content`;
       tooltip.style.left = (e.clientX + 12) + 'px';
       tooltip.style.top = (e.clientY - 10) + 'px';
       tooltip.classList.add('visible');
@@ -781,12 +788,13 @@ function drawPieChart(canvasId, data) {
   };
 
   // -------- Legend with hover interaction --------
+  var esc = function(s) { return String(s||'').replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]||c; }); };
   const legend = document.getElementById('pie-legend');
   if (legend) {
     legend.innerHTML = data.map((d, i) => `
       <div class="chart-legend-item" data-index="${i}">
         <span class="chart-legend-dot" style="background-color:${PIE_COLORS[i % PIE_COLORS.length]}"></span>
-        ${d.name} (${d.percentage}%)
+        ${esc(d.name)} (${d.percentage}%)
       </div>
     `).join('');
     legend.querySelectorAll('.chart-legend-item').forEach(el => {

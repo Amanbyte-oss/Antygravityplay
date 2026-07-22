@@ -106,7 +106,7 @@ function onYouTubeIframeAPIReady() {
   youtubeApiCallbacks = [];
 }
 
-function loadYouTubeAPI(callback) {
+function loadYouTubeAPI(callback, onError) {
   if (youtubeApiLoaded || (window.YT && window.YT.Player)) {
     youtubeApiLoaded = true;
     callback();
@@ -117,8 +117,13 @@ function loadYouTubeAPI(callback) {
     var tag = document.createElement('script');
     tag.id = 'youtube-iframe-api';
     tag.src = 'https://www.youtube.com/iframe_api';
+    tag.onerror = function() { if (onError) onError(); };
     document.head.appendChild(tag);
   }
+  // Timeout: if API doesn't load in 10s, call error fallback
+  setTimeout(function() {
+    if (!window.YT || !window.YT.Player) { if (onError) onError(); }
+  }, 10000);
 }
 
 function extractYouTubeId(url) {
@@ -129,7 +134,9 @@ function extractYouTubeId(url) {
 function getYouTubeEmbedUrl(video) {
   if (video.embedUrl) return video.embedUrl;
   var ids = ['aqz-KE-bpKQ', 'Z3nTfB5yCpM', 'R6MlUcmOul8'];
-  var num = parseInt(video.id.replace('vid-', ''), 10);
+  var m = (video.id || '').match(/^vid-(\d+)$/);
+  if (!m) return '';
+  var num = parseInt(m[1], 10);
   return 'https://www.youtube.com/embed/' + ids[(num - 1) % 3];
 }
 
@@ -215,6 +222,23 @@ function setupVideoPlayer(video, onFirstPlay, handleLike) {
     embedPlaceholder.style.position = 'absolute';
     embedPlaceholder.style.inset = '0';
 
+    var showYTFallback = function() {
+      loadingEl.style.display = 'none';
+      videoEl.style.display = 'none';
+      embedPlaceholder.style.display = 'flex';
+      embedPlaceholder.style.flexDirection = 'column';
+      embedPlaceholder.style.alignItems = 'center';
+      embedPlaceholder.style.justifyContent = 'center';
+      embedPlaceholder.innerHTML =
+        '<svg width="48" height="48" fill="none" stroke="var(--text-muted)" stroke-width="1.5" viewBox="0 0 24 24">' +
+        '<rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>' +
+        '<line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line>' +
+        '<line x1="2" y1="12" x2="22" y2="12"></line></svg>' +
+        '<p style="color:var(--text-muted); text-align:center; max-width:360px;">Video player could not be loaded. Try opening it directly.</p>' +
+        '<a href="' + (video.videoUrl || resolvedEmbedUrl) + '" target="_blank" rel="noopener noreferrer" ' +
+        'style="display:inline-block; padding:8px 20px; background:var(--accent); color:#fff; border-radius:var(--radius-full); text-decoration:none;">' +
+        'Open in YouTube &nearr;</a>';
+    };
     loadYouTubeAPI(function() {
       var videoId = extractYouTubeId(resolvedEmbedUrl);
       if (!videoId) {
@@ -283,7 +307,7 @@ function setupVideoPlayer(video, onFirstPlay, handleLike) {
           }
         }
       });
-    });
+    }, showYTFallback);
     // ─── SCENARIO 2: OTHER EMBED (HTTP, uses iframe) ───
   } else if (isEmbedVideo && !isFileProtocol) {
     // Hide the native video element
@@ -496,11 +520,7 @@ function setupYouTubeControls(video, ytPlayer, loadingEl, onFirstPlay, handleLik
   if (overlay) {
     overlay.addEventListener('mousemove', showControls);
     overlay.addEventListener('touchstart', showControlsOnce, { passive: true });
-    overlay.addEventListener('click', function(e) {
-      var isControl = e.target.closest('button, .player-bottom, .player-emoji-bar, .player-error, .player-endscreen, .player-seek-indicator');
-      if (!isControl) togglePlay();
-      else showControlsOnce();
-    });
+    overlay.addEventListener('click', showControlsOnce);
   }
 
   var fmt = function(s) {
@@ -818,9 +838,10 @@ function setupYouTubeControls(video, ytPlayer, loadingEl, onFirstPlay, handleLik
   }
 
   // ─── EMOJI REACTIONS ─────────────────
-  if (emojiBar) {
+  (function() {
     var EMOJI_KEY = 'emoji-reactions-' + video.id;
     var emojiCounts = {};
+    try { emojiCounts = JSON.parse(localStorage.getItem(EMOJI_KEY)) || {}; } catch (_) {}
 
     var updateEmojiUI = function() {
       document.querySelectorAll('.emoji-btn').forEach(function(btn) {
@@ -832,25 +853,19 @@ function setupYouTubeControls(video, ytPlayer, loadingEl, onFirstPlay, handleLik
     };
     updateEmojiUI();
 
-    emojiBar.addEventListener('click', function(e) {
+    var handleEmojiClick = function(e) {
       var btn = e.target.closest('.emoji-btn');
       if (!btn) return;
       var emoji = btn.dataset.emoji;
       emojiCounts[emoji] = (emojiCounts[emoji] || 0) + 1;
       try { localStorage.setItem(EMOJI_KEY, JSON.stringify(emojiCounts)); } catch (_) {}
       updateEmojiUI();
+    };
 
-      var float = document.createElement('div');
-      float.className = 'emoji-float';
-      float.innerText = emoji;
-      var rect = btn.getBoundingClientRect();
-      var containerRect = container.getBoundingClientRect();
-      float.style.left = (rect.left - containerRect.left + rect.width / 2 - 14) + 'px';
-      float.style.top = (rect.top - containerRect.top - 10) + 'px';
-      container.appendChild(float);
-      setTimeout(function() { float.remove(); }, 1200);
-    });
-  }
+    if (emojiBar) emojiBar.addEventListener('click', handleEmojiClick);
+    var videoReactionsBar = document.getElementById('video-reactions-bar');
+    if (videoReactionsBar) videoReactionsBar.addEventListener('click', handleEmojiClick);
+  })();
 
   // Cleanup on page unload
   window.addEventListener('beforeunload', function() {
@@ -1019,7 +1034,6 @@ function initCustomPlayer(video, videoEl, onFirstPlay, handleLike) {
   const speedBtn = document.getElementById('player-speed-btn');
   const speedMenu = document.getElementById('player-speed-menu');
   const theaterBtn = document.getElementById('player-theater-btn');
-  const pipBtn = document.getElementById('player-pip-btn');
   const fullscreenBtn = document.getElementById('player-fullscreen-btn');
   const endScreen = document.getElementById('player-endscreen');
   const endRelated = document.getElementById('player-end-related');
@@ -1074,12 +1088,8 @@ function initCustomPlayer(video, videoEl, onFirstPlay, handleLike) {
   overlay.addEventListener('mousemove', showControls);
   // Show controls on touch start (mobile), with passive flag for performance
   overlay.addEventListener('touchstart', showControlsOnce, { passive: true });
-  // Single click toggles play/pause, but not when clicking on controls
-  overlay.addEventListener('click', (e) => {
-    const isControl = e.target.closest('button, .player-bottom, .player-emoji-bar, .player-error, .player-endscreen, .player-seek-indicator');
-    if (!isControl) togglePlay();
-    else showControlsOnce();
-  });
+  // Show controls on any click within the overlay
+  overlay.addEventListener('click', showControlsOnce);
 
   // ─── FORMAT TIME ────────────────────────────────────────
   // Converts seconds (number) to a "M:SS" display string
@@ -1232,7 +1242,7 @@ function initCustomPlayer(video, videoEl, onFirstPlay, handleLike) {
       // Convert pixel distance to a percentage of container width, scaled by 2x for sensitivity
       const seekPct = (dx / container.offsetWidth) * 2;
       // Calculate seek delta clamped to +/-30 seconds
-      const delta = duration * Math.max(-30, Math.min(30, seekPct));
+      const delta = Math.max(-30, Math.min(30, duration * seekPct));
       // Perform the seek
       seekRelative(delta);
     }
@@ -1418,7 +1428,7 @@ function initCustomPlayer(video, videoEl, onFirstPlay, handleLike) {
   }
 
   // ─── PLAYBACK SPEED ─────────────────────────────────────
-  if (speedBtn) {
+  if (speedBtn && speedMenu) {
     // Toggle the speed menu on button click (prevent event from bubbling)
     speedBtn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -1445,7 +1455,7 @@ function initCustomPlayer(video, videoEl, onFirstPlay, handleLike) {
     });
 
     // Close the speed menu when clicking anywhere else on the document
-    document.addEventListener('click', () => { speedMenu.style.display = 'none'; });
+    document.addEventListener('click', () => { if (speedMenu) speedMenu.style.display = 'none'; });
   }
 
   // ─── THEATER MODE ─────────────────────────────────────
@@ -1460,24 +1470,6 @@ function initCustomPlayer(video, videoEl, onFirstPlay, handleLike) {
         : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>';
       // Notify the user
       window.App.showToast(isTheater ? 'Theater mode on' : 'Theater mode off', 'info');
-    });
-  }
-
-  // ─── MINI PLAYER (PIP) ────────────────────────────────
-  if (pipBtn) {
-    pipBtn.addEventListener('click', async () => {
-      try {
-        if (document.pictureInPictureElement) {
-          // Exit Picture-in-Picture mode if already in it
-          await document.exitPictureInPicture();
-        } else {
-          // Request Picture-in-Picture for the video element
-          await videoEl.requestPictureInPicture();
-        }
-      } catch (_) {
-        // Show error if PIP is not supported or denied
-        window.App.showToast('Picture-in-Picture not supported', 'error');
-      }
     });
   }
 
@@ -1545,11 +1537,10 @@ function initCustomPlayer(video, videoEl, onFirstPlay, handleLike) {
     });
   }
 
-  // ─── EMOJI REACTIONS (session-based, resets each page load) ─────────────────
-  // LocalStorage key for persisting emoji reaction counts for this video
+  // ─── EMOJI REACTIONS ─────────────────
   const EMOJI_KEY = 'emoji-reactions-' + video.id;
-  // Object to store current emoji counts in memory
   let emojiCounts = {};
+  try { emojiCounts = JSON.parse(localStorage.getItem(EMOJI_KEY)) || {}; } catch (_) {}
 
   // Updates the count display for each emoji button
   const updateEmojiUI = () => {
@@ -1564,32 +1555,30 @@ function initCustomPlayer(video, videoEl, onFirstPlay, handleLike) {
   updateEmojiUI();
 
   // Handle emoji click: increment count, persist, update UI, and show floating animation
-  emojiBar.addEventListener('click', (e) => {
-    // Find the clicked emoji button
+  const handleEmojiClick = (e) => {
     const btn = e.target.closest('.emoji-btn');
     if (!btn) return;
     const emoji = btn.dataset.emoji;
-    // Increment the count for this emoji
     emojiCounts[emoji] = (emojiCounts[emoji] || 0) + 1;
-    // Persist to localStorage
     try { localStorage.setItem(EMOJI_KEY, JSON.stringify(emojiCounts)); } catch (_) {}
-    // Update the UI
     updateEmojiUI();
 
-    // Create a floating emoji that animates upward
-    const float = document.createElement('div');
-    float.className = 'emoji-float';
-    float.innerText = emoji;
-    // Position the floating emoji above the clicked button
-    const rect = btn.getBoundingClientRect();
-    const containerRect = container.getBoundingClientRect();
-    float.style.left = (rect.left - containerRect.left + rect.width / 2 - 14) + 'px';
-    float.style.top = (rect.top - containerRect.top - 10) + 'px';
-    // Add to the player container
-    container.appendChild(float);
-    // Remove after the animation completes (1.2s)
-    setTimeout(() => float.remove(), 1200);
-  });
+    // Only create floating emoji if clicked from within the player
+    if (container && container.contains(btn)) {
+      const float = document.createElement('div');
+      float.className = 'emoji-float';
+      float.innerText = emoji;
+      const rect = btn.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+      float.style.left = (rect.left - containerRect.left + rect.width / 2 - 14) + 'px';
+      float.style.top = (rect.top - containerRect.top - 10) + 'px';
+      container.appendChild(float);
+      setTimeout(() => float.remove(), 1200);
+    }
+  };
+
+  const videoReactionsBar = document.getElementById('video-reactions-bar');
+  if (videoReactionsBar) videoReactionsBar.addEventListener('click', handleEmojiClick);
 
   // ─── LOADING STATE ───────────────────────────────────
   // Show a loading spinner when the video is buffering
@@ -1659,12 +1648,20 @@ function setupVideoDetails(video, handleLike) {
   // Set creator avatar initial letter
   if (creatorAvatarEl) creatorAvatarEl.innerText = video.creator.charAt(0).toUpperCase();
 
+  // Tag color helper
+  function tagColor(str) {
+    var hash = 0;
+    for (var i = 0; i < str.length; i++) { hash = str.charCodeAt(i) + ((hash << 5) - hash); }
+    var colors = ['#0070f3','#7928ca','#ff0080','#ffa42b','#50e3c2','#539df5','#1db954','#f3727f','#e91e63','#ff5722','#9c27b0','#00bcd4','#ff9800','#4caf50','#f44336','#3f51b5'];
+    return colors[Math.abs(hash) % colors.length];
+  }
+
   // Render tag badges for the video's tags
   if (tagsRow) {
-    const allTags = window.App.getTags();
-    tagsRow.innerHTML = video.tags.map(tagId => {
-      const tag = allTags.find(t => t.id === tagId);
-      return tag ? window.Components.renderTagCard(tag) : '';
+    var esc = function(s) { return String(s||'').replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]||c; }); };
+    tagsRow.innerHTML = (video.tags || []).map(function(t) {
+      var c = tagColor(t);
+      return '<a href="./tag.html?tag=' + encodeURIComponent(t) + '" class="tag-badge" style="border-left:4px solid ' + c + '; background:' + c + '18;">' + esc(t) + '</a>';
     }).join('');
   }
 
@@ -1742,14 +1739,15 @@ function setupRelatedSidebar(currentVideo, allVideos) {
     return;
   }
 
+  var esc = function(s) { return String(s||'').replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]||c; }); };
   // Renders a single related video card with optional "Up Next" badge
   const renderCard = (vid, isPinned = false) =>
     '<div class="related-card" data-href="./watch.html?id=' + encodeURIComponent(vid.id) + '" role="button" tabindex="0">' +
-    '<div class="related-thumb"><img src="' + vid.thumbnail + '" alt="' + vid.title + ' Thumbnail" loading="lazy">' +
-    '<span class="duration-badge" style="font-size: 10px; padding: 1px 4px;">' + vid.duration + '</span></div>' +
-    '<div class="related-info"><h4 class="related-title">' + vid.title +
+    '<div class="related-thumb"><img src="' + esc(vid.thumbnail) + '" alt="' + esc(vid.title) + ' Thumbnail" loading="lazy">' +
+    '<span class="duration-badge" style="font-size: 10px; padding: 1px 4px;">' + esc(vid.duration) + '</span></div>' +
+    '<div class="related-info"><h4 class="related-title">' + esc(vid.title) +
     (isPinned ? ' <span class="upnext-badge">Up Next</span>' : '') + '</h4>' +
-    '<div class="related-meta"><div>' + vid.creator + '</div><div>' +
+    '<div class="related-meta"><div>' + esc(vid.creator) + '</div><div>' +
     Number(vid.views).toLocaleString() + ' views</div></div></div></div>';
 
   // Build the HTML: pinned video first (if any), then related videos

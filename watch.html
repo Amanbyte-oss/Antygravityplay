@@ -108,16 +108,6 @@
             <span id="player-seek-text">10s</span>
           </div>
 
-          <!-- Emoji Reactions Bar: floating reaction buttons -->
-          <div class="player-emoji-bar" id="player-emoji-bar">
-            <button class="emoji-btn" data-emoji="🔥">🔥<span class="emoji-count">0</span></button>
-            <button class="emoji-btn" data-emoji="❤️">❤️<span class="emoji-count">0</span></button>
-            <button class="emoji-btn" data-emoji="😂">😂<span class="emoji-count">0</span></button>
-            <button class="emoji-btn" data-emoji="😲">😲<span class="emoji-count">0</span></button>
-            <button class="emoji-btn" data-emoji="🎉">🎉<span class="emoji-count">0</span></button>
-            <button class="emoji-btn" data-emoji="👍">👍<span class="emoji-count">0</span></button>
-          </div>
-
           <!-- Bottom Controls: progress bar + control buttons -->
           <div class="player-bottom" id="player-bottom">
             <!-- Progress/scrub bar with buffered indicator -->
@@ -154,7 +144,7 @@
                 <span class="player-time" id="player-time-total">0:00</span>
               </div>
 
-              <!-- Right controls: volume, speed, theater, PiP, fullscreen -->
+              <!-- Right controls: volume, speed, theater, fullscreen -->
               <div class="player-controls-right">
                 <!-- Volume slider with mute toggle -->
                 <div class="player-volume-wrap" id="player-volume-wrap">
@@ -199,12 +189,6 @@
                 <button class="player-btn" id="player-theater-btn" aria-label="Theater mode">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line>
-                  </svg>
-                </button>
-
-                <button class="player-btn" id="player-pip-btn" aria-label="Picture in Picture">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><rect x="11" y="9" width="8" height="5" rx="1"></rect>
                   </svg>
                 </button>
 
@@ -286,6 +270,19 @@
         </div>
         <p id="watch-description" class="description-text">Description Loading...</p>
         <div id="watch-tags-row" class="tags-row"></div>
+
+        <!-- Emoji Reactions Bar (outside player, below description) -->
+        <div class="video-reactions-bar" id="video-reactions-bar">
+          <span class="reactions-label">Reactions</span>
+          <div class="reactions-emoji-row">
+            <button class="emoji-btn" data-emoji="🔥">🔥<span class="emoji-count">0</span></button>
+            <button class="emoji-btn" data-emoji="❤️">❤️<span class="emoji-count">0</span></button>
+            <button class="emoji-btn" data-emoji="😂">😂<span class="emoji-count">0</span></button>
+            <button class="emoji-btn" data-emoji="😲">😲<span class="emoji-count">0</span></button>
+            <button class="emoji-btn" data-emoji="🎉">🎉<span class="emoji-count">0</span></button>
+            <button class="emoji-btn" data-emoji="👍">👍<span class="emoji-count">0</span></button>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -382,6 +379,9 @@
 <script src="./js/main.js"></script>
 <script src="./js/components.js"></script>
 <script src="./js/animations.js"></script>
+<!-- supabase.js + supabase-api.js: Backend integration layer (optional) -->
+<script src="./js/supabase.js"></script>
+<script src="./js/supabase-api.js"></script>
 <!-- watch.js: Watch page logic — video player controller, emoji reactions,
      playlist management, metadata display, related videos, now-playing bar -->
 <script src="./js/watch.js"></script>

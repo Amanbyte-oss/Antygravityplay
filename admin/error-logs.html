@@ -71,25 +71,32 @@
       window.Components.injectAdminSidebar() on DOMContentLoaded. Renders
       the admin navigation menu with links to all admin sections.
     -->
-    <div id="sidebar-container"></div>
+    <div class="sidebar-overlay"></div>
+    <aside id="sidebar-container"></aside>
     <!-- ==================== MAIN CONTENT ==================== -->
     <main class="admin-main">
       <!-- ─── SECTION: MOBILE HEADER ──────────── -->
-      <!--
-        ADMIN HEADER (Mobile Top Bar):
-        Contains hamburger menu button for sidebar toggle on small screens,
-        the page title "Error Logs", and a flex spacer.
-      -->
-      <div class="admin-header">
-        <!-- HAMBURGER MENU: Toggles sidebar on mobile using SVG icon -->
-        <button class="admin-menu-btn" aria-label="Open menu">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-        </button>
-        <!-- PAGE TITLE: Displayed in the mobile header bar -->
-        <h1>Error Logs</h1>
-        <!-- SPACER: Fills remaining flex space in header row -->
-        <div class="flex-1"></div>
-      </div>
+      <header class="admin-header">
+        <div class="admin-header-left">
+          <button class="admin-menu-btn hidden" aria-label="Open sidebar menu" style="border:none;background:none;cursor:pointer;">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <span class="text-sm-bold">Console</span>
+        </div>
+        <div class="admin-header-right">
+          <a href="../index.html" class="btn btn-secondary">View Live Site</a>
+          <button class="theme-toggle" aria-label="Toggle theme">
+            <svg class="theme-icon-sun hidden" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line>
+            </svg>
+            <svg class="theme-icon-moon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </button>
+        </div>
+      </header>
       <!-- ─── SECTION: ADMIN CONTENT ──────────── -->
       <!--
         ADMIN CONTENT WRAPPER: Contains the main error log card.

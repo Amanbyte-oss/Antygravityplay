@@ -42,8 +42,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ─── 3. RETRIEVE VIDEOS FOR THIS TAG ───
-  // Filter only published videos that include the tag ID
-  const allVideos = window.App.getVideos().filter(v => v.status === 'published' && v.tags.includes(tag.id));
+  var currentTagName = tag.name;
+  var allVideos = window.App.getVideos().filter(function(v) {
+    if (v.status !== 'published') return false;
+    return (v.tags || []).indexOf(currentTagName) !== -1 || v.tags.indexOf(tag.id) !== -1;
+  });
 
   // ─── 4. SETUP TAG DETAILS HEADER ───
   // Update the hero banner with tag name, count, and color
@@ -97,53 +100,40 @@ function renderAllTagsView() {
   // Exit if the grid container doesn't exist
   if (!gridEl) return;
 
-  // Get all published videos and all tags
-  const allVideos = window.App.getVideos().filter(v => v.status === 'published');
-  const allTags = window.App.getTags();
+  var allVideos = window.App.getVideos().filter(function(v) { return v.status === 'published'; });
 
-  // ─── COUNT VIDEOS PER TAG ───
-  // Iterate through all published videos and count how many use each tag
-  const tagCounts = {};
-  allVideos.forEach(v => {
-    (v.tags || []).forEach(tId => {
-      tagCounts[tId] = (tagCounts[tId] || 0) + 1;
+  var tagCounts = {};
+  var tagSet = [];
+  allVideos.forEach(function(v) {
+    (v.tags || []).forEach(function(t) {
+      if (tagCounts[t]) { tagCounts[t]++; } else { tagCounts[t] = 1; }
+      if (tagSet.indexOf(t) === -1) tagSet.push(t);
     });
   });
+  tagSet.sort();
 
-  // Sort tags by usage count descending
-  const sortedTags = [...allTags].sort((a, b) => (tagCounts[b.id] || 0) - (tagCounts[a.id] || 0));
+  var sortedTags = tagSet.slice().sort(function(a, b) { return (tagCounts[b] || 0) - (tagCounts[a] || 0); });
 
-  // ─── INJECT ALL-TAGS GRID ───
-  gridEl.innerHTML = `
-    <div class="alltags-wrapper">
-      <!-- Search bar for live tag filtering -->
-      <div class="alltags-search-bar">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="alltags-search-icon">
-          <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-        <input type="text" id="alltags-search-input" class="alltags-search-input" placeholder="Search tags..." autofocus>
-      </div>
-      <!-- Grid of tag cards -->
-      <div id="alltags-grid" class="alltags-grid">
-        ${sortedTags.map(t => renderTagCard(t, tagCounts[t.id] || 0)).join('')}
-      </div>
-    </div>
-  `;
+  gridEl.innerHTML = '\
+    <div class="alltags-wrapper">\
+      <div class="alltags-search-bar">\
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="alltags-search-icon">\
+          <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>\
+        </svg>\
+        <input type="text" id="alltags-search-input" class="alltags-search-input" placeholder="Search tags..." autofocus>\
+      </div>\
+      <div id="alltags-grid" class="alltags-grid">\
+        ' + sortedTags.map(function(t) { return renderTagCardStr(t, tagCounts[t] || 0); }).join('') + '\
+      </div>\
+    </div>';
 
-  // ─── LIVE SEARCH FILTER ───
-  // Get references to the search input and the tag grid container
-  const searchInput = document.getElementById('alltags-search-input');
-  const gridContainer = document.getElementById('alltags-grid');
+  var searchInput = document.getElementById('alltags-search-input');
+  var gridContainer = document.getElementById('alltags-grid');
   if (searchInput && gridContainer) {
-    searchInput.addEventListener('input', () => {
-      // Get the search query in lowercase
-      const q = searchInput.value.toLowerCase().trim();
-      // Filter tags whose name includes the query
-      const filtered = q
-        ? sortedTags.filter(t => t.name.toLowerCase().includes(q))
-        : sortedTags;
-      // Re-render the grid with only matching tags
-      gridContainer.innerHTML = filtered.map(t => renderTagCard(t, tagCounts[t.id] || 0)).join('');
+    searchInput.addEventListener('input', function() {
+      var q = searchInput.value.toLowerCase().trim();
+      var filtered = q ? tagSet.filter(function(t) { return t.toLowerCase().includes(q); }) : tagSet;
+      gridContainer.innerHTML = filtered.map(function(t) { return renderTagCardStr(t, tagCounts[t] || 0); }).join('');
     });
   }
 
@@ -160,16 +150,25 @@ function renderAllTagsView() {
  * @returns {string} HTML string for the tag card
  */
 function renderTagCard(tag, count) {
-  return `
-    <a href="./tag.html?tag=${encodeURIComponent(tag.name)}" class="alltags-card">
-      <!-- Colored dot indicator -->
-      <span class="alltags-card-dot" style="background-color:${tag.color};"></span>
-      <!-- Tag name with # prefix -->
-      <span class="alltags-card-name">#${tag.name}</span>
-      <!-- Video count with pluralization -->
-      <span class="alltags-card-count">${count} video${count === 1 ? '' : 's'}</span>
-    </a>
-  `;
+  var esc = function(s) { return String(s||'').replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]||c; }); };
+  var color = tag.color || 'var(--accent)';
+  var name = tag.name;
+  return '\
+    <a href="./tag.html?tag=' + encodeURIComponent(name) + '" class="alltags-card">\
+      <span class="alltags-card-dot" style="background-color:' + esc(color) + ';"></span>\
+      <span class="alltags-card-name">#' + esc(name) + '</span>\
+      <span class="alltags-card-count">' + count + ' video' + (count === 1 ? '' : 's') + '</span>\
+    </a>';
+}
+
+function renderTagCardStr(name, count) {
+  var esc = function(s) { return String(s||'').replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]||c; }); };
+  return '\
+    <a href="./tag.html?tag=' + encodeURIComponent(name) + '" class="alltags-card">\
+      <span class="alltags-card-dot" style="background-color:var(--accent);"></span>\
+      <span class="alltags-card-name">#' + esc(name) + '</span>\
+      <span class="alltags-card-count">' + count + ' video' + (count === 1 ? '' : 's') + '</span>\
+    </a>';
 }
 
 // ─── TAG HEADER SETUP ───
@@ -233,63 +232,45 @@ function renderTagVideos(videos) {
  * @param {Array} taggedVideos - Videos that have the current tag
  */
 function renderRelatedTags(currentTag, taggedVideos) {
-  // Get the related tags container
-  const container = document.getElementById('related-tags-container');
-  const descEl = document.getElementById('related-tags-desc');
+  var container = document.getElementById('related-tags-container');
+  var descEl = document.getElementById('related-tags-desc');
   if (!container) return;
 
-  // ─── COUNT CO-OCCURRENCES ───
-  // Count how many times each other tag appears alongside the current tag
-  const tagCounts = {};
-  taggedVideos.forEach(v => {
-    v.tags.forEach(tId => {
-      // Skip the current tag itself
-      if (tId !== currentTag.id) {
-        tagCounts[tId] = (tagCounts[tId] || 0) + 1;
+  var tagName = currentTag.name;
+  var tagCounts = {};
+  taggedVideos.forEach(function(v) {
+    (v.tags || []).forEach(function(t) {
+      if (t !== tagName && t !== currentTag.id) {
+        tagCounts[t] = (tagCounts[t] || 0) + 1;
       }
     });
   });
 
-  // Get all available tags for lookups
-  const allTags = window.App.getTags();
-  // Sort co-occurring tags by count descending, take top 8, and enrich with tag data
-  const related = Object.entries(tagCounts)
-    // Sort by co-occurrence count descending
-    .sort((a, b) => b[1] - a[1])
-    // Take the top 8
-    .slice(0, 8)
-    // Map [tagId, count] to tag object with coCount
-    .map(([tId, count]) => {
-      const t = allTags.find(tg => tg.id === tId);
-      return t ? { ...t, coCount: count } : null;
-    })
-    // Remove any null entries (tags not found)
-    .filter(Boolean);
+  var entries = Object.keys(tagCounts).map(function(k) { return [k, tagCounts[k]]; });
+  entries.sort(function(a, b) { return b[1] - a[1]; });
+  var related = entries.slice(0, 8).map(function(e) { return { name: e[0], coCount: e[1] }; });
 
-  // ─── EMPTY RELATED TAGS ───
   if (related.length === 0) {
     container.innerHTML = '<span style="font-size:var(--text-sm); color:var(--text-muted);">No related tags found.</span>';
     return;
   }
 
-  // Update the description with the top related tag info
-  if (descEl) descEl.innerText = `Also appears in ${related[0].coCount} video${related[0].coCount > 1 ? 's' : ''} tagged with #${currentTag.name}`;
+  if (descEl) descEl.innerText = 'Also appears in ' + related[0].coCount + ' video' + (related[0].coCount > 1 ? 's' : '') + ' tagged with #' + tagName;
 
-  // ─── RENDER RELATED TAG CARDS ───
-  container.innerHTML = related.map(t => `
-    <a href="./tag.html?tag=${encodeURIComponent(t.name)}" class="related-tag-card" style="display:flex; align-items:center; gap:var(--space-md); padding:var(--space-md) var(--space-lg); background:var(--bg-secondary); border:1px solid var(--border); border-radius:var(--radius-md); border-left:4px solid ${t.color}; text-decoration:none; transition:all var(--transition-fast);">
-      <!-- Tag initial circle -->
-      <span style="display:flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:var(--radius-sm); background:${t.color}20; color:${t.color}; font-weight:700; font-size:var(--text-sm); flex-shrink:0;">${t.name.charAt(0).toUpperCase()}</span>
-      <div style="flex:1; min-width:0;">
-        <div style="font-size:var(--text-sm); font-weight:600; color:var(--text-primary);">#${t.name}</div>
-        <div style="font-size:var(--text-xs); color:var(--text-muted); margin-top:2px;">${t.coCount} video${t.coCount > 1 ? 's' : ''}</div>
-      </div>
-      <!-- Right arrow icon -->
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted); flex-shrink:0;">
-        <polyline points="9 18 15 12 9 6"></polyline>
-      </svg>
-    </a>
-  `).join('');
+  var esc = function(s) { return String(s||'').replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]||c; }); };
+  container.innerHTML = related.map(function(t) {
+    return '\
+    <a href="./tag.html?tag=' + encodeURIComponent(t.name) + '" class="related-tag-card" style="display:flex; align-items:center; gap:var(--space-md); padding:var(--space-md) var(--space-lg); background:var(--bg-secondary); border:1px solid var(--border); border-radius:var(--radius-md); border-left:4px solid var(--accent); text-decoration:none; transition:all var(--transition-fast);">\
+      <span style="display:flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:var(--radius-sm); background:var(--accent)20; color:var(--accent); font-weight:700; font-size:var(--text-sm); flex-shrink:0;">' + esc(t.name.charAt(0).toUpperCase()) + '</span>\
+      <div style="flex:1; min-width:0;">\
+        <div style="font-size:var(--text-sm); font-weight:600; color:var(--text-primary);">#' + esc(t.name) + '</div>\
+        <div style="font-size:var(--text-xs); color:var(--text-muted); margin-top:2px;">' + t.coCount + ' video' + (t.coCount > 1 ? 's' : '') + '</div>\
+      </div>\
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted); flex-shrink:0;">\
+        <polyline points="9 18 15 12 9 6"></polyline>\
+      </svg>\
+    </a>';
+  }).join('');
 }
 
 // ─── ERROR STATE HELPER ───

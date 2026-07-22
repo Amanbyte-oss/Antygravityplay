@@ -182,17 +182,19 @@
                   <button type="button" id="clear-video-btn" class="youtube-clear-btn hidden">Remove Video</button>
                 </div>
 
+                <div class="platform-divider" style="margin:var(--space-lg) 0; border-top:1px solid var(--border);"></div>
+
                 <!--
                   IFRAME CODE INPUT SECTION:
-                  Shown when "Embed Code" platform is selected. Provides a textarea
-                  for pasting raw <iframe> embed markup. The "Load Embed" button
-                  parses and inserts the iframe into the preview container below.
+                  Always-visible textarea for pasting raw <iframe> embed markup.
+                  Works independently of the platform selector. The "Load Embed" button
+                  parses and inserts the iframe into the preview container.
                 -->
-                <div class="platform-input-section hidden" id="platform-iframe-section">
-                  <label class="form-label" for="iframe-code-input">Embed Code</label>
+                <div class="platform-input-section" id="platform-iframe-section">
+                  <label class="form-label" for="iframe-code-input">Or paste iframe embed code</label>
                   <textarea id="iframe-code-input" class="textarea-field" placeholder="Paste &lt;iframe&gt; embed code here…" style="min-height:80px;"></textarea>
                   <div style="margin-top:var(--space-sm);">
-                    <button type="button" id="load-iframe-btn" class="btn btn-primary">Load Embed</button>
+                    <button type="button" id="load-iframe-btn" class="btn btn-secondary">Load Embed</button>
                   </div>
                   <div id="iframe-error" class="youtube-error" role="alert"></div>
                 </div>
@@ -275,41 +277,11 @@
                     </div>
                   </div>
 
-                  <!--
-                    EXISTING TAGS:
-                    Checkable tag pills showing all existing tags. Click to toggle
-                    selection. Max 10 tags per video. Populated by admin/upload.js.
-                  -->
                   <div class="form-group">
-                    <label class="form-label">Existing Tags</label>
-                    <div id="existing-tags-container" class="tags-checkable-grid">
-                      <!-- Populated via JS -->
-                    </div>
-                  </div>
-
-                  <!--
-                    SELECTED TAGS DISPLAY:
-                    Shows currently selected tags as removable chips.
-                    Limited to 10 selections. Counter updates in real-time.
-                  -->
-                  <div class="form-group">
-                    <label class="form-label">Selected Tags (<span id="selected-tags-count">0</span>/10)</label>
-                    <div id="selected-tags-display" class="tag-chips-wrapper">
-                      <!-- Selected tag chips injected here -->
-                    </div>
-                  </div>
-
-                  <!--
-                    CREATE CUSTOM TAG:
-                    Inline form to create a new tag on-the-fly.
-                    Type the tag name and press Enter or click "Add".
-                    The new tag is saved to the tag list and auto-selected.
-                  -->
-                  <div class="form-group">
-                    <label class="form-label">Create New Tag</label>
-                    <div style="display: flex; gap: var(--space-sm);">
-                      <input type="text" id="custom-tag-input" class="form-input-field flex-1" placeholder="Type tag name and press Enter or Add..." autocomplete="off">
-                      <button type="button" id="add-custom-tag-btn" class="btn btn-secondary" style="padding: var(--space-sm) var(--space-lg);">Add</button>
+                    <label class="form-label">Tags</label>
+                    <div class="tags-chip-input" id="tags-input-container">
+                      <div id="tags-chips-display" class="tags-chips"></div>
+                      <input type="text" id="tags-input" class="form-input-field" placeholder="Type tag and press comma or Enter" autocomplete="off">
                     </div>
                   </div>
 
@@ -345,6 +317,11 @@
                 </div>
               </div>
 
+              <div class="form-group" style="margin-top:var(--space-md);">
+                <label class="form-label" for="thumbnail-url-input">Or paste thumbnail URL</label>
+                <input type="url" id="thumbnail-url-input" class="form-input-field" placeholder="https://example.com/thumbnail.jpg" autocomplete="off">
+              </div>
+
               <!--
                 PUBLISH BUTTON:
                 Full-width submit button. Disabled until a valid video source
@@ -377,6 +354,9 @@
   <!-- ==================== SCRIPTS ==================== -->
   <!-- mockData.js: Mock data factory for prototype tags and video data -->
   <script src="../js/mockData.js"></script>
+  <!-- supabase.js + supabase-api.js: Backend integration layer (optional) -->
+  <script src="../js/supabase.js"></script>
+  <script src="../js/supabase-api.js"></script>
   <!-- main.js: Core app - theme toggling, toast API, utility functions -->
   <script src="../js/main.js"></script>
   <!-- components.js: UI injectors - sidebar, navbar, footer, pagination -->
