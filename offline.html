@@ -57,6 +57,7 @@
   <p class="system-desc">It appears you are offline. Check your internet connection and try again. Some previously viewed videos may be available for offline playback.</p>
   <div class="system-actions">
     <button class="btn btn-primary" onclick="location.reload()">Try Again</button>
+    <button class="btn btn-secondary" onclick="if(navigator.onLine)window.location.href='./index.html';else alert('Still offline. Please check your connection.')">Check Connection</button>
   </div>
 </main>
 

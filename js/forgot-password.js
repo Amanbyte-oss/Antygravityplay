@@ -244,33 +244,18 @@
       } // End if passwords do not match
 
       // ─── UPDATE USER CREDENTIALS ───
-      // Declare a variable to hold the users array
       let users;
       try {
-        // Attempt to parse the 'mock-users' JSON string from localStorage
         users = JSON.parse(localStorage.getItem('mock-users'));
-      } catch (_) {
-        // Silently ignore JSON parse errors
-      } // End try/catch for localStorage parsing
-      // Fall back to the global mock data if localStorage has no valid users array
+      } catch (_) {}
       if (!Array.isArray(users) || users.length === 0) {
-        // Use the default MOCK_USERS array as the fallback
-        users = window.MOCK_USERS;
-      } // End if localStorage users are invalid
-
-      // Update the password for the first user in the array
+        window.App.showToast('No admin account found. Password reset unavailable.', 'error');
+        return;
+      }
       if (users[0]) {
-        // Ensure the first user entry exists
-        // Set the user's password to the newly chosen password
         users[0].password = newPw;
-        // Overwrite the old password with the new one
-        // Also update the in-memory global mock data object to keep them in sync
-        window.MOCK_USERS[0] = users[0];
-        // Sync the global reference with the modified user object
-        // Persist the updated users array back to localStorage as a JSON string
         try { localStorage.setItem('mock-users', JSON.stringify(users)); } catch (_) {}
-        // Attempt to save; silently ignore storage errors
-      } // End if users[0] exists
+      }
 
       // Display a success toast notification and prepare to redirect
       window.App.showToast('Password reset successful! Redirecting to login...', 'success');

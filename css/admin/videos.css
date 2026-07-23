@@ -267,6 +267,12 @@
   transform: scale(0.95);
 }
 
+.view-live-btn:hover {
+  color: var(--accent) !important;
+  border-color: var(--accent) !important;
+  background-color: color-mix(in srgb, var(--accent) 8%, transparent) !important;
+}
+
 /* --- EMPTY STATE --- */
 .videos-empty {
   grid-column: 1 / -1;

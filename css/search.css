@@ -118,30 +118,58 @@
   gap: var(--space-sm);       /* 8px between chips */
   max-height: 100px;          /* Max height before scroll */
   overflow-y: auto;           /* Scroll if too many chips */
+  padding: var(--space-xs) 0;
 }
 
-/* Individual filter chip button: pill-shaped toggle */
+/* Induvidual filter chip button: pill-shaped toggle */
 .filter-chip-btn {
   font-size: var(--text-xs);         /* 12px */
   font-weight: 500;                  /* Medium weight */
-  padding: 4px 12px;                 /* Compact padding */
+  padding: 6px 14px;                 /* Slightly larger padding */
   border-radius: var(--radius-full); /* Fully pill-shaped */
   background-color: var(--bg-elevated);  /* Elevated background */
   border: 1px solid var(--border);       /* Subtle border */
   color: var(--text-secondary);          /* Grey text when inactive */
-  transition: color var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast);  /* Smooth toggle */
+  cursor: pointer;                       /* Pointer cursor */
+  transition: all var(--transition-fast) ease;  /* Smooth toggle */
+  position: relative;
 }
 
-/* Active filter chip: accent background with black text */
+/* Hover: lift, tint background, and add glow */
+.filter-chip-btn:hover {
+  background-color: var(--bg-secondary);
+  border-color: var(--text-muted);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+/* Active filter chip: solid accent with checkmark via pseudo */
 .filter-chip-btn.active {
-  background-color: var(--accent);  /* Green accent background */
-  color: #000000;                   /* Black text for contrast */
-  border-color: var(--accent);      /* Match border to background */
+  background-color: var(--accent);
+  color: #000000;
+  border-color: var(--accent);
+  font-weight: 600;
+  padding-left: 20px;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.filter-chip-btn.active::before {
+  content: '';
+  position: absolute;
+  left: 7px;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+  width: 4px;
+  height: 8px;
+  border: solid currentColor;
+  border-width: 0 2px 2px 0;
 }
 
 /* Light theme: active chip has white text for readability on accent */
 [data-theme="light"] .filter-chip-btn.active {
-  color: #ffffff;                   /* White text in light mode */
+  color: #ffffff;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════

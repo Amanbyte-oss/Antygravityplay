@@ -1,6 +1,6 @@
 // ─── LOGIN PAGE LOGIC ───
 // Handles authentication: injects navbar/footer, checks for existing session,
-// and validates login credentials against localStorage (falling back to MOCK_USERS).
+// and validates login credentials against localStorage.
 document.addEventListener('DOMContentLoaded', () => {
   // Wait for the DOM to be fully parsed before executing any logic
   // ─── 1. INJECT PUBLIC NAVBAR & FOOTER ───
@@ -52,11 +52,13 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // ─── FALLBACK: localStorage / mock users ───
+    // ─── FALLBACK: localStorage users ───
     let users;
     try { users = JSON.parse(localStorage.getItem('mock-users')); } catch (_) {}
     if (!Array.isArray(users) || users.length === 0) {
-      users = window.MOCK_USERS;
+      errorMsg.innerText = 'No admin account found. Please contact the administrator.';
+      errorMsg.style.display = 'block';
+      return;
     }
     const user = users.find(u => u.email === email && u.password === password);
 

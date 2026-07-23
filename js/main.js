@@ -4,6 +4,9 @@
 // click delegation, admin sidebar controls, and export the global App object.
 (function() {
 
+  // ─── APP PAGES MANIFEST (for SW pre-cache) ───
+  window.__pages = ['/index.html', '/watch.html', '/search.html', '/tag.html', '/sitemap.html', '/status.html', '/maintenance.html', '/404.html', '/403.html', '/500.html', '/offline.html', '/login.html'];
+
   // ─── THEME SETUP ───
   // Read the saved theme preference from localStorage, defaulting to 'dark'
   const currentTheme = localStorage.getItem('site-theme') || 'dark';
@@ -13,16 +16,22 @@
   // ─── ROUTE GUARD ───
   // Get the current URL path and normalize backslashes to forward slashes
   const path = window.location.pathname.replace(/\\/g, '/');
-  // Check if the current page is inside the /admin/ directory
   const isAdminPage = path.includes('/admin/');
   const isLoginPage = path.includes('login.html');
-  // Check if an admin session token exists in localStorage
+  const isMaintenancePage = path.includes('maintenance.html');
   const hasLocalSession = localStorage.getItem('admin-session') !== null;
+
+  // Maintenance mode guard: redirect non-admin visitors to maintenance page
+  if (!isAdminPage && !isLoginPage && !isMaintenancePage) {
+    if (localStorage.getItem('maintenance_mode') === 'true') {
+      window.location.href = 'maintenance.html';
+    }
+  }
 
   // Quick initial guard using localStorage (sync, works before Supabase loads)
   if (isAdminPage && !hasLocalSession) {
     if (!window.__supabasePresent) {
-      window.location.href = '../login.html';
+      window.location.href = '403.html';
     }
   }
   // If on login page with an active local session, go to admin
@@ -31,22 +40,65 @@
   }
 
   // ─── SUPABASE ROUTE GUARD (async, runs after CDN loads) ───
-  if ((isAdminPage || isLoginPage) && !window.__supabase && !window.__supabaseGuardAttached) {
+  if ((isAdminPage || isLoginPage || !isMaintenancePage) && !window.__supabase && !window.__supabaseGuardAttached) {
     window.__supabaseGuardAttached = true;
     document.addEventListener('supabase-ready', async function guard() {
       if (!window.__supabase) return;
+
+      // Maintenance mode check from Supabase (catches cached CDN case)
+      if (!isAdminPage && !isLoginPage && !isMaintenancePage) {
+        try {
+          var sbMaint = await window.SupabaseSettings.get('maintenance_mode');
+          if (sbMaint === 'true') {
+            try { localStorage.setItem('maintenance_mode', 'true'); } catch(_) {}
+            window.location.href = 'maintenance.html';
+            return;
+          }
+        } catch(_) {}
+      }
+
       const { session } = await window.SupabaseAuth.getSession();
       const isAuthd = !!session;
 
       if (isAdminPage && !isAuthd && !hasLocalSession) {
-        window.location.href = '../login.html';
+        window.location.href = '403.html';
       }
-      // Clear legacy localStorage session if Supabase session exists
-      if (isAuthd && localStorage.getItem('admin-session')) {
-        localStorage.removeItem('admin-session');
+      if (isAuthd) {
+        localStorage.setItem('admin-session', 'session-active-' + Date.now());
       }
     });
   }
+
+  // ─── SERVICE WORKER REGISTRATION ───
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('./sw.js').catch(function() {});
+    });
+  }
+
+  // ─── GLOBAL ERROR HANDLER (500) ───
+  window.onerror = function(msg, source, line, col, err) {
+    var isErrorPage = window.location.pathname.includes('500.html') || window.location.pathname.includes('maintenance.html');
+    if (!isErrorPage) {
+      try { localStorage.setItem('last_error', JSON.stringify({ msg: String(msg), source: source, time: Date.now() })); } catch(_) {}
+      window.location.href = '500.html';
+    }
+    return false;
+  };
+
+  // ─── OFFLINE / ONLINE DETECTION ───
+  window.addEventListener('offline', function() {
+    var isOfflinePage = window.location.pathname.includes('offline.html') || window.location.pathname.includes('maintenance.html');
+    if (!isOfflinePage) {
+      window.location.href = 'offline.html';
+    }
+  });
+
+  window.addEventListener('online', function() {
+    if (window.location.pathname.includes('offline.html')) {
+      window.location.href = 'index.html';
+    }
+  });
 
   // ─── DOM CONTENT LOADED ───
   // Wait for the DOM to be fully parsed before attaching event listeners
@@ -281,48 +333,21 @@
     // ─── VIDEO DATABASE ACCESS ───
     /**
      * Retrieves the video database from localStorage.
-     * On first access or corruption, seeds from window.MOCK_VIDEOS.
-     * @returns {Array} Array of video objects
+     * @returns {Array} Array of video objects (empty if none uploaded)
      */
     getVideos() {
-      // Bump this when mock data schema changes to force re-seed
-      const DB_VERSION = '2';
-      // Read raw video data from localStorage
       let raw = localStorage.getItem('db-videos');
-      const storedVersion = localStorage.getItem('db-videos-version');
-      // If version mismatch, discard cache and re-seed
-      if (raw && storedVersion !== DB_VERSION) {
-        localStorage.removeItem('db-videos');
-        raw = null;
-      }
-      // If no data exists yet, seed from mock data
-      if (!raw) {
-        // Deep clone the mock videos to avoid mutating the original
-        const mockCopy = JSON.parse(JSON.stringify(window.MOCK_VIDEOS));
-        // Store the clone in localStorage with version marker
-        localStorage.setItem('db-videos', JSON.stringify(mockCopy));
-        localStorage.setItem('db-videos-version', DB_VERSION);
-        return mockCopy;
-      }
+      if (!raw) return [];
       try {
-        // Attempt to parse the stored JSON
         let parsed = JSON.parse(raw);
-        // If it's a valid non-empty array, return it
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-        // If it's an empty array, return it as-is
-        if (Array.isArray(parsed)) return [];
-        // Data is corrupted (not an array) - re-seed from defaults
-        // Notify the user with a warning toast
-        this.showToast('Video data was corrupted. Default data restored.', 'warning');
-        const mockCopy = JSON.parse(JSON.stringify(window.MOCK_VIDEOS));
-        localStorage.setItem('db-videos', JSON.stringify(mockCopy));
-        return mockCopy;
+        if (Array.isArray(parsed)) return parsed;
+        this.showToast('Video data was corrupted. Data reset.', 'warning');
+        localStorage.removeItem('db-videos');
+        return [];
       } catch (e) {
-        // JSON parse error - re-seed from defaults
-        this.showToast('Video data was corrupted. Default data restored.', 'warning');
-        const mockCopy = JSON.parse(JSON.stringify(window.MOCK_VIDEOS));
-        localStorage.setItem('db-videos', JSON.stringify(mockCopy));
-        return mockCopy;
+        this.showToast('Video data was corrupted. Data reset.', 'warning');
+        localStorage.removeItem('db-videos');
+        return [];
       }
     },
 
@@ -332,38 +357,41 @@
      * @param {Array} videosList - Array of video objects to save
      */
     saveVideos(videosList) {
-      // Stringify and store the full video list
       localStorage.setItem('db-videos', JSON.stringify(videosList));
-      localStorage.setItem('db-videos-version', '2');
-      // Dispatch a custom event to notify other components of the update
       window.dispatchEvent(new CustomEvent('videosupdated'));
     },
 
     // ─── TAGS ACCESS ───
     /**
-     * Retrieves the tags array from localStorage, seeding from MOCK_TAGS if needed.
-     * @returns {Array} Array of tag objects
+     * Computes unique tags from all videos' tags arrays.
+     * Falls back to localStorage db-tags only if no videos available.
+     * @returns {Array} Array of tag objects {id, name, videoCount}
      */
     getTags() {
-      // Read raw tags from localStorage
-      let raw = localStorage.getItem('db-tags');
-      // If no tags exist yet, seed from mock data
-      if (!raw) {
-        localStorage.setItem('db-tags', JSON.stringify(window.MOCK_TAGS));
-        return window.MOCK_TAGS;
+      var vids = this.getVideos();
+      if (vids && vids.length > 0) {
+        var seen = {};
+        var tags = [];
+        vids.forEach(function(v) {
+          if (v.tags && Array.isArray(v.tags)) {
+            v.tags.forEach(function(t) {
+              if (!seen[t]) { seen[t] = true; tags.push({ id: t, name: t, videoCount: 0 }); }
+            });
+          }
+        });
+        tags.forEach(function(tag) { tag.videoCount = vids.filter(function(v) { return v.tags && v.tags.includes(tag.id); }).length; });
+        return tags;
       }
+      let raw = localStorage.getItem('db-tags');
+      if (!raw) return [];
       try {
-        // Attempt to parse stored JSON
         let parsed = JSON.parse(raw);
-        // If valid non-empty array, return it
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-        // Invalid data - re-seed
-        localStorage.setItem('db-tags', JSON.stringify(window.MOCK_TAGS));
-        return window.MOCK_TAGS;
+        if (Array.isArray(parsed)) return parsed;
+        localStorage.removeItem('db-tags');
+        return [];
       } catch (e) {
-        // Parse error - re-seed
-        localStorage.setItem('db-tags', JSON.stringify(window.MOCK_TAGS));
-        return window.MOCK_TAGS;
+        localStorage.removeItem('db-tags');
+        return [];
       }
     },
 

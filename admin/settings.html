@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <!-- ═══════════════════════════════════════════ -->
 <!-- FILE: settings.html                        -->
-<!-- PURPOSE: Tabbed settings for profile,      -->
-<!--          appearance, notifications, and    -->
-<!--          data export/import/danger-zone.   -->
+<!-- PURPOSE: Tabbed settings for profile, -->
+<!--          appearance, and data           -->
+<!--          export/import/danger-zone.     -->
 <!-- ═══════════════════════════════════════════ -->
 <!--
   ============================================================================
   FILE: settings.html
   SECTION: Admin / Configuration
   DESCRIPTION: Tabbed settings panel for profile information, theme/appearance
-  customization, notification preferences, and data management (export/import,
+  customization, and data management (export/import,
   clear all data with danger-zone confirmation).
   DEPENDENCIES: main.js, components.js, admin/settings.js
   ============================================================================
@@ -111,7 +111,7 @@
           <span class="text-sm-bold">Console</span>
         </div>
         <div class="admin-header-right">
-          <a href="../index.html" class="btn btn-secondary">View Live Site</a>
+          <a href="../index.html" class="btn btn-secondary" target="_blank">View Live Site</a>
           <button class="theme-toggle" aria-label="Toggle theme">
             <svg class="theme-icon-sun hidden" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line></svg>
             <svg class="theme-icon-moon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
@@ -124,7 +124,7 @@
         <div class="admin-title-row">
           <div class="admin-title-group">
             <h1>Settings</h1>
-            <p>Manage your profile, security, appearance, and notification preferences.</p>
+            <p>Manage your profile, security, appearance, and data preferences.</p>
           </div>
         </div>
 
@@ -143,57 +143,17 @@
         <div class="tabs-container settings-tabs" data-tabs>
           <!-- TAB NAVIGATION: Four settings categories as horizontal tabs -->
           <div class="tabs-nav" role="tablist">
-            <button class="tabs-tab active" role="tab" aria-selected="true" data-tab="profile" id="tab-profile">Profile</button>
-            <button class="tabs-tab" role="tab" aria-selected="false" data-tab="appearance" id="tab-appearance">Appearance</button>
-            <button class="tabs-tab" role="tab" aria-selected="false" data-tab="notifications" id="tab-notifications">Notifications</button>
+            <button class="tabs-tab active" role="tab" aria-selected="true" data-tab="appearance" id="tab-appearance">Appearance</button>
+            <button class="tabs-tab" role="tab" aria-selected="false" data-tab="maintenance" id="tab-maintenance">Maintenance</button>
             <button class="tabs-tab" role="tab" aria-selected="false" data-tab="data" id="tab-data">Data</button>
           </div>
 
           <!-- ==================== TAB PANELS ==================== -->
           <div class="tabs-panels">
 
-            <!-- ─── TAB: Profile ───────────────────── -->
-            <!-- ======== TAB: Profile ======== -->
-            <div class="tabs-panel active" role="tabpanel" id="panel-profile" aria-labelledby="tab-profile">
-              <!-- PROFILE INFO CARD: Admin name, email, bio, and avatar upload -->
-              <div class="settings-card">
-                <h2 class="settings-section-title">Profile Information</h2>
-                <!-- AVATAR UPLOAD: Clickable circle to upload profile photo -->
-                <div class="avatar-upload">
-                  <div class="avatar-circle" id="avatar-circle">
-                    <img id="avatar-img" alt="Avatar" class="hidden">
-                    <span class="avatar-placeholder">A</span>
-                    <span class="avatar-overlay">Change</span>
-                    <input type="file" id="avatar-file-input" accept="image/*" class="hidden">
-                  </div>
-                  <div>
-                    <p style="font-size:var(--text-sm);font-weight:500;">Admin Avatar</p>
-                    <p class="text-xs-muted">Click to upload a profile photo</p>
-                  </div>
-                </div>
-                <!-- FORM FIELD: Admin display name -->
-                <div class="form-group">
-                  <label class="form-label" for="admin-name-input">Admin Name</label>
-                  <input type="text" id="admin-name-input" class="form-input-field" placeholder="Your name" autocomplete="off">
-                </div>
-                <!-- FORM FIELD: Email address (pre-filled with default) -->
-                <div class="form-group">
-                  <label class="form-label" for="admin-email-input">Email</label>
-                  <input type="email" id="admin-email-input" class="form-input-field" value="amansharma882007@gmail.com" autocomplete="off">
-                </div>
-                <!-- FORM FIELD: Short bio / about textarea -->
-                <div class="form-group">
-                  <label class="form-label" for="admin-bio-input">Bio</label>
-                  <textarea id="admin-bio-input" class="textarea-field" placeholder="A short bio about yourself..."></textarea>
-                </div>
-                <!-- SAVE BUTTON: Persists profile changes to localStorage -->
-                <button class="btn btn-primary" id="save-profile-btn">Save Profile</button>
-              </div>
-            </div>
-
             <!-- ─── TAB: Appearance ────────────────── -->
             <!-- ======== TAB: Appearance ======== -->
-            <div class="tabs-panel" role="tabpanel" id="panel-appearance" aria-labelledby="tab-appearance">
+            <div class="tabs-panel active" role="tabpanel" id="panel-appearance" aria-labelledby="tab-appearance">
               <!-- THEME SELECTION: Dark / Light / System radio cards with visual preview -->
               <div class="settings-card">
                 <h2 class="settings-section-title">Theme</h2>
@@ -265,61 +225,29 @@
               </div>
             </div>
 
-            <!-- ─── TAB: Notifications ─────────────── -->
-            <!-- ======== TAB: Notifications ======== -->
-            <div class="tabs-panel" role="tabpanel" id="panel-notifications" aria-labelledby="tab-notifications">
-              <!-- NOTIFICATION TOGGLES: Toggle switches for each notification type -->
+            <!-- ─── TAB: Maintenance ───────────────── -->
+            <!-- ======== TAB: Maintenance ======== -->
+            <div class="tabs-panel" role="tabpanel" id="panel-maintenance" aria-labelledby="tab-maintenance">
               <div class="settings-card">
-                <h2 class="settings-section-title">Notification Preferences</h2>
+                <h2 class="settings-section-title">Maintenance Mode</h2>
                 <div class="settings-row">
                   <div class="settings-row-label">
-                    <span class="settings-row-title">Email Notifications</span>
-                    <span class="settings-row-desc">Receive email alerts for important updates</span>
+                    <span class="settings-row-title">Enable Maintenance Mode</span>
+                    <span class="settings-row-desc">Show maintenance page to all visitors</span>
                   </div>
                   <div class="settings-row-control">
                     <label class="toggle-switch">
-                      <input type="checkbox" class="notif-toggle" data-key="email" checked>
+                      <input type="checkbox" id="maintenance-toggle">
                       <span class="toggle-slider"></span>
                     </label>
                   </div>
                 </div>
-                <div class="settings-row">
-                  <div class="settings-row-label">
-                    <span class="settings-row-title">Upload Alerts</span>
-                    <span class="settings-row-desc">Get notified when a video finishes uploading</span>
-                  </div>
-                  <div class="settings-row-control">
-                    <label class="toggle-switch">
-                      <input type="checkbox" class="notif-toggle" data-key="uploadAlerts" checked>
-                      <span class="toggle-slider"></span>
-                    </label>
-                  </div>
+                <div class="form-group" style="margin-top:var(--space-lg);">
+                  <label class="form-label" for="maintenance-eta-input">Estimated Completion Time</label>
+                  <input type="text" id="maintenance-eta-input" class="form-input-field" placeholder="e.g. 2 hours, or March 15, 2025 6:00 PM" autocomplete="off">
+                  <p class="text-xs-muted" style="margin-top:var(--space-xs);">Shown on the maintenance page so visitors know when to return.</p>
                 </div>
-                <div class="settings-row">
-                  <div class="settings-row-label">
-                    <span class="settings-row-title">Like Alerts</span>
-                    <span class="settings-row-desc">Notifications when users like videos</span>
-                  </div>
-                  <div class="settings-row-control">
-                    <label class="toggle-switch">
-                      <input type="checkbox" class="notif-toggle" data-key="likeAlerts">
-                      <span class="toggle-slider"></span>
-                    </label>
-                  </div>
-                </div>
-                <div class="settings-row">
-                  <div class="settings-row-label">
-                    <span class="settings-row-title">Weekly Reports</span>
-                    <span class="settings-row-desc">Receive weekly analytics summary via email</span>
-                  </div>
-                  <div class="settings-row-control">
-                    <label class="toggle-switch">
-                      <input type="checkbox" class="notif-toggle" data-key="weeklyReports" checked>
-                      <span class="toggle-slider"></span>
-                    </label>
-                  </div>
-                </div>
-
+                <button class="btn btn-primary" id="save-maintenance-btn" style="margin-top:var(--space-md);">Save Maintenance Settings</button>
               </div>
             </div>
 

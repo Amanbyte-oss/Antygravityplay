@@ -1,52 +1,18 @@
 <!DOCTYPE html>
-<!-- ═══════════════════════════════════════════ -->
-<!-- FILE: upload.html                          -->
-<!-- PURPOSE: Multi-tab upload form to add      -->
-<!--          videos from URL/embed, set        -->
-<!--          metadata, tags, and thumbnail.    -->
-<!-- ═══════════════════════════════════════════ -->
-<!--
-  ============================================================================
-  FILE: upload.html
-  SECTION: Admin / Content
-  DESCRIPTION: Multi-tab form for adding videos from external platforms
-  (YouTube, Vimeo, Dailymotion, etc.) via URL or embed code. Includes
-  metadata editing, tag assignment, thumbnail upload, and publishing.
-  DEPENDENCIES: main.js, components.js, admin/upload.js
-  ============================================================================
--->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <!-- ==================== HEAD ==================== -->
-  <!-- THEME INIT: Sets data-theme from localStorage before render to avoid FOUC -->
   <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("site-theme")||"dark")</script>
-  <!-- META: UTF-8 encoding for proper Unicode character handling -->
-  <!-- META: Viewport configuration for responsive mobile layout -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- META: SEO description for this page -->
-  <meta name="description" content="Add a video from YouTube, Vimeo, Dailymotion, and more — validate, embed, and publish to the platform.">
-  <!-- TITLE: Browser tab title -->
+  <meta name="description" content="Add a video from YouTube, Vimeo, and more — validate, embed, and publish.">
   <title>Add Video - Admin Console</title>
-  <!-- STYLESHEET: main.css - Global design system foundation -->
   <link rel="stylesheet" href="../css/main.css">
-  <!-- STYLESHEET: dashboard.css - Shared admin dashboard card/layout styles -->
   <link rel="stylesheet" href="../css/admin/dashboard.css">
-  <!-- STYLESHEET: upload.css - Upload form-specific styles (platform selector, embed container, metadata, thumbnail) -->
   <link rel="stylesheet" href="../css/admin/upload.css">
-  <!-- STYLESHEET: tabs.css - Tab navigation styles for Source/Details tabs -->
-  <link rel="stylesheet" href="../css/admin/tabs.css">
+  <link rel="stylesheet" href="../css/admin-upload.css">
 </head>
 <body>
-
-  <!-- TOAST CONTAINER: Fixed notification area for success/error feedback messages -->
   <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
-
-  <!--
-    CONFIRMATION MODAL OVERLAY:
-    Reusable dialog with Cancel/Confirm buttons for action confirmations.
-    role="dialog" + aria-modal="true" for accessible keyboard navigation.
-  -->
   <div class="modal-overlay" id="confirm-modal-overlay" role="dialog" aria-modal="true">
     <div class="modal">
       <div class="modal-header">
@@ -60,29 +26,10 @@
       </div>
     </div>
   </div>
-
-  <!-- ─── SECTION: ADMIN LAYOUT ──────────────── -->
   <div class="admin-layout">
-    
-    <!-- SIDEBAR OVERLAY: Mobile backdrop for closing sidebar on tap -->
     <div class="sidebar-overlay"></div>
-
-    <!--
-      SIDEBAR CONTAINER (<aside>):
-      Admin navigation sidebar injected by Components.injectAdminSidebar().
-      Provides links to all admin sections; current page highlighted.
-    -->
     <aside id="sidebar-container"></aside>
-
-    <!-- ==================== MAIN CONTENT ==================== -->
     <div class="admin-main">
-      
-      <!-- ─── SECTION: MOBILE HEADER ──────────── -->
-      <!--
-        ADMIN HEADER (Mobile Top Bar):
-        Contains hamburger menu button, "Console" label, "View Live Site"
-        link, and theme toggle (sun/moon icons). Visible on narrow screens.
-      -->
       <header class="admin-header">
         <div class="admin-header-left">
           <button class="admin-menu-btn hidden" aria-label="Open sidebar menu" style="border:none;background:none;cursor:pointer;">
@@ -93,47 +40,22 @@
           <span class="text-sm-bold">Console</span>
         </div>
         <div class="admin-header-right">
-          <a href="../index.html" class="btn btn-secondary">
-            View Live Site
-          </a>
+          <a href="../index.html" class="btn btn-secondary" target="_blank">View Live Site</a>
           <button class="theme-toggle" aria-label="Toggle theme">
-            <svg class="theme-icon-sun hidden" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line>
-            </svg>
-            <svg class="theme-icon-moon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-            </svg>
+            <svg class="theme-icon-sun hidden" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line></svg>
+            <svg class="theme-icon-moon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
           </button>
         </div>
       </header>
-
       <main class="admin-body">
-        
-        <!--
-          TITLE ROW: Page heading with description and a Cancel link
-          that returns to the Videos management page.
-        -->
         <div class="admin-title-row">
           <div class="admin-title-group">
             <h1>Add Video</h1>
             <p>Choose a source, paste the URL or embed code, and publish it on the platform.</p>
           </div>
-          <div>
-            <a href="./videos.html" class="btn btn-secondary">
-              Cancel
-            </a>
-          </div>
+          <div><a href="./videos.html" class="btn btn-secondary">Cancel</a></div>
         </div>
-
-        <!-- ─── SECTION: UPLOAD FORM ───────────── -->
-        <!-- ==================== UPLOAD FORM ==================== -->
         <form id="upload-video-form">
-          <!--
-            TAB NAVIGATION: Two-step form process.
-            - "Source" tab: Select platform, paste URL or embed code, preview video
-            - "Details" tab: Edit title, description, duration, status, tags
-            Active tab is toggled by JavaScript (#tab-source-btn / #tab-details-btn).
-          -->
           <div class="tabs-nav">
             <button type="button" class="tab-btn active" data-tab="source" id="tab-source-btn">
               <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
@@ -144,67 +66,29 @@
               Details
             </button>
           </div>
-
-          <!-- ─── SECTION: Two-Column Layout ────── -->
-          <!-- ==================== FORM TWO-COLUMN LAYOUT ==================== -->
           <div class="upload-form-layout">
-            
-            <!-- ─── COLUMN: Source & Details ──────── -->
-            <!-- ======== LEFT COLUMN: Source + Details ======== -->
             <div class="upload-card">
-              
-              <!-- ======== TAB PANEL: Source ======== -->
               <div class="tab-panel active" id="tab-panel-source">
                 <h2 class="form-title">Video Source</h2>
-
-                <!--
-                  PLATFORM SELECTOR:
-                  Row of platform buttons (YouTube, Vimeo, Dailymotion, Embed, etc.)
-                  Populated by admin/upload.js. Clicking a platform updates the
-                  input section (URL vs iframe) shown below.
-                -->
                 <div class="platform-selector" id="platform-selector"></div>
-
-                <!--
-                  VIDEO URL INPUT SECTION:
-                  Shown for URL-based platforms (YouTube, Vimeo, Dailymotion).
-                  Contains a text input for pasting the video URL and a "Load Video"
-                  button that fetches metadata via the oEmbed proxy. A "Remove Video"
-                  button appears after loading to clear the selection.
-                -->
                 <div class="platform-input-section" id="platform-url-section">
                   <label class="form-label" for="platform-url-input">Video URL</label>
                   <div class="youtube-input-row">
-                    <input type="url" id="platform-url-input" class="youtube-input" placeholder="Paste URL here..." autocomplete="off" aria-describedby="platform-error" aria-label="Video URL">
+                    <input type="url" id="platform-url-input" class="youtube-input" placeholder="Paste URL here..." autocomplete="off" aria-label="Video URL">
                     <button type="button" id="load-video-btn" class="btn btn-primary youtube-load-btn">Load Video</button>
                   </div>
                   <div id="platform-error" class="youtube-error" role="alert"></div>
                   <button type="button" id="clear-video-btn" class="youtube-clear-btn hidden">Remove Video</button>
                 </div>
-
                 <div class="platform-divider" style="margin:var(--space-lg) 0; border-top:1px solid var(--border);"></div>
-
-                <!--
-                  IFRAME CODE INPUT SECTION:
-                  Always-visible textarea for pasting raw <iframe> embed markup.
-                  Works independently of the platform selector. The "Load Embed" button
-                  parses and inserts the iframe into the preview container.
-                -->
-                <div class="platform-input-section" id="platform-iframe-section">
-                  <label class="form-label" for="iframe-code-input">Or paste iframe embed code</label>
-                  <textarea id="iframe-code-input" class="textarea-field" placeholder="Paste &lt;iframe&gt; embed code here…" style="min-height:80px;"></textarea>
+                <div class="platform-input-section" id="platform-embed-section">
+                  <label class="form-label" for="embed-code-textarea">Or paste embed code</label>
+                  <textarea id="embed-code-textarea" class="textarea-field" placeholder="Paste &lt;iframe&gt; embed code or direct URL here…" style="min-height:80px;"></textarea>
                   <div style="margin-top:var(--space-sm);">
-                    <button type="button" id="load-iframe-btn" class="btn btn-secondary">Load Embed</button>
+                    <button type="button" id="load-embed-btn" class="btn btn-secondary">Load Embed</button>
                   </div>
-                  <div id="iframe-error" class="youtube-error" role="alert"></div>
+                  <div id="embed-error" class="youtube-error" role="alert"></div>
                 </div>
-
-                <!--
-                  EMBED PREVIEW CONTAINER:
-                  Shows a loading spinner while fetching video data, then displays
-                  the embedded video player. If loading fails, shows a fallback
-                  message explaining the video may be unavailable.
-                -->
                 <div id="embed-container" class="embed-container hidden">
                   <div class="embed-loader" id="embed-loader">
                     <div class="loader-spinner"></div>
@@ -215,13 +99,6 @@
                     <p>This video cannot be loaded. It may be private, deleted, or unavailable.</p>
                   </div>
                 </div>
-
-                <!--
-                  VIDEO METADATA:
-                  Displays the video thumbnail, title, and channel name fetched
-                  from the platform. Shown after successful URL/embed loading.
-                  The thumbnail is also used as the default cover image.
-                -->
                 <div id="video-metadata" class="video-metadata hidden">
                   <img id="meta-thumbnail" class="meta-thumbnail" alt="Video thumbnail">
                   <div class="meta-info">
@@ -229,42 +106,28 @@
                     <span class="meta-channel" id="meta-channel"></span>
                   </div>
                 </div>
-
-                <!--
-                  RECENT HISTORY:
-                  Shows recently added videos for quick re-adding. Populated
-                  by admin/upload.js from localStorage "recentUploads" key.
-                  Each entry shows platform icon + title; click to re-load.
-                -->
                 <div id="recent-history" class="recent-history hidden"></div>
+                <div id="direct-upload-section" class="hidden" style="margin-top:var(--space-lg); padding:var(--space-lg); border:2px dashed var(--border); border-radius:var(--radius-lg); text-align:center;">
+                  <p style="margin-bottom:var(--space-md); color:var(--text-muted);">Upload a video file directly</p>
+                  <input type="file" id="video-file-input" accept="video/*" style="display:block;margin:0 auto;">
+                </div>
               </div>
-
-              <!-- ─── TAB PANEL: Details ────────────── -->
-              <!-- ======== TAB PANEL: Details ======== -->
               <div class="tab-panel" id="tab-panel-details">
                 <h2 class="form-title">Video Details</h2>
-
                 <div class="form-grid">
-
-                  <!-- VIDEO TITLE: Auto-filled from platform metadata, editable -->
                   <div class="form-group">
                     <label class="form-label" for="title-input">Video Title</label>
                     <input type="text" id="title-input" class="form-input-field" placeholder="Auto-filled from source when available" autocomplete="off">
                   </div>
-
-                  <!-- DESCRIPTION: Optional text description for viewers -->
                   <div class="form-group">
                     <label class="form-label" for="description-input">Description</label>
                     <textarea id="description-input" class="textarea-field" placeholder="Provide a description for viewers..."></textarea>
                   </div>
-
                   <div class="form-row">
-                    <!-- DURATION: Manual input in Min:Sec format with regex validation -->
                     <div class="form-group">
                       <label class="form-label" for="duration-input">Duration (Min:Sec)</label>
                       <input type="text" id="duration-input" class="form-input-field" placeholder="E.g., 12:45" pattern="^[0-9]+:[0-5]?[0-9]:[0-5][0-9]$|^[0-9]+:[0-5][0-9]$" autocomplete="off">
                     </div>
-                    <!-- PUBLISH TOGGLE: Switch to publish immediately or save as draft -->
                     <div class="form-group">
                       <label class="form-label">Status</label>
                       <div class="toggle-row" style="padding-top: var(--space-sm);">
@@ -276,7 +139,6 @@
                       </div>
                     </div>
                   </div>
-
                   <div class="form-group">
                     <label class="form-label">Tags</label>
                     <div class="tags-chip-input" id="tags-input-container">
@@ -284,97 +146,47 @@
                       <input type="text" id="tags-input" class="form-input-field" placeholder="Type tag and press comma or Enter" autocomplete="off">
                     </div>
                   </div>
-
                 </div>
               </div>
-
             </div>
-
-            <!-- ─── COLUMN: Publish & Cover ───────── -->
-            <!-- ======== RIGHT COLUMN: Publish & Cover ======== -->
             <div class="upload-card" style="height:fit-content;">
               <h2 class="form-title">Publish & Cover</h2>
-              
-              <!--
-                THUMBNAIL UPLOAD:
-                Drag-and-drop or click-to-upload box for a custom video thumbnail.
-                Supports image/* file types. Preview shown after selection.
-                If no custom thumbnail is uploaded, the platform-provided
-                thumbnail from the metadata is used as the default.
-              -->
               <div class="form-group">
                 <label class="form-label">Thumbnail Image</label>
                 <div class="thumbnail-upload-box" id="thumbnail-box">
                   <img id="thumbnail-preview" class="thumbnail-preview-img" alt="Thumbnail Preview">
                   <div class="thumbnail-upload-placeholder" id="thumbnail-placeholder">
-                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle>
-                      <polyline points="21 15 16 10 5 21"></polyline>
-                    </svg>
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
                     <span>Click to upload thumbnail</span>
                   </div>
                   <input type="file" id="thumbnail-file-input" accept="image/*" class="hidden">
                 </div>
               </div>
-
               <div class="form-group" style="margin-top:var(--space-md);">
                 <label class="form-label" for="thumbnail-url-input">Or paste thumbnail URL</label>
-                <input type="url" id="thumbnail-url-input" class="form-input-field" placeholder="https://example.com/thumbnail.jpg" autocomplete="off">
+                <div class="input-row">
+                  <input type="url" id="thumbnail-url-input" class="form-input-field" placeholder="https://example.com/thumbnail.jpg" autocomplete="off" style="flex:1;">
+                  <button type="button" id="fetch-thumb-btn" class="btn btn-secondary" style="white-space:nowrap;">Fetch</button>
+                </div>
               </div>
-
-              <!--
-                PUBLISH BUTTON:
-                Full-width submit button. Disabled until a valid video source
-                is loaded (URL/embed successfully fetched). On submit, saves
-                the video data to localStorage and redirects to ./videos.html.
-              -->
               <div style="margin-top: var(--space-2xl);">
-                <button type="submit" id="submit-btn" class="btn btn-primary" style="width:100%;" disabled>
-                  Publish Video
-                </button>
+                <button type="submit" id="submit-btn" class="btn btn-primary" style="width:100%;" disabled>Publish Video</button>
               </div>
-
             </div>
-
           </div>
         </form>
-
       </main>
-
     </div>
   </div>
-
   <style>
-    @media (max-width: 896px) {
-      .admin-menu-btn { display: flex !important; }
-    }
+    @media (max-width: 896px) { .admin-menu-btn { display: flex !important; } }
   </style>
-
-  <!-- ─── SECTION: SCRIPTS ──────────────────── -->
-  <!-- ==================== SCRIPTS ==================== -->
-  <!-- mockData.js: Mock data factory for prototype tags and video data -->
   <script src="../js/mockData.js"></script>
-  <!-- supabase.js + supabase-api.js: Backend integration layer (optional) -->
   <script src="../js/supabase.js"></script>
   <script src="../js/supabase-api.js"></script>
-  <!-- main.js: Core app - theme toggling, toast API, utility functions -->
   <script src="../js/main.js"></script>
-  <!-- components.js: UI injectors - sidebar, navbar, footer, pagination -->
   <script src="../js/components.js"></script>
-  <!-- animations.js: Scroll-reveal and transition animation effects -->
   <script src="../js/animations.js"></script>
-  <!--
-    admin/upload.js: Video upload page logic.
-    - Platform selector rendering and switching (YouTube, Vimeo, Dailymotion, Embed)
-    - URL validation and oEmbed metadata fetching via proxy
-    - Iframe embed code parsing and injection
-    - Video preview container management (loading, player, fallback states)
-    - Auto-fill title/description/thumbnail from fetched metadata
-    - Tag selection (existing + custom creation) with 10-tag limit
-    - Thumbnail upload with FileReader preview
-    - Form submission: validates all fields, saves to localStorage, redirects
-    - Recent history tracking and display
-  -->
   <script src="../js/admin/upload.js"></script>
 </body>
 </html>

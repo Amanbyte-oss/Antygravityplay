@@ -90,7 +90,7 @@
           <span class="text-sm-bold">Console</span>
         </div>
         <div class="admin-header-right">
-          <a href="../index.html" class="btn btn-secondary">
+          <a href="../index.html" class="btn btn-secondary" target="_blank">
             View Live Site
           </a>
           <button class="theme-toggle" aria-label="Toggle theme">
@@ -205,7 +205,7 @@
 
   <!-- Edit Video Modal -->
   <div class="modal-overlay" id="edit-video-modal" role="dialog" aria-modal="true">
-    <div class="modal" style="max-width:520px;">
+    <div class="modal" style="max-width:560px;">
       <div class="modal-header">
         <h3 class="modal-title">Edit Video</h3>
         <button class="modal-close" id="edit-modal-close" aria-label="Close">&times;</button>
@@ -225,6 +225,21 @@
             <div id="edit-tags-chips" class="tags-chips"></div>
             <input type="text" id="edit-tags-input" class="form-input-field" placeholder="Type tag and press comma or Enter" autocomplete="off">
           </div>
+        </div>
+        <div class="form-group" style="margin-bottom:12px;">
+          <label class="form-label" for="edit-status-input">Status</label>
+          <select id="edit-status-input" class="form-input-field" style="width:100%;">
+            <option value="published">Published</option>
+            <option value="draft">Draft</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:12px;">
+          <label class="form-label" for="edit-duration-input">Duration</label>
+          <input type="text" id="edit-duration-input" class="form-input-field" style="width:100%;" placeholder="e.g. 10:14">
+        </div>
+        <div class="form-group" style="margin-bottom:12px;">
+          <label class="form-label" for="edit-thumbnail-input">Thumbnail URL</label>
+          <input type="text" id="edit-thumbnail-input" class="form-input-field" style="width:100%;" placeholder="https://...">
         </div>
       </div>
       <div class="modal-footer">

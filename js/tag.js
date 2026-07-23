@@ -8,61 +8,53 @@ document.addEventListener('DOMContentLoaded', () => {
   window.Components.injectNavbar();
   window.Components.injectFooter();
 
-  // ─── 2. PARSE TAG IDENTIFIER FROM URL ───
-  // Support both ?id= (tag ID) and ?tag= (tag name) query parameters
+  // ─── 2. RENDER TAG PAGE ───
+  renderTagPage();
+
+  // ─── 3. RE-RENDER WHEN SUPABASE DATA ARRIVES ───
+  document.addEventListener('supabase-active', renderTagPage);
+});
+
+function renderTagPage() {
   const params = window.App.getQueryParams();
-  // Get the tag ID from the URL if present
   const tagId = params.id;
-  // Get the tag name from the URL if present
   const tagName = params.tag;
-  // Load all available tags
   const tags = window.App.getTags();
-  // Placeholder for the resolved tag object
   let tag = null;
 
-  // Try to find the tag by ID first
   if (tagId) {
     tag = tags.find(t => t.id === tagId);
-  // Fall back to finding by name (case-insensitive)
   } else if (tagName) {
     tag = tags.find(t => t.name.toLowerCase() === tagName.toLowerCase());
   }
 
-  // If still not found and tagName was provided, try with decodeURIComponent
   if (!tag) {
     if (tagName) {
       tag = tags.find(t => t.name.toLowerCase() === decodeURIComponent(tagName).toLowerCase());
     }
   }
 
-  // ─── IF NO SPECIFIC TAG, SHOW "BROWSE ALL TAGS" VIEW ───
   if (!tag) {
     renderAllTagsView();
     return;
   }
 
-  // ─── 3. RETRIEVE VIDEOS FOR THIS TAG ───
   var currentTagName = tag.name;
   var allVideos = window.App.getVideos().filter(function(v) {
     if (v.status !== 'published') return false;
-    return (v.tags || []).indexOf(currentTagName) !== -1 || v.tags.indexOf(tag.id) !== -1;
+    if (!v.tags) return false;
+    return v.tags.indexOf(currentTagName) !== -1 || v.tags.indexOf(tag.id) !== -1;
   });
 
-  // ─── 4. SETUP TAG DETAILS HEADER ───
-  // Update the hero banner with tag name, count, and color
   setupTagHeader(tag, allVideos.length);
-
-  // ─── 5. RENDER MATCHING VIDEOS ───
   renderTagVideos(allVideos);
-
-  // ─── 6. RENDER RELATED TAGS ───
-  // Show tags that frequently appear alongside the current tag
   renderRelatedTags(tag, allVideos);
+  var relatedSection = document.querySelector('.related-tags-section');
+  if (relatedSection) relatedSection.style.display = '';
 
-  // ─── 7. TRIGGER SCROLL REVEAL AND LAZY LOADING ───
   window.Animations.initScrollReveal();
   if (window.refreshLazyLoading) window.refreshLazyLoading();
-});
+}
 
 // ─── BROWSE ALL TAGS VIEW ───
 /**

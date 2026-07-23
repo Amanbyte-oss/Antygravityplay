@@ -112,7 +112,7 @@
           <span class="text-sm-bold">Console</span>
         </div>
         <div class="admin-header-right">
-          <a href="../index.html" class="btn btn-secondary">View Live Site</a>
+          <a href="../index.html" class="btn btn-secondary" target="_blank">View Live Site</a>
           <button class="theme-toggle" aria-label="Toggle theme">
             <svg class="theme-icon-sun hidden" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line></svg>
             <svg class="theme-icon-moon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
@@ -187,6 +187,15 @@
             <div class="stat-change up">
               <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg>
               <span>+8.2% vs last period</span>
+            </div>
+          </div>
+          <!-- STAT CARD: Total Reactions - engagement metric -->
+          <div class="stat-card large-stat">
+            <div class="stat-title">Total Reactions</div>
+            <div class="stat-value" id="stat-total-reactions">0</div>
+            <div class="stat-change up">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg>
+              <span>+4.5% vs last period</span>
             </div>
           </div>
           <!-- STAT CARD: Total Videos - content volume metric -->
@@ -293,6 +302,60 @@
           </div>
         </div>
 
+        <!-- ─── SECTION: Per-Video Real-Time Detail ─── -->
+        <section class="video-detail-section" aria-label="Real-time video performance detail">
+          <div class="admin-title-row" style="margin-top:var(--space-2xl);">
+            <div class="admin-title-group">
+              <h2>Video Performance Detail</h2>
+              <p>Select a video to see its real-time views, likes, and reactions.</p>
+            </div>
+          </div>
+          <div class="vd-card">
+            <div class="vd-select-row">
+              <select id="vd-video-select" class="vd-select">
+                <option value="">— Select a video —</option>
+              </select>
+              <span class="vd-badge" id="vd-live-badge">● LIVE</span>
+            </div>
+            <div id="vd-panel" class="vd-panel" style="display:none;">
+              <div class="vd-stats-row">
+                <div class="vd-stat">
+                  <span class="vd-stat-icon">👁️</span>
+                  <span class="vd-stat-label">Views</span>
+                  <span class="vd-stat-value" id="vd-views">0</span>
+                </div>
+                <div class="vd-stat">
+                  <span class="vd-stat-icon">❤️</span>
+                  <span class="vd-stat-label">Likes</span>
+                  <span class="vd-stat-value" id="vd-likes">0</span>
+                </div>
+                <div class="vd-stat">
+                  <span class="vd-stat-icon">🔥</span>
+                  <span class="vd-stat-label">Reactions</span>
+                  <span class="vd-stat-value" id="vd-reactions">0</span>
+                </div>
+                <div class="vd-stat">
+                  <span class="vd-stat-icon">📊</span>
+                  <span class="vd-stat-label">Rank</span>
+                  <span class="vd-stat-value" id="vd-rank">—</span>
+                </div>
+              </div>
+              <div class="vd-trend-row">
+                <div class="vd-trend-header">
+                  <h4 class="vd-trend-title">Live View Trend</h4>
+                  <span class="vd-trend-subtitle">Engagement since opening this page</span>
+                </div>
+                <div class="vd-trend-canvas-wrapper">
+                  <canvas id="vd-trend-chart"></canvas>
+                </div>
+              </div>
+            </div>
+            <div id="vd-empty" class="vd-empty">
+              <p>Select a video above to view its real-time performance.</p>
+            </div>
+          </div>
+        </section>
+
       </main>
     </div>
   </div>
@@ -315,6 +378,7 @@
   <script src="../js/components.js"></script>
   <!-- animations.js: Scroll-reveal and transition animation utilities -->
   <script src="../js/animations.js"></script>
+  <script src="../js/supabase-engagement.js"></script>
   <!--
     admin/analytics.js: Analytics page-specific logic.
     - Initializes Chart.js instances for line, bar, pie, and donut charts

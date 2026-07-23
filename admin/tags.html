@@ -129,7 +129,7 @@
           <span class="text-sm-bold">Console</span>
         </div>
         <div class="admin-header-right">
-          <a href="../index.html" class="btn btn-secondary">View Live Site</a>
+          <a href="../index.html" class="btn btn-secondary" target="_blank">View Live Site</a>
           <button class="theme-toggle" aria-label="Toggle theme">
             <svg class="theme-icon-sun hidden" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line></svg>
             <svg class="theme-icon-moon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
@@ -163,12 +163,12 @@
         -->
         <!-- ─── SECTION: Inline Add Tag ────────── -->
         <div class="inline-add-tag">
-          <input type="text" id="add-tag-input" placeholder="Type tag name and press Enter to create..." autocomplete="off">
+          <input type="text" id="add-tag-input" placeholder="Type tag name and press Enter (use commas to add multiple)..." autocomplete="off">
           <div class="add-tag-color-wrap">
             <input type="color" id="add-tag-color" value="#0070f3" title="Pick tag color">
           </div>
           <button type="button" id="add-tag-btn" class="btn btn-primary" style="padding:var(--space-xs) var(--space-md);font-size:var(--text-xs);">Add Tag</button>
-          <span class="text-xs-muted">Press Enter or click Add Tag</span>
+          <span class="text-xs-muted">Enter or click Add Tag &middot; Use commas for bulk creation</span>
         </div>
 
         <!--
@@ -186,12 +186,16 @@
           performs the merge operation, reassigning all videos from the
           selected tags to the target and deleting the source tags.
         -->
-        <!-- ─── SECTION: Merge Bar ─────────────── -->
+        <!-- ─── SECTION: Selection Action Bar ──── -->
         <div class="merge-bar hidden" id="merge-bar">
-          <span style="font-size:var(--text-sm);">Merge <strong id="merge-count">0</strong> selected tags into:</span>
-          <select id="merge-target-select"></select>
-          <button class="btn btn-primary" id="merge-btn" style="padding:var(--space-xs) var(--space-md);font-size:var(--text-xs);">Merge Selected</button>
+          <span class="text-sm" id="selection-count" style="font-weight:600;"></span>
+          <span id="merge-section">
+            <span style="font-size:var(--text-sm);">Merge into:</span>
+            <select id="merge-target-select"></select>
+            <button class="btn btn-primary" id="merge-btn" style="padding:var(--space-xs) var(--space-md);font-size:var(--text-xs);">Merge</button>
+          </span>
           <span style="flex:1;"></span>
+          <button class="btn btn-secondary" id="clear-selection-btn" style="padding:var(--space-xs) var(--space-md);font-size:var(--text-xs);">Clear</button>
           <button class="btn btn-primary" id="bulk-delete-btn" style="padding:var(--space-xs) var(--space-md);font-size:var(--text-xs);background-color:var(--error);color:#fff;border-color:var(--error);">Delete Selected</button>
         </div>
 

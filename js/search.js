@@ -71,6 +71,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // ─── 5. INITIAL SEARCH ───
   // Perform the initial search based on URL params and default filters
   performSearch();
+
+  // ─── 6. RE-RENDER WHEN SUPABASE DATA ARRIVES ───
+  document.addEventListener('supabase-active', () => {
+    renderFilterChips();
+    performSearch();
+  });
 });
 
 // ─── TAG FILTER CHIPS ───
@@ -258,22 +264,42 @@ function renderSearchResults(videos, query) {
     }
 
     const href = `./watch.html?id=${encodeURIComponent(vid.id)}`;
+    var fmt = window.Engagement ? window.Engagement.formatNum : function(n){ return Number(n).toLocaleString(); };
+    var viewsStr = fmt(vid.views || 0);
+    var likesStr = fmt(vid.likes || 0);
+    var reactsStr = fmt(vid.reactions || 0);
+    var vs = vid.video_source || '';
+    var platIcon = vs === 'youtube' ? '▶' : vs === 'vimeo' ? '▽' : vs === 'dailymotion' ? '◆' : vs === 'streamable' ? '▶' : vs === 'cloudflare' ? '◎' : vs === 'peertube' ? '◉' : vs === 'wistia' ? '◈' : vs === 'abyss' ? '⬡' : vs === 'pornhub' ? '🔥' : vs === 'googledrive' ? '▣' : vs === 'screenpal' ? '●' : vs === 'dropbox' ? '◆' : vs === 'onedrive' ? '☁' : vs === 'embed' ? '</>' : vs === 'upload' ? '📁' : '';
+    var platBadge = platIcon ? '<span class="platform-badge" title="' + escapeHtml(vs) + '">' + platIcon + '</span>' : '';
     return `
       <article class="video-card" data-video-id="${escapeHtml(vid.id)}" data-href="${href}">
         <div class="thumbnail-container">
           <img class="lazy" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9'%3E%3Crect width='100%25' height='100%25' fill='%231f1f1f'/%3E%3C/svg%3E" data-src="${escapeHtml(vid.thumbnail || '')}" alt="${escTitle} Preview">
           <span class="duration-badge">${escapeHtml(vid.duration)}</span>
+          ${platBadge}
           <button class="play-hover-btn" data-href="${href}" aria-label="Play ${escTitle}">
             <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
               <polygon points="8,5 19,12 8,19"></polygon>
             </svg>
           </button>
+          <button class="live-link-btn" onclick="event.stopPropagation();window.open('${href}','_blank')" aria-label="Open video in new tab" title="Open in new tab">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
+          </button>
+          <div class="engagement-stats">
+            <span class="eng-stat"><span class="eng-icon">👁️</span><span class="eng-count eng-views">${viewsStr}</span></span>
+            <span class="eng-stat"><span class="eng-icon">❤️</span><span class="eng-count eng-likes">${likesStr}</span></span>
+            <span class="eng-stat"><span class="eng-icon">🔥</span><span class="eng-count eng-reacts">${reactsStr}</span></span>
+          </div>
         </div>
         <div class="video-info">
           <h3 class="video-title">${titleHtml}</h3>
           <div class="video-meta">
             <div class="video-creator">${escapeHtml(vid.creator)}</div>
-            <div>${Number(vid.views).toLocaleString()} views &bull; ${escapeHtml(vid.publishDate)}</div>
+            <div>${escapeHtml(vid.publishDate)}</div>
           </div>
         </div>
       </article>

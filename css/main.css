@@ -855,11 +855,18 @@ main {
 
 /* heartBeat: bounce-like scale animation for like/favourite actions */
 @keyframes heartBeat {
-  0%   { transform: scale(1); }       /* Normal size */
-  30%  { transform: scale(1.15); }    /* Grow larger (the "thump") */
-  60%  { transform: scale(0.95); }    /* Overshoot smaller */
-  80%  { transform: scale(1.08); }    /* Slightly overshoot larger */
-  100% { transform: scale(1); }       /* Settle back to normal */
+  0%   { transform: scale(1); }
+  30%  { transform: scale(1.15); }
+  60%  { transform: scale(0.95); }
+  80%  { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+/* reactionPop: quick pop animation for the fire reaction button */
+@keyframes reactionPop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.3); }
+  100% { transform: scale(1); }
 }
 
 /* shimmer: moving gradient effect for skeleton loading states */
@@ -1013,6 +1020,38 @@ main {
 .play-hover-btn:hover {
   background-color: var(--accent-hover);  /* Darker green */
   transform: scale(1.05) !important;      /* Grow slightly (override card hover transform) */
+}
+
+/* Live link button (open in new tab): positioned left of play button */
+.live-link-btn {
+  position: absolute;
+  bottom: var(--space-md);
+  right: calc(var(--space-md) + 52px);
+  background-color: rgba(0,0,0,0.7);
+  color: #ffffff;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity var(--transition-base), transform var(--transition-base), background-color var(--transition-fast);
+  z-index: 2;
+}
+
+.video-card:hover .live-link-btn {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.live-link-btn:hover {
+  background-color: var(--accent);
+  color: #000;
+  transform: scale(1.05) !important;
 }
 
 /* Info section: title and metadata stacked below thumbnail */
@@ -1213,6 +1252,24 @@ main {
   }
 }
 
+/* ─── ENGAGEMENT STATS (video cards) ──────────────────────────── */
+.engagement-stats {
+  display: flex;
+  gap: var(--space-lg);
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+.eng-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.eng-icon {
+  font-size: 1em;
+  line-height: 1;
+}
+
 /* ─── GLOBAL SMOOTHNESS ─────────────────────────────────────────── */
 /* Smooth scrolling for the entire page */
 html {
@@ -1242,4 +1299,21 @@ a, button, .btn, input, select, textarea,
   transition: transform 0.4s var(--ease-relax), opacity 0.4s var(--ease-relax), background 0.4s var(--ease-relax), box-shadow 0.4s var(--ease-relax);
 }
 
+.platform-badge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  background-color: rgba(0,0,0,0.7);
+  color: #fff;
+  font-size: 12px;
+  line-height: 1;
+  z-index: 2;
+  pointer-events: none;
+}
 

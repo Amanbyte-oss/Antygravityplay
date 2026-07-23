@@ -170,6 +170,57 @@
   color: #f3727f;                   /* Red text for the count */
 }
 
+/* Reaction button (🔥): matches like-btn style */
+.reaction-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: var(--radius-full);
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+.reaction-btn:hover {
+  background-color: var(--bg-elevated);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+.reaction-btn:active {
+  transform: scale(0.95);
+}
+.reaction-btn span:first-child {
+  font-size: 1.2em;
+  line-height: 1;
+}
+
+.embed-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: var(--text-sm);
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+.embed-btn:hover {
+  background: var(--bg-tertiary);
+  color: var(--text);
+  border-color: var(--accent);
+}
+.embed-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
 /* ═══════════════════════════════════════════════════════════════════════
    CREATOR / DESCRIPTION
    Video metadata: creator profile, description text, and tag badges.
@@ -245,13 +296,17 @@
   font-weight: 500;                      /* Medium weight */
   text-decoration: none;                 /* Remove underline from links */
   cursor: pointer;                       /* Hand cursor for links */
-  transition: color var(--transition-fast), background-color var(--transition-fast);  /* Smooth hover */
+  transition: all var(--transition-fast) ease;  /* Smooth hover */
 }
 
-/* Tag badge hover: lighter background and brighter text */
+/* Tag badge hover: lift, scale, and glow */
 .tag-badge:hover {
-  background-color: var(--bg-secondary);  /* Lighter background */
-  color: var(--text-primary);             /* Brighter text */
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+  color: var(--text-primary);
+  border-color: transparent;
+  position: relative;
+  z-index: 1;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -278,6 +333,7 @@
   display: flex;             /* Horizontal row */
   gap: var(--space-md);      /* 12px between thumbnail and info */
   cursor: pointer;           /* Clickable */
+  margin-bottom: var(--space-lg); /* 16px gap between cards */
 }
 
 /* Related video thumbnail: fixed width, 16:9 */
@@ -329,6 +385,30 @@
   border-radius: var(--radius-sm); /* 4px rounded */
   margin-left: 4px;               /* Small gap before label */
   vertical-align: middle;          /* Align with text baseline */
+}
+
+/* Related video duration badge */
+.related-duration {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  background: rgba(0,0,0,0.8);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 5px;
+  border-radius: 3px;
+  line-height: 1.4;
+  pointer-events: none;
+}
+
+/* Sidebar section spacing */
+.sidebar-section {
+  margin-bottom: var(--space-2xl);
+}
+
+.sidebar-section:last-child {
+  margin-bottom: 0;
 }
 
 /* Related video metadata: views, upload date */

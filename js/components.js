@@ -191,6 +191,18 @@
           document.body.style.overflow = isOpen ? 'hidden' : '';
         });
       }
+
+      // ─── SUPABASE TAGS REFRESH ───
+      // Re-render the tags dropdown when Supabase data arrives
+      var self = this;
+      document.addEventListener('supabase-active', function() {
+        var tags = window.App.getTags();
+        var dropdown = container.querySelector('.dropdown-menu');
+        if (!dropdown) return;
+        dropdown.innerHTML = tags.map(function(tag) {
+          return '<li><a href="' + rootPrefix + 'tag.html?tag=' + encodeURIComponent(tag.name) + '"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:' + self._tagColor(tag.name) + '; margin-right:6px;"></span>' + tag.name + '</a></li>';
+        }).join('');
+      });
     },
 
     // ─── 2. ADMIN SIDEBAR ───
@@ -270,15 +282,6 @@
               </a>
             </li>
             <li>
-              <a href="${adminPrefix}notifications.html" class="sidebar-link ${activePage === 'notifications' ? 'active' : ''}">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                  <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                </svg>
-                Notifications
-              </a>
-            </li>
-            <li>
               <a href="${adminPrefix}settings.html" class="sidebar-link ${activePage === 'settings' ? 'active' : ''}">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <circle cx="12" cy="12" r="3"></circle>
@@ -346,7 +349,7 @@
                 </svg>
                 <span>Antigravity Play</span>
               </div>
-              <p>A high-performance cinematic video sharing network built entirely on design systems from Spotify and Vercel.</p>
+              <p>Experience books, Reddit stories, and real-life narratives through crystal-clear, emotionally engaging human voice narration in English.</p>
             </div>
             <!-- Browse links column -->
             <div class="footer-col">
@@ -400,7 +403,7 @@
           </div>
           <!-- Bottom bar with copyright and tech credit -->
           <div class="container footer-bottom">
-            <span>&copy; 2026 Antigravity. All rights reserved.</span>
+            <span>&copy; 2026 Antigravity Play. All rights reserved.</span>
             <span>Handcrafted in India with Vanilla JS</span>
           </div>
         </div>
@@ -462,26 +465,42 @@
       const safeCreator = escapeHtml(video.creator);
       const safeDuration = escapeHtml(video.duration);
       const safePubDate = escapeHtml(video.publishDate);
-      // Return the complete video card HTML
+      var fmt = window.Engagement ? window.Engagement.formatNum : function(n){ return Number(n).toLocaleString(); };
+      var viewsStr = fmt(video.views || 0);
+      var likesStr = fmt(video.likes || 0);
+      var reactsStr = fmt(video.reactions || 0);
+      var vs = video.video_source || '';
+      var platIcon = vs === 'youtube' ? '▶' : vs === 'vimeo' ? '▽' : vs === 'dailymotion' ? '◆' : vs === 'streamable' ? '▶' : vs === 'cloudflare' ? '◎' : vs === 'peertube' ? '◉' : vs === 'wistia' ? '◈' : vs === 'abyss' ? '⬡' : vs === 'pornhub' ? '🔥' : vs === 'googledrive' ? '▣' : vs === 'screenpal' ? '●' : vs === 'dropbox' ? '◆' : vs === 'onedrive' ? '☁' : vs === 'embed' ? '</>' : vs === 'upload' ? '📁' : '';
+      var platBadge = platIcon ? '<span class="platform-badge" title="' + escapeHtml(vs) + '">' + platIcon + '</span>' : '';
       return `
         <article class="video-card" data-video-id="${video.id}" data-href="${href}">
           <div class="thumbnail-container">
-            <!-- Lazy-loaded thumbnail with tiny SVG placeholder -->
             <img class="lazy" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9'%3E%3Crect width='100%25' height='100%25' fill='%231f1f1f'/%3E%3C/svg%3E" data-src="${video.thumbnail}" alt="${safeTitle} Preview">
-            <!-- Duration badge overlay -->
             <span class="duration-badge">${safeDuration}</span>
-            <!-- Play button overlay on hover -->
+            ${platBadge}
             <button class="play-hover-btn" data-href="${href}" aria-label="Play video">
               <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
                 <polygon points="8,5 19,12 8,19"></polygon>
               </svg>
             </button>
+            <button class="live-link-btn" onclick="event.stopPropagation();window.open('${href}','_blank')" aria-label="Open video in new tab" title="Open in new tab">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+            </button>
+            <div class="engagement-stats">
+              <span class="eng-stat"><span class="eng-icon">👁️</span><span class="eng-count eng-views">${viewsStr}</span></span>
+              <span class="eng-stat"><span class="eng-icon">❤️</span><span class="eng-count eng-likes">${likesStr}</span></span>
+              <span class="eng-stat"><span class="eng-icon">🔥</span><span class="eng-count eng-reacts">${reactsStr}</span></span>
+            </div>
           </div>
           <div class="video-info">
             <h3 class="video-title">${safeTitle}</h3>
             <div class="video-meta">
               <div class="video-creator">${safeCreator}</div>
-              <div>${Number(video.views).toLocaleString()} views &bull; ${safePubDate}</div>
+              <div>${safePubDate}</div>
             </div>
             ${tagsSection}
           </div>

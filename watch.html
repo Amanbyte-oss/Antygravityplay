@@ -63,7 +63,7 @@
 <main class="container">
   <!-- Back navigation link -->
   <div style="padding-top: var(--space-xl); margin-bottom: var(--space-lg);">
-    <a href="#" onclick="history.back(); return false;" class="inline-flex-center text-xs-muted">
+    <a href="./index.html" class="inline-flex-center text-xs-muted" id="back-link">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
       Back
     </a>
@@ -244,7 +244,7 @@
 
         <div class="watch-actions-row">
           <div class="watch-meta-text">
-            <span id="watch-views-count">0</span> views &bull;
+            <span id="watch-views-count">—</span> views &bull;
             Uploaded on <span id="watch-publish-date">YYYY-MM-DD</span>
           </div>
 
@@ -253,7 +253,16 @@
               <svg width="18" height="18" viewBox="0 0 24 24">
                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
               </svg>
-              <span id="watch-like-count">0</span>
+              <span id="watch-like-count">—</span>
+            </button>
+            <button class="reaction-btn" id="watch-reaction-btn" aria-label="React to this video">
+              <span>🔥</span>
+              <span id="watch-reaction-count">—</span>
+            </button>
+            <button class="embed-btn" id="watch-embed-btn" aria-label="Embed this video" title="Embed">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="10 13 2 13 2 3 20 3 20 13 14 13"></polyline><polyline points="7 17 12 22 17 17"></polyline><line x1="12" y1="13" x2="12" y2="22"></line>
+              </svg>
             </button>
           </div>
         </div>
@@ -271,18 +280,6 @@
         <p id="watch-description" class="description-text">Description Loading...</p>
         <div id="watch-tags-row" class="tags-row"></div>
 
-        <!-- Emoji Reactions Bar (outside player, below description) -->
-        <div class="video-reactions-bar" id="video-reactions-bar">
-          <span class="reactions-label">Reactions</span>
-          <div class="reactions-emoji-row">
-            <button class="emoji-btn" data-emoji="🔥">🔥<span class="emoji-count">0</span></button>
-            <button class="emoji-btn" data-emoji="❤️">❤️<span class="emoji-count">0</span></button>
-            <button class="emoji-btn" data-emoji="😂">😂<span class="emoji-count">0</span></button>
-            <button class="emoji-btn" data-emoji="😲">😲<span class="emoji-count">0</span></button>
-            <button class="emoji-btn" data-emoji="🎉">🎉<span class="emoji-count">0</span></button>
-            <button class="emoji-btn" data-emoji="👍">👍<span class="emoji-count">0</span></button>
-          </div>
-        </div>
       </div>
     </section>
 
@@ -290,7 +287,7 @@
     <!-- RIGHT COLUMN: RELATED VIDEOS SIDEBAR   -->
     <!-- ═══════════════════════════════════════ -->
     <aside class="watch-sidebar" aria-labelledby="sidebar-heading">
-      <h2 id="sidebar-heading" class="sidebar-title">Up Next</h2>
+      <h2 id="sidebar-heading" class="sidebar-title">Related Videos</h2>
       <div id="related-videos-container" class="flex-col-lg">
         <!-- Related video items injected here via watch.js -->
       </div>
@@ -373,6 +370,25 @@
 <footer id="footer-container" class="footer-spacer"></footer>
 
 <!-- ═══════════════════════════════════════════ -->
+<!-- MODAL: Embed video (shareable iframe code)  -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="modal-overlay" id="embed-modal-overlay" role="dialog" aria-modal="true" style="display:none;">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">Embed Video</h3>
+      <button class="modal-close" id="embed-modal-close" aria-label="Close">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p style="margin-bottom:12px;color:var(--text-muted);font-size:var(--text-sm);">Copy the iframe code below to embed this video on your site.</p>
+      <div style="background:var(--bg-secondary);border-radius:var(--radius-md);padding:12px;position:relative;">
+        <pre id="embed-code-output" style="margin:0;font-size:12px;white-space:pre-wrap;word-break:break-all;color:var(--text);font-family:var(--font-mono);user-select:all;"></pre>
+      </div>
+      <button class="btn btn-primary" id="embed-copy-btn" style="margin-top:12px;width:100%;">Copy Code</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
 <!-- SECTION: SCRIPTS                            -->
 <!-- ═══════════════════════════════════════════ -->
 <script src="./js/mockData.js"></script>
@@ -382,6 +398,7 @@
 <!-- supabase.js + supabase-api.js: Backend integration layer (optional) -->
 <script src="./js/supabase.js"></script>
 <script src="./js/supabase-api.js"></script>
+<script src="./js/supabase-engagement.js"></script>
 <!-- watch.js: Watch page logic — video player controller, emoji reactions,
      playlist management, metadata display, related videos, now-playing bar -->
 <script src="./js/watch.js"></script>

@@ -9,17 +9,39 @@ document.addEventListener('DOMContentLoaded', () => {
   // Step 1: Inject the admin sidebar into the page, highlighting "dashboard" as active
   window.Components.injectAdminSidebar('dashboard');
 
-  // Step 2: Retrieve all videos and tags from the central App data store
+  // Step 2: Show maintenance banner if maintenance mode is enabled
+  var maintBanner = document.getElementById('maintenance-banner');
+  if (maintBanner && localStorage.getItem('maintenance_mode') === 'true') {
+    maintBanner.style.display = 'flex';
+  }
+
+  // Step 3: Retrieve all videos and tags from the central App data store
   const videos = window.App.getVideos();  // Array of all video objects
   const tags = window.App.getTags();       // Array of all tag objects
   
   // Step 3: Calculate and display the aggregate statistics (totals) on the page
   computeStats(videos, tags);
 
-  // Step 4: Render the recent uploads grid (shows up to 5 most recently published videos)
-  renderRecentUploadsTable(videos, tags);
+  // Re-compute and re-render when Supabase overrides are fully installed
+  document.addEventListener('supabase-active', () => {
+    var vids = window.App.getVideos();
+    var tgs = window.App.getTags();
+    computeStats(vids, tgs);
+    renderUpNextSelector(vids, tgs);
+    // Sync maintenance banner from Supabase
+    (async function() {
+      try {
+        var sbMaint = await window.SupabaseSettings.get('maintenance_mode');
+        if (sbMaint !== null) {
+          try { localStorage.setItem('maintenance_mode', sbMaint); } catch(_) {}
+          var mb = document.getElementById('maintenance-banner');
+          if (mb) mb.style.display = sbMaint === 'true' ? 'flex' : 'none';
+        }
+      } catch(_) {}
+    })();
+  });
 
-  // Step 5: Render the "Up Next" video selector dropdown with save functionality
+  // Step 4: Render the "Related Videos" multi-selector
   renderUpNextSelector(videos, tags);
 
   // Step 6: Draw the 7-day views trend line chart on the canvas element
@@ -69,142 +91,84 @@ function computeStats(videos, tags) {
 }
 
 // ============================================================
-// Render the "Recent Uploads" grid (shows up to 5 published video cards)
+// Render the "Related Videos" selector (multi-select videos for watch page sidebar)
 // ============================================================
 /**
- * Builds and injects HTML for a grid of the most recently published videos.
- * Each card shows a thumbnail, view count, status badge, title, and up to 3 tags.
+ * Renders a multi-select list of videos. Selected videos appear in the
+ * watch page sidebar as curated related videos. Stores comma-separated IDs
+ * in localStorage and Supabase (site_settings key "related_videos").
  * @param {Array} videos - Array of all video objects
- * @param {Array} tags   - Array of all tag objects
+ * @param {Array} tags   - Array of all tag objects (unused, kept for API consistency)
  */
-function renderRecentUploadsTable(videos, tags) {
-  // Get the DOM container for the recent uploads grid
-  const grid = document.getElementById('recent-uploads-grid');
-  // Guard: exit early if the container element does not exist in the DOM
-  if (!grid) return;
-
-  // Filter to only published videos (also guard against null/undefined entries)
+function renderUpNextSelector(videos, tags) {
+  const container = document.getElementById('upnext-selector');
+  if (!container) return;
   const published = videos.filter(v => v && v.status === 'published');
-  // Reverse the order (newest first) then take the first 5 items
-  const sortedRecent = [...published].reverse().slice(0, 5);
-
-  // If there are no published videos, show an empty-state message
-  if (sortedRecent.length === 0) {
-    grid.innerHTML = '<div class="uploads-empty">No recent uploads found.</div>';
-    return;
-  }
-
-  var esc = function(s) { return String(s||'').replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]||c; }); };
-  // Build HTML for each video card and join them into a single string
-  grid.innerHTML = sortedRecent.map((vid, idx) => {
-    var safeTags = Array.isArray(vid.tags) ? vid.tags : [];
-    var resolvedTags = safeTags.map(function(t) {
-      var found = tags.find(function(at) { return at && at.id === t; });
-      if (found) return { name: found.name, color: found.color };
-      return { name: t, color: 'var(--accent)' };
-    }).filter(Boolean);
-    var tagHtml = resolvedTags.length > 0
-      ? resolvedTags.slice(0, 3).map(function(t) {
-          return '<span class="upload-tag" style="background-color:' + esc(t.color) + '18; color:' + esc(t.color) + ';">' + esc(t.name) + '</span>';
-        }).join('') + (resolvedTags.length > 3 ? '<span class="upload-tag-more">+' + (resolvedTags.length - 3) + '</span>' : '')
-      : '<span class="upload-tag-none">—</span>';
-
-    const badgeClass = vid.status === 'published' ? 'badge-success' : 'badge-warning';
-    const thumbSrc = vid.thumbnail || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 9%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%231f1f1f%22/%3E%3C/svg%3E';
-
-    return `
-      <div class="upload-card">
-        <div class="upload-card-thumb">
-          <img src="${esc(thumbSrc)}" alt="${esc(vid.title)}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 9%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%231f1f1f%22/%3E%3C/svg%3E'">
-          <div class="upload-card-overlay">
-            <span class="upload-card-views">
-              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              ${Number(vid.views || 0).toLocaleString()}
-            </span>
-            <span class="badge ${badgeClass}">${esc(vid.status || 'draft')}</span>
+  var selectedIds = [];
+  try {
+    var raw = localStorage.getItem('related_videos');
+    if (raw) selectedIds = raw.split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+  } catch(e) {}
+  (async function() {
+    if (window.SupabaseSettings) {
+      try {
+        var sbRaw = await window.SupabaseSettings.get('related_videos');
+        if (sbRaw) {
+          var sbIds = sbRaw.split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+          if (sbIds.length > 0) {
+            selectedIds = sbIds;
+            try { localStorage.setItem('related_videos', sbRaw); } catch(e) {}
+          }
+        }
+      } catch(e) {}
+    }
+    var esc = function(s) { return String(s||'').replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]||c; }); };
+    var selectedSet = {};
+    selectedIds.forEach(function(id) { selectedSet[id] = true; });
+    container.innerHTML = `
+      <div class="upnext-card">
+        <div class="upnext-card-body">
+          <p style="margin:0 0 var(--space-md) 0;color:var(--text-muted);font-size:var(--text-sm);">
+            Check the videos to show in the Related Videos sidebar on the watch page.
+            Order them by clicking the up/down arrows.
+          </p>
+          <div id="related-videos-list" style="display:flex;flex-direction:column;gap:var(--space-sm);">
+            ${published.map(function(v) {
+              var checked = selectedSet[v.id] ? 'checked' : '';
+              return '<label class="upnext-select-label" style="display:flex;align-items:center;gap:var(--space-md);padding:var(--space-sm) var(--space-md);border-radius:var(--radius-md);border:1px solid var(--border-color);cursor:pointer;">' +
+                '<input type="checkbox" value="' + esc(v.id) + '" ' + checked + ' style="width:16px;height:16px;accent-color:var(--accent);flex-shrink:0;">' +
+                '<img src="' + esc(v.thumbnail || '') + '" alt="" style="width:48px;height:27px;border-radius:var(--radius-sm);object-fit:cover;flex-shrink:0;">' +
+                '<span style="flex:1;font-size:var(--text-sm);">' + esc(v.title) + '</span>' +
+                '<span style="font-size:var(--text-xs);color:var(--text-muted);flex-shrink:0;">' + esc(v.creator) + '</span>' +
+              '</label>';
+            }).join('')}
           </div>
-        </div>
-        <div class="upload-card-body">
-          <h3 class="upload-card-title">${esc(vid.title) || 'Untitled'}</h3>
-          <div class="upload-card-tags">${tagHtml}</div>
+          <div style="margin-top:var(--space-md);display:flex;gap:var(--space-md);">
+            <button id="related-save-btn" class="btn btn-primary">Save Related Videos</button>
+            <button id="related-clear-btn" class="btn btn-secondary">Clear All</button>
+          </div>
         </div>
       </div>
     `;
-  }).join('');
-}
-
-// ============================================================
-// Render the "Up Next" video selector (pin a video to the front page)
-// ============================================================
-/**
- * Renders the Up Next selector card showing currently pinned video (if any),
- * a dropdown to choose a video, and a save button. Persists the selection to localStorage.
- * @param {Array} videos - Array of all video objects
- * @param {Array} tags   - Array of all tag objects (unused here, kept for API consistency)
- */
-function renderUpNextSelector(videos, tags) {
-  // Get the DOM container for the Up Next selector
-  const container = document.getElementById('upnext-selector');
-  // Guard: exit early if the container element does not exist
-  if (!container) return;
-
-  // Filter to only published videos
-  const published = videos.filter(v => v && v.status === 'published');
-  // Retrieve the previously saved "up-next" video ID from localStorage
-  const savedId = localStorage.getItem('up-next-video-id');
-  // Find the corresponding video object from published list, or null if not found
-  const selectedVideo = savedId ? published.find(v => v.id === savedId) : null;
-
-  var esc = function(s) { return String(s||'').replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]||c; }); };
-  container.innerHTML = `
-    <div class="upnext-card">
-      <div class="upnext-card-body">
-        <div class="upnext-current">
-          <span class="upnext-label">Currently pinned:</span>
-          ${selectedVideo
-            ? `<div class="upnext-selected-video">
-                <img src="${esc(selectedVideo.thumbnail || '')}" alt="" class="upnext-thumb">
-                <div class="upnext-info">
-                  <span class="upnext-title">${esc(selectedVideo.title)}</span>
-                  <span class="upnext-creator">${esc(selectedVideo.creator)}</span>
-                </div>
-              </div>`
-            : '<span class="upnext-none">None selected — showing auto-matched related videos</span>'
-          }
-        </div>
-        <div class="upnext-form">
-          <label for="upnext-select" class="upnext-select-label">Select a video to pin as "Up Next":</label>
-          <div class="upnext-select-row">
-            <select id="upnext-select" class="upnext-select">
-              <option value="">— Auto (no pin) —</option>
-              ${published.map(v => `
-                <option value="${esc(v.id)}" ${v.id === savedId ? 'selected' : ''}>
-                  ${esc(v.title)} (${esc(v.creator)})
-                </option>
-              `).join('')}
-            </select>
-            <button id="upnext-save-btn" class="btn btn-primary" style="white-space:nowrap; flex-shrink:0;">Save</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
-
-  var saveBtn = document.getElementById('upnext-save-btn');
-  var select = document.getElementById('upnext-select');
-  if (saveBtn && select) {
-    saveBtn.addEventListener('click', () => {
-      const val = select.value;
-      if (val) {
-        localStorage.setItem('up-next-video-id', val);
-        window.App.showToast('Up Next video pinned successfully!');
-      } else {
-        localStorage.removeItem('up-next-video-id');
-        window.App.showToast('Up Next pin removed. Auto-matching will be used.');
-      }
-      renderUpNextSelector(videos, tags);
-    });
-  }
+    var saveBtn = document.getElementById('related-save-btn');
+    var clearBtn = document.getElementById('related-clear-btn');
+    if (saveBtn) {
+      saveBtn.addEventListener('click', async function() {
+        var checks = document.querySelectorAll('#related-videos-list input[type="checkbox"]');
+        var ids = [];
+        checks.forEach(function(cb) { if (cb.checked) ids.push(cb.value); });
+        var val = ids.join(',');
+        try { localStorage.setItem('related_videos', val); } catch(e) {}
+        if (window.SupabaseSettings) await window.SupabaseSettings.set('related_videos', val);
+        window.App.showToast('Related videos saved (' + ids.length + ' selected).');
+      });
+    }
+    if (clearBtn) {
+      clearBtn.addEventListener('click', function() {
+        document.querySelectorAll('#related-videos-list input[type="checkbox"]').forEach(function(cb) { cb.checked = false; });
+      });
+    }
+  })();
 }
 
 // ============================================================

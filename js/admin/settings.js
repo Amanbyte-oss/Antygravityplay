@@ -1,6 +1,6 @@
 // ============================================================
 // Settings.js - Admin settings panel: theme, font size, accent color,
-// notifications, profile, danger zone (clear data), import/export
+// notifications, danger zone (clear data), import/export
 // ============================================================
 
 // Wait for the DOM to be fully loaded before initializing
@@ -110,27 +110,40 @@ function loadSettings() {
     var reducedMotionToggle = document.getElementById('reduced-motion-toggle'); if (reducedMotionToggle) reducedMotionToggle.checked = settings.reducedMotion;
   }
 
-  // -------- Notification toggles --------
-  const notifSettings = settings.notifications || {};
-  document.querySelectorAll('.notif-toggle').forEach(toggle => {
-    const key = toggle.dataset.key;
-    if (notifSettings[key] !== undefined) {
-      toggle.checked = notifSettings[key];
+  // -------- Maintenance mode --------
+  try {
+    var maintToggle = document.getElementById('maintenance-toggle');
+    if (maintToggle) {
+      var maintEnabled = localStorage.getItem('maintenance_mode') === 'true';
+      maintToggle.checked = maintEnabled;
     }
-  });
-
-  // -------- Admin profile --------
-  let profile = {};
-  try { profile = JSON.parse(localStorage.getItem('admin-profile') || '{}'); } catch (_) {}
-  if (profile.name) { var el = document.getElementById('admin-name-input'); if (el) el.value = profile.name; }
-  if (profile.email) { var el = document.getElementById('admin-email-input'); if (el) el.value = profile.email; }
-  if (profile.bio) { var el = document.getElementById('admin-bio-input'); if (el) el.value = profile.bio; }
-  // If an avatar was saved, display it
-  if (profile.avatar) {
-    var avatarImg = document.getElementById('avatar-img'); var avatarPlaceholder = document.querySelector('.avatar-placeholder');
-    if (avatarImg) { avatarImg.src = profile.avatar; avatarImg.style.display = 'block'; }
-    if (avatarPlaceholder) avatarPlaceholder.style.display = 'none';
+  } catch(_) {}
+  try {
+    var etaEl = document.getElementById('maintenance-eta-input');
+    if (etaEl) etaEl.value = localStorage.getItem('maintenance_eta') || '';
+  } catch(_) {}
+  // Also try loading from Supabase
+  if (window.SupabaseSettings) {
+    (async function() {
+      try {
+        var sbMaint = await window.SupabaseSettings.get('maintenance_mode');
+        if (sbMaint !== null) {
+          try { localStorage.setItem('maintenance_mode', sbMaint); } catch(_) {}
+          var mt = document.getElementById('maintenance-toggle');
+          if (mt) mt.checked = sbMaint === 'true';
+        }
+      } catch(_) {}
+      try {
+        var sbEta = await window.SupabaseSettings.get('maintenance_eta');
+        if (sbEta !== null) {
+          try { localStorage.setItem('maintenance_eta', sbEta); } catch(_) {}
+          var ei = document.getElementById('maintenance-eta-input');
+          if (ei) ei.value = sbEta;
+        }
+      } catch(_) {}
+    })();
   }
+
 }
 
 // ============================================================
@@ -139,7 +152,7 @@ function loadSettings() {
 /**
  * Attaches change/click/input handlers for theme radios, accent swatches,
  * font size slider, reduced motion toggle, notification toggles,
- * profile save button, avatar upload, and syncs with external theme changes.
+ * and syncs with external theme changes.
  */
 function bindSettingsEvents() {
   // -------- Theme radio buttons --------
@@ -197,78 +210,21 @@ function bindSettingsEvents() {
     });
   }
 
-  // -------- Notification type toggles --------
-  document.querySelectorAll('.notif-toggle').forEach(toggle => {
-    toggle.addEventListener('change', () => {
-      // Read current settings, update the notifications sub-object, and save
-      const settings = JSON.parse(localStorage.getItem('admin-settings') || '{}');
-      if (!settings.notifications) settings.notifications = {};
-      settings.notifications[toggle.dataset.key] = toggle.checked;
-      localStorage.setItem('admin-settings', JSON.stringify(settings));
-    });
-  });
-
-  // -------- Save Profile button --------
-  var saveProfileBtn = document.getElementById('save-profile-btn');
-  if (saveProfileBtn) {
-    saveProfileBtn.addEventListener('click', () => {
-      var adminNameInput = document.getElementById('admin-name-input'); var adminEmailInput = document.getElementById('admin-email-input'); var adminBioInput = document.getElementById('admin-bio-input');
-      if (!adminNameInput || !adminEmailInput || !adminBioInput) return;
-      const name = adminNameInput.value.trim();
-      const email = adminEmailInput.value.trim();
-      const bio = adminBioInput.value.trim();
-      // Validate required fields
-      if (!name) {
-        window.App.showToast('Admin name is required.', 'error');
-        return;
+  // -------- Maintenance mode save button --------
+  var maintSaveBtn = document.getElementById('save-maintenance-btn');
+  if (maintSaveBtn) {
+    maintSaveBtn.addEventListener('click', async function() {
+      var toggle = document.getElementById('maintenance-toggle');
+      var etaInput = document.getElementById('maintenance-eta-input');
+      var enabled = toggle ? toggle.checked : false;
+      var eta = etaInput ? etaInput.value.trim() : '';
+      try { localStorage.setItem('maintenance_mode', String(enabled)); } catch(_) {}
+      try { localStorage.setItem('maintenance_eta', eta); } catch(_) {}
+      if (window.SupabaseSettings) {
+        await window.SupabaseSettings.set('maintenance_mode', String(enabled));
+        await window.SupabaseSettings.set('maintenance_eta', eta);
       }
-      if (!email || !email.includes('@')) {
-        window.App.showToast('A valid email is required.', 'error');
-        return;
-      }
-      const profile = JSON.parse(localStorage.getItem('admin-profile') || '{}');
-      profile.name = name;
-      profile.email = email;
-      profile.bio = bio;
-      try {
-        localStorage.setItem('admin-profile', JSON.stringify(profile));
-        localStorage.setItem('admin-name', name);
-        // Also update the mock users data with the new email
-        const users = window.MOCK_USERS;
-        users[0].email = email;
-        localStorage.setItem('mock-users', JSON.stringify(users));
-      } catch (e) {
-        window.App.showToast('Unable to save profile. Storage may be full.', 'error');
-        return;
-      }
-      window.App.showToast('Profile saved successfully.');
-    });
-  }
-
-  // -------- Avatar file upload --------
-  var avatarFileInput = document.getElementById('avatar-file-input');
-  if (avatarFileInput) {
-    avatarFileInput.addEventListener('change', function() {
-      if (this.files.length > 0) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          // Display the uploaded image as the avatar
-          var avatarImg = document.getElementById('avatar-img'); var avatarPlaceholder = document.querySelector('.avatar-placeholder');
-          if (avatarImg) { avatarImg.src = e.target.result; avatarImg.style.display = 'block'; }
-          if (avatarPlaceholder) avatarPlaceholder.style.display = 'none';
-          // Save the avatar data URL to the profile in localStorage
-          const profile = JSON.parse(localStorage.getItem('admin-profile') || '{}');
-          profile.avatar = e.target.result;
-          try {
-            localStorage.setItem('admin-profile', JSON.stringify(profile));
-          } catch (e) {
-            window.App.showToast('Avatar too large to save.', 'error');
-            return;
-          }
-          window.App.showToast('Avatar updated.');
-        };
-        reader.readAsDataURL(this.files[0]);  // Read as base64 data URL
-      }
+      window.App.showToast(enabled ? 'Maintenance mode enabled.' : 'Maintenance mode disabled.');
     });
   }
 
@@ -424,7 +380,6 @@ function bindImportExport() {
         videos: window.App.getVideos(),
         tags: JSON.parse(localStorage.getItem('db-tags') || '[]'),
         settings: JSON.parse(localStorage.getItem('admin-settings') || '{}'),
-        profile: JSON.parse(localStorage.getItem('admin-profile') || '{}'),
         exportedAt: new Date().toISOString()  // Timestamp of export
       };
       // Create a downloadable Blob and trigger the download

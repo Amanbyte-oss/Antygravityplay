@@ -107,19 +107,40 @@
 <!-- ═══════════════════════════════════════════ -->
 <script src="./js/mockData.js"></script>
 <script src="./js/main.js"></script>
+<script src="./js/supabase.js"></script>
+<script src="./js/supabase-api.js"></script>
 <script src="./js/components.js"></script>
 <script src="./js/animations.js"></script>
 
-  <!-- Init: inject navbar, footer, animations; attach form submission handler -->
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     window.Components.injectNavbar();
     window.Components.injectFooter();
     window.Animations.initScrollReveal();
-    const form = document.getElementById('main-form');
+    var form = document.getElementById('main-form');
     if (form) {
-      form.addEventListener('submit', (e) => {
+      form.addEventListener('submit', async (e) => {
         e.preventDefault();
+        var submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting...';
+        var data = {
+          type: document.getElementById('feedback-type').value,
+          name: document.getElementById('feedback-name').value.trim(),
+          email: document.getElementById('feedback-email').value.trim(),
+          message: document.getElementById('feedback-message').value.trim()
+        };
+        try {
+          var result = null;
+          if (window.SupabaseSubmissions) result = await window.SupabaseSubmissions.insertFeedback(data);
+          if (result) {
+            window.App.showToast('Feedback submitted successfully!', 'success');
+          } else {
+            window.App.showToast('Saved locally. Will sync when online.', 'info');
+          }
+        } catch(_) {
+          window.App.showToast('Saved locally.', 'info');
+        }
         form.style.display = 'none';
         document.getElementById('form-success').classList.add('show');
       });

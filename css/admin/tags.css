@@ -21,7 +21,7 @@
 
 .inline-add-tag input {
   flex: 1;
-  max-width: 320px;
+  max-width: 420px;
   height: 42px;
   padding: 0 var(--space-md) 0 28px;
   background-color: var(--bg-secondary);
@@ -177,6 +177,10 @@
   display: none;
 }
 
+#merge-section.hidden {
+  display: none;
+}
+
 .merge-bar select {
   height: 36px;
   padding: 0 var(--space-md);
@@ -250,7 +254,7 @@
   background-color: rgba(0,0,0,0.35);
   border-radius: var(--radius-sm);
   padding: 2px;
-  opacity: 0;
+  opacity: 0.6;
   transition: opacity 0.2s;
 }
 

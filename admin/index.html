@@ -2,16 +2,15 @@
 <!-- ═══════════════════════════════════════════ -->
 <!-- FILE: index.html                           -->
 <!-- PURPOSE: Admin dashboard with stat cards,  -->
-<!--          chart, recent uploads, feed,      -->
-<!--          and up-next video selector.       -->
+<!--          chart, and related videos selector. -->
 <!-- ═══════════════════════════════════════════ -->
 <!--
   ============================================================================
   FILE: admin/index.html
   SECTION: Admin / Dashboard
   DESCRIPTION: Main admin dashboard showing platform performance overview,
-  stat cards (videos, views, likes, tags), views trend line chart, recent
-  activity feed, recent uploads grid, and up-next video selector.
+  stat cards (videos, views, likes, tags), views trend line chart, and related
+  videos selector.
   DEPENDENCIES: main.js, components.js, dashboard.js
   ============================================================================
 -->
@@ -105,7 +104,7 @@
           <span class="text-sm-bold">Console</span>
         </div>
         <div class="admin-header-right">
-          <a href="../index.html" class="btn btn-secondary">
+          <a href="../index.html" class="btn btn-secondary" target="_blank">
             View Live Site
           </a>
           <button class="theme-toggle" aria-label="Toggle theme">
@@ -146,6 +145,12 @@
           - Total Tags: Active tag/label count
           Each .stat-value is dynamically populated from mock data by dashboard.js.
         -->
+        <!-- Maintenance mode status banner -->
+        <div id="maintenance-banner" style="display:none;background:var(--warning-bg, #ffa42b20);border:1px solid var(--warning, #ffa42b);border-radius:var(--radius-md);padding:var(--space-md) var(--space-lg);margin-bottom:var(--space-lg);align-items:center;gap:var(--space-md);">
+          <strong style="color:var(--warning);font-size:var(--text-sm);">Maintenance Mode Active</strong>
+          <span style="font-size:var(--text-sm);color:var(--text-secondary);flex:1;">Visitors are seeing the maintenance page.</span>
+          <a href="./settings.html" style="font-size:var(--text-sm);font-weight:600;color:var(--accent);white-space:nowrap;">Change Settings</a>
+        </div>
         <section class="stats-grid" aria-label="Quick metrics">
           
           <div class="stat-card">
@@ -205,86 +210,20 @@
             </div>
           </section>
 
-          <!-- ─── SECTION: Activity Feed ─────────── -->
-          <!--
-            FEED CARD: Recent Activity Feed.
-            Static mock activity feed showing the latest platform events:
-            new video published, new like received, title modification,
-            and database sync. Each item has a contextual icon (checkmark,
-            heart, pencil), description text, and relative timestamp.
-            This is currently a static placeholder; not dynamically populated.
-          -->
-          <section class="feed-card" aria-labelledby="feed-heading">
-            <h2 id="feed-heading" class="feed-title">Recent Activity</h2>
-            <div class="feed-list">
-              
-              <div class="feed-item">
-                <div class="feed-icon">✓</div>
-                <div class="feed-content">
-                  <span class="feed-text"><strong>Alex Mercer</strong> published a new video</span>
-                  <span class="feed-time">2 hours ago</span>
-                </div>
-              </div>
-
-              <div class="feed-item">
-                <div class="feed-icon">♥</div>
-                <div class="feed-content">
-                  <span class="feed-text">Video <strong>Hollow Knight Speedrun</strong> received a new like</span>
-                  <span class="feed-time">4 hours ago</span>
-                </div>
-              </div>
-
-              <div class="feed-item">
-                <div class="feed-icon">✎</div>
-                <div class="feed-content">
-                  <span class="feed-text"><strong>Alex Mercer</strong> modified title for vid-14</span>
-                  <span class="feed-time">1 day ago</span>
-                </div>
-              </div>
-
-              <div class="feed-item">
-                <div class="feed-icon">✓</div>
-                <div class="feed-content">
-                  <span class="feed-text">Database sync successful</span>
-                  <span class="feed-time">2 days ago</span>
-                </div>
-              </div>
-
-            </div>
-          </section>
-
         </div>
 
         <!--
-          RECENT UPLOADS SECTION:
-          Shows thumbnail cards for the most recently uploaded videos.
-          Each card displays the video thumbnail, title, creator name,
-          view count, and publish status. The grid (#recent-uploads-grid)
-          is dynamically populated by admin/dashboard.js from mock data.
-          "Manage All" link navigates to ./videos.html for full management.
-        -->
-        <!-- ─── SECTION: Recent Uploads ────────── -->
-        <section class="uploads-section" aria-labelledby="uploads-heading">
-          <div class="uploads-section-header">
-            <h2 id="uploads-heading" class="uploads-section-title">Recent Uploads</h2>
-            <a href="./videos.html" class="row-link">Manage All &rarr;</a>
-          </div>
-          <div class="uploads-grid" id="recent-uploads-grid">
-            <!-- Dynamically populated via JS -->
-          </div>
-        </section>
-
-        <!--
-          UP NEXT VIDEO SELECTOR:
-          Dropdown/selector widget that lets the admin choose which video
-          appears as "Up Next" on the public watch page. The selection is
-          saved to localStorage and retrieved by the watch page player.
+          RELATED VIDEOS SELECTOR:
+          Multi-select list that lets the admin choose which videos
+          appear as "Related Videos" on the public watch page sidebar.
+          The selection is stored in Supabase site_settings and retrieved
+          by watch.js to render the curated list.
           Populated dynamically by admin/dashboard.js from the video list.
         -->
-        <!-- ─── SECTION: Up Next Selector ──────── -->
+        <!-- ─── SECTION: Related Videos Selector ── -->
         <section class="upnext-section" aria-labelledby="upnext-heading">
           <div class="upnext-section-header">
-            <h2 id="upnext-heading" class="upnext-section-title">Up Next Video</h2>
+            <h2 id="upnext-heading" class="upnext-section-title">Related Videos</h2>
           </div>
           <div id="upnext-selector">
             <!-- Dynamically populated via JS -->
@@ -338,8 +277,7 @@
     admin/dashboard.js: Dashboard page-specific logic.
     - Populates stat cards (#stat-total-videos, #stat-total-views, etc.)
     - Initializes the views trend chart (#analytics-line-chart) via Chart.js
-    - Renders the recent uploads grid (#recent-uploads-grid) from mock data
-    - Populates the Up Next video selector (#upnext-selector)
+    - Populates the Related Videos multi-selector (#upnext-selector)
   -->
   <script src="../js/admin/dashboard.js"></script>
 </body>

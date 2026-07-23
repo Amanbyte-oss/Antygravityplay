@@ -172,6 +172,13 @@ function renderCards(state) {
         </div>
         <!-- Action buttons -->
         <div class="video-card-actions">
+          <button class="card-action-btn view-live-btn" data-id="${vid.id}" onclick="event.stopPropagation();window.open('../watch.html?id=${encodeURIComponent(vid.id)}','_blank')" aria-label="View live" title="View live">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
+          </button>
           <button class="card-action-btn edit-video-btn" data-id="${vid.id}" aria-label="Edit video" title="Edit">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
@@ -719,12 +726,18 @@ var _editModalEsc = function(s) { return String(s||'').replace(/[&<>"']/g, funct
 function openEditModal(video, state) {
   var titleInput = document.getElementById('edit-title-input');
   var descInput = document.getElementById('edit-desc-input');
+  var statusInput = document.getElementById('edit-status-input');
+  var durationInput = document.getElementById('edit-duration-input');
+  var thumbnailInput = document.getElementById('edit-thumbnail-input');
   var chipsContainer = document.getElementById('edit-tags-chips');
   var tagInput = document.getElementById('edit-tags-input');
   if (!titleInput || !descInput || !chipsContainer || !tagInput) return;
 
   titleInput.value = video.title || '';
   descInput.value = video.description || '';
+  if (statusInput) statusInput.value = video.status || 'published';
+  if (durationInput) durationInput.value = video.duration || '';
+  if (thumbnailInput) thumbnailInput.value = video.thumbnail || '';
 
   chipsContainer.innerHTML = '';
   (video.tags || []).forEach(function(t) {
@@ -780,11 +793,14 @@ function openEditModal(video, state) {
     video.title = newTitle;
     video.description = newDesc;
     video.tags = newTags;
+    if (statusInput) video.status = statusInput.value;
+    if (durationInput) video.duration = durationInput.value.trim();
+    if (thumbnailInput) video.thumbnail = thumbnailInput.value.trim();
 
     window.App.saveVideos(state.videos);
 
     if (window.__supabase) {
-      window.SupabaseVideos.update(video.id, { title: newTitle, description: newDesc, tags: newTags })
+      window.SupabaseVideos.update(video.id, { title: newTitle, description: newDesc, tags: newTags, status: video.status, duration: video.duration, thumbnail: video.thumbnail })
         .catch(function(err) { console.error('Supabase update failed:', err); });
     }
 
@@ -797,28 +813,25 @@ function openEditModal(video, state) {
     if (modal) modal.classList.remove('active');
   }
 
-  var saveBtn = document.getElementById('edit-modal-save');
-  var cancelBtn = document.getElementById('edit-modal-cancel');
-  var closeBtn = document.getElementById('edit-modal-close');
+  // Replace buttons with clones to remove stale event listeners
+  ['edit-modal-save', 'edit-modal-cancel', 'edit-modal-close'].forEach(function(id) {
+    var btn = document.getElementById(id);
+    if (btn) {
+      var clone = btn.cloneNode(true);
+      btn.parentNode.replaceChild(clone, btn);
+    }
+  });
 
-  if (saveBtn) {
-    var newSave = saveBtn.cloneNode(true);
-    saveBtn.parentNode.replaceChild(newSave, saveBtn);
-    newSave.addEventListener('click', onSave);
-  }
-  if (cancelBtn) {
-    var newCancel = cancelBtn.cloneNode(true);
-    cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
-    newCancel.addEventListener('click', closeModal);
-  }
-  if (closeBtn) {
-    var newClose = closeBtn.cloneNode(true);
-    closeBtn.parentNode.replaceChild(newClose, closeBtn);
-    newClose.addEventListener('click', closeModal);
-  }
-  if (modal) {
-    var newModal = modal.cloneNode(true);
-    modal.parentNode.replaceChild(newModal, modal);
-    newModal.addEventListener('click', function(e) { if (e.target === newModal) closeModal(); });
+  // Attach fresh listeners
+  document.getElementById('edit-modal-save').addEventListener('click', onSave);
+  document.getElementById('edit-modal-cancel').addEventListener('click', closeModal);
+  document.getElementById('edit-modal-close').addEventListener('click', closeModal);
+
+  // Backdrop click to close (attach once to avoid duplicates)
+  if (modal && !modal.dataset._listenerAttached) {
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) { var m = document.getElementById('edit-video-modal'); if (m) m.classList.remove('active'); }
+    });
+    modal.dataset._listenerAttached = '1';
   }
 }

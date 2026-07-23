@@ -59,6 +59,15 @@
   margin-bottom: var(--space-2xl);         /* 32px below */
 }
 
+.system-detail {
+  font-size: 0.85em;                       /* Small error detail */
+  color: var(--text-muted);                /* Muted text */
+  max-width: 480px;                        /* Don't stretch too wide */
+  word-break: break-word;                  /* Break long error messages */
+  opacity: 0.6;                            /* Faint appearance */
+  margin-bottom: var(--space-lg);          /* 16px below */
+}
+
 /* Action buttons row: CTA buttons for navigation (e.g., "Go Home", "Try Again") */
 .system-actions {
   display: flex;                           /* Row of buttons */
