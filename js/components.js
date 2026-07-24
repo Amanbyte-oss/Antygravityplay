@@ -459,7 +459,7 @@
       const tagsSection = (tagPillsHtml || moreHtml) ? `<div class="video-tag-pills" style="margin-top:6px;">${tagPillsHtml}${moreHtml}</div>` : '';
 
       // Build the watch page URL for this video
-      const href = `${rootPrefix}watch.html?id=${encodeURIComponent(video.id)}`;
+      const href = `/watch.html?id=${encodeURIComponent(video.id)}`;
       // Escape all user-facing strings for safe HTML insertion
       const safeTitle = escapeHtml(video.title);
       const safeCreator = escapeHtml(video.creator);

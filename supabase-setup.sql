@@ -87,8 +87,31 @@ CREATE POLICY "Anyone can update videos" ON videos
   FOR UPDATE TO anon, authenticated USING (true);
 
 -- Anyone can DELETE (matches INSERT/UPDATE policies above)
+DROP POLICY IF EXISTS "Auth can delete videos" ON videos;
 CREATE POLICY "Anyone can delete videos" ON videos
   FOR DELETE TO anon, authenticated USING (true);
+
+-- Grant DELETE privilege at table level to anon role (needed before RLS is checked)
+GRANT DELETE ON TABLE videos TO anon;
+
+-- SECURITY DEFINER function as fallback — bypasses RLS entirely
+CREATE OR REPLACE FUNCTION delete_video(vid UUID)
+RETURNS BOOLEAN
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  DELETE FROM videos WHERE id = vid;
+  RETURN FOUND;
+END;
+$$;
+
+-- Grant execute on the function to anon role
+GRANT EXECUTE ON FUNCTION delete_video TO anon;
+
+-- Refresh PostgREST schema cache so all changes take effect immediately
+NOTIFY pgrst, 'reload schema';
 
 -- ─── 6. STORAGE RLS POLICIES ──
 

@@ -21,10 +21,10 @@ window.__VIDEOS_DATA = [
     "id": "570681d2-58ab-48fc-9a46-3bb751725b6a",
     "title": "YouTube Video (42KrUd9EBF0)",
     "description": "",
-    "video_source": "upload",
+    "video_source": "youtube",
     "external_url": "https://www.youtube.com/watch?v=42KrUd9EBF0",
     "videoUrl": "https://www.youtube.com/watch?v=42KrUd9EBF0",
-    "embed_code": null,
+    "embed_code": "https://www.youtube.com/embed/42KrUd9EBF0",
     "thumbnail": "https://i.ytimg.com/vi/42KrUd9EBF0/maxresdefault.jpg",
     "views": 7,
     "likes": 1,
@@ -39,10 +39,10 @@ window.__VIDEOS_DATA = [
     "id": "86e1b31f-bc8e-47c0-a800-abe297758d6d",
     "title": "CJP PROTEST",
     "description": "CJP PROTEST",
-    "video_source": "upload",
+    "video_source": "youtube",
     "external_url": "https://www.youtube.com/watch?v=59YONYIcLGQ",
     "videoUrl": "https://www.youtube.com/watch?v=59YONYIcLGQ",
-    "embed_code": null,
+    "embed_code": "https://www.youtube.com/embed/59YONYIcLGQ",
     "thumbnail": "https://i.ytimg.com/vi/59YONYIcLGQ/maxresdefault.jpg",
     "views": 0,
     "likes": 13,
@@ -56,8 +56,10 @@ window.__VIDEOS_DATA = [
 ];
 
 try {
-  localStorage.setItem('db-videos', JSON.stringify(window.__VIDEOS_DATA));
-  console.log('data.js: Set localStorage with ' + window.__VIDEOS_DATA.length + ' videos');
+  if (!localStorage.getItem('db-videos')) {
+    localStorage.setItem('db-videos', JSON.stringify(window.__VIDEOS_DATA));
+    console.log('data.js: Seeded localStorage with ' + window.__VIDEOS_DATA.length + ' videos');
+  }
 } catch(e) {
-  console.warn('data.js: Could not set localStorage', e);
+  console.warn('data.js: Could not check localStorage', e);
 }

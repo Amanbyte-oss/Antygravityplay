@@ -6,6 +6,8 @@ const SUPABASE_URL = 'https://oropqrxbsgzluauvmllz.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9yb3Bxcnhic2d6bHVhdXZtbGx6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ3MDQ0MjcsImV4cCI6MjEwMDI4MDQyN30.W0fvGAVSUrTv9MWjV3hThCN7lcnzgSwm_M8gUxX8zOs';
 // ─────────────────────────────────────────────────────────────────
 window.__supabasePresent = true;
+window.__SUPABASE_URL = SUPABASE_URL;
+window.__SUPABASE_ANON_KEY = SUPABASE_ANON_KEY;
 
 let supabaseClient = null;
 let supabaseLoaded = false;

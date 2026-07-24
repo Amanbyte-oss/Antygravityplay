@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function pollVideos(retries) {
   var allVideos = window.App.getVideos().filter(function(v) { return v.status === 'published'; });
-  if (allVideos.length === 0 && window.__VIDEOS_DATA) {
+  if (allVideos.length === 0 && window.__VIDEOS_DATA && !localStorage.getItem('db-videos')) {
     allVideos = window.__VIDEOS_DATA.filter(function(v) { return v.status === 'published'; });
     if (allVideos.length > 0) {
       try { localStorage.setItem('db-videos', JSON.stringify(window.__VIDEOS_DATA)); } catch(e) {}
@@ -179,7 +179,7 @@ function setupHeroBanner(video, tagColor) {
         <p class="hero-desc">${safeDesc}</p>
         <div class="hero-btns">
           <!-- Watch Now button linking to the video's watch page -->
-          <a href="./watch.html?id=${video.id}" class="btn btn-primary">
+          <a href="/watch.html?id=${encodeURIComponent(video.id)}" class="btn btn-primary">
             <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24" style="margin-right:4px;">
               <polygon points="8,5 19,12 8,19"></polygon>
             </svg>

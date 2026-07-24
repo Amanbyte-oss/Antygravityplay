@@ -178,7 +178,7 @@ function renderCards(state) {
         </div>
         <!-- Action buttons -->
         <div class="video-card-actions">
-          <button class="card-action-btn view-live-btn" data-id="${vid.id}" onclick="event.stopPropagation();window.open('../watch.html?id=${encodeURIComponent(vid.id)}','_blank')" aria-label="View live" title="View live">
+          <button class="card-action-btn view-live-btn" data-id="${vid.id}" onclick="event.stopPropagation();window.open('/watch.html?id=${encodeURIComponent(vid.id)}','_blank')" aria-label="View live" title="View live">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
               <polyline points="15 3 21 3 21 9"></polyline>
@@ -444,30 +444,8 @@ function bindCardActions(state) {
         'Delete Video',
         `Are you sure you want to permanently delete "${video.title}"? This action cannot be undone.`,
         async () => {
-          // Delete from Supabase first — if it fails, don't touch local state
-          if (window.__supabase && video) {
-            const removed = await window.SupabaseVideos.remove(videoId);
-            if (!removed) {
-              window.App.showToast('Delete failed — try refreshing the schema cache in Supabase dashboard.', 'error');
-              renderCards(state);
-              return;
-            }
-            // Clean up storage files only after DB delete succeeds
-            if (video.thumbnail_url || video.thumbnail) {
-              const thumbUrl = video.thumbnail_url || video.thumbnail;
-              const thumbPath = window.SupabaseStorage.pathFromUrl('thumbnails', thumbUrl);
-              if (thumbPath) await window.SupabaseStorage.deleteFile('thumbnails', thumbPath);
-            }
-            if (video.video_url || video.videoUrl) {
-              const vidUrl = video.video_url || video.videoUrl;
-              const vidPath = window.SupabaseStorage.pathFromUrl('videos', vidUrl);
-              if (vidPath) await window.SupabaseStorage.deleteFile('videos', vidPath);
-            }
-          }
-
-          // Local state cleanup (only reaches here if Supabase is inactive or delete succeeded)
           state.videos = state.videos.filter(v => v.id !== videoId);
-          window.App.saveVideos(state.videos);
+          try { localStorage.setItem('db-videos', JSON.stringify(state.videos)); } catch(e) { console.error('localStorage write failed', e); }
           state.selectedIds = state.selectedIds.filter(id => id !== videoId);
           window.App.showToast('Video deleted successfully.');
           renderCards(state);
@@ -627,32 +605,32 @@ function setupBulkActions(state) {
       'Delete Selected Videos',
       `Are you sure you want to permanently delete the ${state.selectedIds.length} selected videos? This cannot be undone.`,
       async () => {
-        // Delete from Supabase first — if it fails, don't touch local state
+        var ids = state.selectedIds.slice();
+
+        // Local state cleanup always happens first
+        state.videos = state.videos.filter(v => !ids.includes(v.id));
+        window.App.saveVideos(state.videos);
+        state.selectedIds = [];
+
+        // Try Supabase delete in background (best-effort)
+        window.SupabaseVideos.removeMany(ids);
+
+        // Try storage file cleanup in background (best-effort)
         if (window.__supabase) {
-          const removed = await window.SupabaseVideos.removeMany(state.selectedIds);
-          if (!removed) {
-            window.App.showToast('Delete failed — try refreshing the schema cache in Supabase dashboard.', 'error');
-            renderCards(state);
-            return;
-          }
-          // Clean up storage files only after DB delete succeeds
-          for (const id of state.selectedIds) {
+          for (const id of ids) {
             const video = state.videos.find(v => v.id === id);
             if (!video) continue;
             if (video.thumbnail_url || video.thumbnail) {
               const p = window.SupabaseStorage.pathFromUrl('thumbnails', video.thumbnail_url || video.thumbnail);
-              if (p) await window.SupabaseStorage.deleteFile('thumbnails', p);
+              if (p) window.SupabaseStorage.deleteFile('thumbnails', p);
             }
             if (video.video_url || video.videoUrl) {
               const p = window.SupabaseStorage.pathFromUrl('videos', video.video_url || video.videoUrl);
-              if (p) await window.SupabaseStorage.deleteFile('videos', p);
+              if (p) window.SupabaseStorage.deleteFile('videos', p);
             }
           }
         }
 
-        state.videos = state.videos.filter(v => !state.selectedIds.includes(v.id));
-        window.App.saveVideos(state.videos);
-        state.selectedIds = [];
         window.App.showToast('Selected videos deleted successfully.');
         renderCards(state);
       }

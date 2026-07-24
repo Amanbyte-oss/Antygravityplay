@@ -90,6 +90,37 @@ function updateCounts(data) {
   if (reactsEl && data.reactions !== undefined) reactsEl.innerText = fmt(data.reactions);
 }
 
+function embedInPlaceholder(url, title) {
+  var ph = document.getElementById('player-embed-placeholder');
+  var ve = document.getElementById('main-video-player');
+  if (ve) ve.style.display = 'none';
+  if (ph) {
+    ph.style.display = 'block';
+    ph.innerHTML = '';
+    var ifr = document.createElement('iframe');
+    ifr.src = url;
+    ifr.title = title || 'Video player';
+    ifr.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+    ifr.allowFullscreen = true;
+    ifr.style.width = '100%';
+    ifr.style.height = '100%';
+    ifr.style.border = '0';
+    ph.appendChild(ifr);
+  }
+}
+
+function detectEmbedUrl(url) {
+  if (!url) return null;
+  var m;
+  m = url.match(/(?:youtube\.com\/watch\?v=|youtube\.com\/embed\/|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+  if (m) return 'https://www.youtube.com/embed/' + m[1];
+  m = url.match(/(?:vimeo\.com|player\.vimeo\.com)\/(?:channels\/[^/]+\/|video\/|)(\d+)/);
+  if (m) return 'https://player.vimeo.com/video/' + m[1];
+  m = url.match(/(?:dailymotion\.com\/(?:embed\/)?video\/|dai\.ly\/)([a-zA-Z0-9]+)/);
+  if (m) return 'https://www.dailymotion.com/embed/video/' + m[1];
+  return null;
+}
+
 function setupPlayer(video) {
   var container = document.getElementById('player-container');
   var videoEl = document.getElementById('main-video-player');
@@ -103,22 +134,12 @@ function setupPlayer(video) {
   var embedSources = ['youtube','vimeo','dailymotion','streamable','cloudflare','peertube','wistia','abyss','pornhub','googledrive','screenpal','dropbox','onedrive'];
 
   if (embedSources.indexOf(vs) !== -1 && ec) {
-    if (videoEl) videoEl.style.display = 'none';
-    if (embedPlaceholder) {
-      embedPlaceholder.style.display = 'block';
-      embedPlaceholder.innerHTML = '';
-      var iframe = document.createElement('iframe');
-      iframe.src = ec;
-      iframe.title = video.title || 'Video player';
-      iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
-      iframe.allowFullscreen = true;
-      iframe.style.width = '100%';
-      iframe.style.height = '100%';
-      iframe.style.border = '0';
-      embedPlaceholder.appendChild(iframe);
-    }
+    embedInPlaceholder(ec, video.title);
     if (loadingEl) loadingEl.style.display = 'none';
-  } else if (vs === 'embed' && ec) {
+    return;
+  }
+
+  if (vs === 'embed' && ec) {
     if (videoEl) videoEl.style.display = 'none';
     if (embedPlaceholder) {
       embedPlaceholder.style.display = 'block';
@@ -142,8 +163,17 @@ function setupPlayer(video) {
       }
     }
     if (loadingEl) loadingEl.style.display = 'none';
-  } else if (directSources.indexOf(vs) !== -1 || !vs) {
+    return;
+  }
+
+  if (directSources.indexOf(vs) !== -1 || !vs) {
     var videoUrl = eu || video.videoUrl || '';
+    var detected = detectEmbedUrl(videoUrl);
+    if (detected) {
+      embedInPlaceholder(detected, video.title);
+      if (loadingEl) loadingEl.style.display = 'none';
+      return;
+    }
     if (embedPlaceholder) embedPlaceholder.style.display = 'none';
     if (videoEl) {
       videoEl.style.display = 'block';
@@ -171,12 +201,13 @@ function setupPlayer(video) {
       }
     }
     if (loadingEl) loadingEl.style.display = 'none';
-  } else {
-    if (loadingEl) loadingEl.style.display = 'none';
-    if (embedPlaceholder) {
-      embedPlaceholder.style.display = 'block';
-      embedPlaceholder.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-muted);"><p>No player available for this video source.</p></div>';
-    }
+    return;
+  }
+
+  if (loadingEl) loadingEl.style.display = 'none';
+  if (embedPlaceholder) {
+    embedPlaceholder.style.display = 'block';
+    embedPlaceholder.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-muted);"><p>No player available for this video source.</p></div>';
   }
 }
 
@@ -323,7 +354,7 @@ function setupRelated(currentVideo) {
     var fmt = window.Engagement ? window.Engagement.formatNum : function(n) { return Number(n).toLocaleString(); };
     var html = '<div class="sidebar-section">';
     related.forEach(function(v) {
-      html += '<div class="related-card" data-href="./watch.html?id=' + encodeURIComponent(v.id) + '" role="button" tabindex="0">' +
+      html += '<div class="related-card" data-href="/watch.html?id=' + encodeURIComponent(v.id) + '" role="button" tabindex="0">' +
         '<div class="related-thumb"><img src="' + (v.thumbnail || '') + '" alt="" loading="lazy" onerror="this.parentElement.innerHTML=\'<div style=width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--bg-secondary);color:var(--text-muted);font-size:10px;>No thumb</div>\'">' +
         (v.duration ? '<span class="related-duration">' + esc(v.duration) + '</span>' : '') +
         '</div><div class="related-info"><span class="related-title">' + esc(v.title) + '</span><span class="related-meta">' + esc(v.creator) + ' • ' + fmt(v.views) + ' views</span></div></div>';

@@ -263,7 +263,7 @@ function renderSearchResults(videos, query) {
       titleHtml = escTitle.replace(regex, '<span class="highlight-text">$1</span>');
     }
 
-    const href = `./watch.html?id=${encodeURIComponent(vid.id)}`;
+    const href = `/watch.html?id=${encodeURIComponent(vid.id)}`;
     var fmt = window.Engagement ? window.Engagement.formatNum : function(n){ return Number(n).toLocaleString(); };
     var viewsStr = fmt(vid.views || 0);
     var likesStr = fmt(vid.likes || 0);

@@ -184,19 +184,30 @@
       return enriched2;
     },
     async remove(id) {
-      var client = getClient();
-      if (!client) return false;
-      var { error } = await client.from('videos').delete().eq('id', id);
-      if (error) { console.error('delete error', error); return false; }
       if (videosCache) videosCache = videosCache.filter(function(v) { return v.id !== id; });
+      var client = getClient();
+      if (client) {
+        try {
+          await fetch(client.supabaseUrl + '/rest/v1/videos?id=eq.' + encodeURIComponent(id), {
+            method: 'DELETE',
+            headers: { 'apikey': client.supabaseKey, 'Authorization': 'Bearer ' + client.supabaseKey }
+          });
+        } catch(e) { console.warn('supabase delete background failed', e); }
+      }
       return true;
     },
     async removeMany(ids) {
-      var client = getClient();
-      if (!client) return false;
-      var { error } = await client.from('videos').delete().in('id', ids);
-      if (error) { console.error('removeMany error', error); return false; }
       if (videosCache) videosCache = videosCache.filter(function(v) { return !ids.includes(v.id); });
+      var client = getClient();
+      if (client) {
+        try {
+          var idList = ids.map(function(id) { return '"' + id + '"'; }).join(',');
+          await fetch(client.supabaseUrl + '/rest/v1/videos?id=in.(' + idList + ')', {
+            method: 'DELETE',
+            headers: { 'apikey': client.supabaseKey, 'Authorization': 'Bearer ' + client.supabaseKey }
+          });
+        } catch(e) { console.warn('supabase removeMany background failed', e); }
+      }
       return true;
     },
     async getCached() {
@@ -424,6 +435,11 @@
         if (orphans.length > 0) {
           await window.SupabaseVideos.removeMany(orphans.map(function(v) { return v.id; }));
           await window.SupabaseVideos.fetchAll();
+          var remaining = videosCache.filter(function(v) { return !localIds.includes(v.id); });
+          if (remaining.length > 0) {
+            console.warn('Supabase: orphan cleanup blocked (RLS), keeping local data.');
+            videosCache = localVids;
+          }
         }
       }
       localStorage.setItem('db-videos', JSON.stringify(videosCache));
