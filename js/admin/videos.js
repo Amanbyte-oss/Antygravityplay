@@ -448,7 +448,7 @@ function bindCardActions(state) {
           if (window.__supabase && video) {
             const removed = await window.SupabaseVideos.remove(videoId);
             if (!removed) {
-              window.App.showToast('Failed to delete video from database. Check Supabase RLS policy (anon DELETE may be disabled).', 'error');
+              window.App.showToast('Delete failed — try refreshing the schema cache in Supabase dashboard.', 'error');
               renderCards(state);
               return;
             }
@@ -631,7 +631,7 @@ function setupBulkActions(state) {
         if (window.__supabase) {
           const removed = await window.SupabaseVideos.removeMany(state.selectedIds);
           if (!removed) {
-            window.App.showToast('Failed to delete videos from database. Check Supabase RLS policy (anon DELETE may be disabled).', 'error');
+            window.App.showToast('Delete failed — try refreshing the schema cache in Supabase dashboard.', 'error');
             renderCards(state);
             return;
           }

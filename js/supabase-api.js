@@ -186,18 +186,16 @@
     async remove(id) {
       var client = getClient();
       if (!client) return false;
-      var { data, error } = await client.from('videos').delete().eq('id', id).select();
+      var { error } = await client.from('videos').delete().eq('id', id);
       if (error) { console.error('delete error', error); return false; }
-      if (!data || data.length === 0) { console.error('delete: no rows affected (RLS/permission)'); return false; }
       if (videosCache) videosCache = videosCache.filter(function(v) { return v.id !== id; });
       return true;
     },
     async removeMany(ids) {
       var client = getClient();
       if (!client) return false;
-      var { data, error } = await client.from('videos').delete().in('id', ids).select();
+      var { error } = await client.from('videos').delete().in('id', ids);
       if (error) { console.error('removeMany error', error); return false; }
-      if (!data || data.length === 0) { console.error('removeMany: no rows affected (RLS/permission)'); return false; }
       if (videosCache) videosCache = videosCache.filter(function(v) { return !ids.includes(v.id); });
       return true;
     },
@@ -400,9 +398,24 @@
   async function installSupabaseOverrides() {
     if (!getClient() || window.USE_SUPABASE) return;
     window.USE_SUPABASE = true;
+    var client = getClient();
     var origGetVideos = window.App.getVideos.bind(window.App);
     var origSaveVideos = window.App.saveVideos.bind(window.App);
     var localVids = origGetVideos();
+
+    try {
+      var { data: { session } } = await client.auth.getSession();
+      if (!session) {
+        var { data: anonData, error: anonError } = await client.auth.signInAnonymously();
+        if (anonError) console.warn('Supabase: anon sign-in not available, using anon key directly.');
+        else console.log('Supabase: Anonymous session established.');
+      } else {
+        console.log('Supabase: Existing session restored.');
+      }
+    } catch (e) {
+      console.warn('Supabase: Session init skipped.');
+    }
+
     await window.SupabaseVideos.fetchAll();
     if (videosCache && videosCache.length > 0) {
       if (localVids && localVids.length > 0) {
