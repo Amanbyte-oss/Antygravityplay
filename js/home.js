@@ -15,22 +15,30 @@ function escapeHtml(str) {
 }
 
 // ─── HOME PAGE LOGIC ───
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
   window.Components.injectNavbar('home');
   window.Components.injectFooter();
-  renderHomePage();
-  document.addEventListener('supabase-active', renderHomePage);
+  var mainContainer = document.querySelector('main');
+  if (!mainContainer) return;
+  mainContainer.innerHTML = '<div class="loading-state" style="text-align:center;padding:80px 20px;"><div class="spinner" style="width:40px;height:40px;border:3px solid var(--bg-tertiary);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px;"></div><p style="color:var(--text-muted);">Loading videos\u2026</p></div>';
+  pollVideos(0);
 });
 
-function renderHomePage() {
-  const allVideos = window.App.getVideos().filter(v => v.status === 'published');
-  
-  if (allVideos.length === 0) {
-    const mainContainer = document.querySelector('main');
-    if (!mainContainer) return;
-    mainContainer.innerHTML = window.Components.renderEmptyState('No published videos found.');
+function pollVideos(retries) {
+  var allVideos = window.App.getVideos().filter(function(v) { return v.status === 'published'; });
+  if (allVideos.length > 0) {
+    renderHomePage(allVideos);
     return;
   }
+  if (retries < 8) {
+    setTimeout(function() { pollVideos(retries + 1); }, 1000);
+  } else {
+    var mainContainer = document.querySelector('main');
+    if (mainContainer) mainContainer.innerHTML = window.Components.renderEmptyState('No published videos found.');
+  }
+}
+
+function renderHomePage(allVideos) {
 
   // ─── TAG COLOR HELPER ───
   function tagColor(str) {
