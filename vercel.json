@@ -1,10 +1,4 @@
 {
   "cleanUrls": true,
-  "trailingSlash": false,
-  "rewrites": [
-    {
-      "source": "/api/supabase/:path*",
-      "destination": "https://oropqrxbsgzluauvmllz.supabase.co/rest/v1/:path*"
-    }
-  ]
+  "trailingSlash": false
 }
