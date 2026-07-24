@@ -1,33 +1,212 @@
 # ============================================================================
 # robots.txt - Antigravity Play
-# Controls crawler access to the site. Blocks admin and auth pages from
-# indexing while allowing all public-facing pages.
+# Website: https://antigravityplay.com/
+# Last updated: 2026-07-24
+#
+# This file controls which areas of the site search engine crawlers
+# can access and index. It is structured for maximum SEO efficiency,
+# allowing indexing of public content while blocking private/system areas.
 # ============================================================================
 
-# ======== GLOBAL RULES (applies to all crawlers) ========
+# ======== PRIMARY CRAWL RULES (User-agent: *) ========
 User-agent: *
-# Allow crawling of the entire site as default
-Allow: /
-# Reference to the XML sitemap for crawlers to discover all public URLs
+
+# ======== SITEMAP REFERENCE ========
 Sitemap: https://antigravityplay.com/sitemap.xml
 
-# ======== BLOCKED SECTIONS (admin and auth pages) ========
-# Disallow admin pages from indexing
-Disallow: /admin/
-# Disallow login and password recovery pages (no SEO value)
-Disallow: /login.html
-Disallow: /forgot-password.html
+# ======== CRAWL DELAY (be kind to server) ========
+Crawl-Delay: 5
 
-# ======== ALLOWED PUBLIC PAGES ========
-# Allow public pages
+# ======================================================================
+# ALLOWED SECTIONS - Public pages that should be indexed
+# Listed explicitly for clarity and SEO prioritization
+# ======================================================================
+
+# --- HOMEPAGE & CORE PAGES (Priority: Highest) ---
+Allow: /$
 Allow: /index.html
 Allow: /search.html
 Allow: /watch.html
+
+# --- CONTENT & DISCOVERY PAGES (Priority: High) ---
 Allow: /tag.html
+Allow: /sitemap.html
+Allow: /rss-feed.html
+Allow: /opensearch.xml
+
+# --- BLOG & ANNOUNCEMENTS (Priority: High) ---
+Allow: /blog/
+
+# --- COMPANY & ABOUT PAGES (Priority: Medium-High) ---
 Allow: /about.html
+Allow: /press.html
+Allow: /advertise.html
+
+# --- SUPPORT & HELP PAGES (Priority: Medium) ---
 Allow: /contact.html
 Allow: /faq.html
 Allow: /help-centre.html
+Allow: /tutorial.html
+
+# --- LEGAL & POLICY PAGES (Priority: Medium) ---
 Allow: /privacy.html
 Allow: /terms.html
-Allow: /blog/
+Allow: /cookie-policy.html
+Allow: /dmca.html
+Allow: /copyright.html
+Allow: /community-guidelines.html
+
+# --- USER ENGAGEMENT PAGES (Priority: Medium-Low) ---
+Allow: /feedback.html
+Allow: /feature-request.html
+Allow: /report-bug.html
+Allow: /announcements.html
+Allow: /changelog.html
+Allow: /release-notes.html
+
+# --- UTILITY PAGES (Priority: Low) ---
+Allow: /status.html
+Allow: /embed.html
+Allow: /loading.html
+Allow: /empty-state.html
+Allow: /search-empty.html
+Allow: /no-internet.html
+Allow: /offline.html
+
+# --- ERROR PAGES (index canonical pages only) ---
+Allow: /403.html
+Allow: /404.html
+Allow: /500.html
+
+# --- ANTIGRAVITY PLAY SUB-SITE ---
+Allow: /Antigravity-Play/
+
+# ======================================================================
+# BLOCKED SECTIONS - Private, system, auth, and data pages
+# These have no SEO value and should never appear in search results
+# ======================================================================
+
+# --- ADMIN PANEL (full section blocked) ---
+Disallow: /admin/
+
+# --- AUTHENTICATION & ACCOUNT PAGES ---
+Disallow: /login.html
+Disallow: /forgot-password.html
+
+# --- SYSTEM & DATA FILES (no SEO value, sensitive) ---
+Disallow: /data/
+Disallow: /components/
+Disallow: /css/
+Disallow: /js/
+Disallow: /sw.js
+
+# --- DYNAMIC QUERY PARAMETERS (prevent duplicate content & crawl waste) ---
+Disallow: /*?*
+Disallow: /*?sort=
+Disallow: /*?page=
+Disallow: /*?filter=
+Disallow: /*?order=
+Disallow: /*.json$
+Disallow: /*.xml$
+
+# ======================================================================
+# SPECIFIC BOT RULES
+# ======================================================================
+
+# --- GOOGLE BOT - Allow image indexing ---
+User-agent: Googlebot
+Allow: /
+Disallow: /admin/
+Disallow: /data/
+Disallow: /login.html
+Disallow: /forgot-password.html
+Crawl-Delay: 2
+
+# --- GOOGLE IMAGES - Allow all public images ---
+User-agent: Googlebot-Image
+Allow: /
+Disallow: /admin/
+Crawl-Delay: 1
+
+# --- BING BOT - Custom crawl rate ---
+User-agent: Bingbot
+Allow: /
+Disallow: /admin/
+Disallow: /data/
+Disallow: /login.html
+Disallow: /forgot-password.html
+Crawl-Delay: 5
+
+# --- YANDEX BOT ---
+User-agent: Yandex
+Allow: /
+Disallow: /admin/
+Disallow: /data/
+Disallow: /login.html
+Disallow: /forgot-password.html
+Crawl-Delay: 10
+
+# --- BAIDU BOT ---
+User-agent: Baiduspider
+Allow: /
+Disallow: /admin/
+Disallow: /data/
+Disallow: /login.html
+Disallow: /forgot-password.html
+Crawl-Delay: 10
+
+# --- DUCKDUCKGO BOT ---
+User-agent: DuckDuckBot
+Allow: /
+Disallow: /admin/
+Disallow: /data/
+Disallow: /login.html
+Disallow: /forgot-password.html
+Crawl-Delay: 5
+
+# --- SOCIAL MEDIA & SNIPPET BOTS (must access all public pages for rich previews) ---
+User-agent: Twitterbot
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Slackbot-LinkExpanding
+Allow: /
+
+# --- ARCHIVE & ACADEMIC CRAWLERS (generous access) ---
+User-agent: ia_archiver
+Allow: /
+
+# ======================================================================
+# BLOCKED BOTS - Known problematic crawlers and scrapers
+# These consume bandwidth without providing SEO value
+# ======================================================================
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: rogerbot
+Disallow: /
+
+User-agent: Exabot
+Disallow: /
+
+User-agent: magpie-crawler
+Disallow: /
+
+User-agent: Scrapy
+Disallow: /
+
+# ====================================================================
+# END OF robots.txt
+# ====================================================================
