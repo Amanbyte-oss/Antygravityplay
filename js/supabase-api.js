@@ -80,24 +80,46 @@
     async fetchById(id) {
       var client = getClient();
       if (!client) return null;
-      var { data, error } = await client.from('videos').select('*').eq('id', id).single();
-      if (error) { console.error('fetchById error', error); return null; }
-      return enrichVideo(data);
+      try {
+        var baseUrl = window.__SUPABASE_URL || client.supabaseUrl;
+        var anonKey = window.__SUPABASE_ANON_KEY || client.supabaseKey;
+        var r = await fetch(baseUrl + '/rest/v1/videos?id=eq.' + encodeURIComponent(id) + '&select=*', {
+          headers: { 'apikey': anonKey, 'Authorization': 'Bearer ' + anonKey }
+        });
+        if (!r.ok) return null;
+        var data = await r.json();
+        if (data && data.length > 0) return enrichVideo(data[0]);
+        return null;
+      } catch(e) { console.error('fetchById error', e); return null; }
     },
     async insert(dataObj) {
       var client = getClient();
       if (!client) return null;
+      var baseUrl = window.__SUPABASE_URL || client.supabaseUrl;
+      var anonKey = window.__SUPABASE_ANON_KEY || client.supabaseKey;
 
-      async function tryInsert(row, label) {
-        var { data, error } = await client.from('videos').insert(row).select();
-        if (error) return { error: error, label: label };
-        if (data && data.length > 0) {
-          var enriched = enrichVideo(data[0]);
-          if (videosCache) videosCache.unshift(enriched);
-          window.SupabaseVideos.lastInsertError = null;
-          return { success: enriched };
+      async function restInsert(row, label) {
+        try {
+          var r = await fetch(baseUrl + '/rest/v1/videos', {
+            method: 'POST',
+            headers: { 'apikey': anonKey, 'Authorization': 'Bearer ' + anonKey, 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
+            body: JSON.stringify(row)
+          });
+          if (!r.ok) {
+            var errText = await r.text().catch(function(){ return ''; });
+            return { error: { message: label + ': HTTP ' + r.status + ' ' + errText } };
+          }
+          var data = await r.json();
+          if (data && data.length > 0) {
+            var enriched = enrichVideo(data[0]);
+            if (videosCache) videosCache.unshift(enriched);
+            window.SupabaseVideos.lastInsertError = null;
+            return { success: enriched };
+          }
+          return { error: { message: label + ': empty response' } };
+        } catch(e) {
+          return { error: { message: label + ': ' + e.message } };
         }
-        return { error: { message: label + ': insert returned empty result set (RLS may block SELECT)' }, label: label };
       }
 
       var rowNew = {
@@ -113,7 +135,7 @@
         creator: dataObj.creator || 'Administrator',
         views: 0, likes: 0, reactions: 0
       };
-      var r1 = await tryInsert(rowNew, 'new schema');
+      var r1 = await restInsert(rowNew, 'new schema');
       if (r1.success) return r1.success;
       var err1 = r1.error;
 
@@ -130,7 +152,7 @@
         creator: dataObj.creator || 'Administrator',
         views: 0, likes: 0
       };
-      var r2 = await tryInsert(rowOld, 'old schema');
+      var r2 = await restInsert(rowOld, 'old schema');
       if (r2.success) return r2.success;
       var err2 = r2.error;
 
@@ -147,14 +169,14 @@
         creator: dataObj.creator || 'Administrator',
         views: 0, likes: 0
       };
-      var r3 = await tryInsert(rowTagStr, 'text tags');
+      var r3 = await restInsert(rowTagStr, 'text tags');
       if (r3.success) return r3.success;
       var err3 = r3.error;
 
       var errMsg = [
-        'new schema: ' + (err1.message || err1.error_description || JSON.stringify(err1)),
-        'old schema: ' + (err2.message || err2.error_description || JSON.stringify(err2)),
-        'text tags: ' + (err3.message || err3.error_description || JSON.stringify(err3))
+        'new schema: ' + (err1.message || JSON.stringify(err1)),
+        'old schema: ' + (err2.message || JSON.stringify(err2)),
+        'text tags: ' + (err3.message || JSON.stringify(err3))
       ].join(' | ');
       console.error('insert error —', errMsg);
       window.SupabaseVideos.lastInsertError = errMsg;
@@ -163,6 +185,30 @@
     async update(id, updates) {
       var client = getClient();
       if (!client) return null;
+      var baseUrl = window.__SUPABASE_URL || client.supabaseUrl;
+      var anonKey = window.__SUPABASE_ANON_KEY || client.supabaseKey;
+
+      async function restUpdate(row, label) {
+        try {
+          var r = await fetch(baseUrl + '/rest/v1/videos?id=eq.' + encodeURIComponent(id), {
+            method: 'PATCH',
+            headers: { 'apikey': anonKey, 'Authorization': 'Bearer ' + anonKey, 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
+            body: JSON.stringify(row)
+          });
+          if (!r.ok) {
+            var errText = await r.text().catch(function(){ return ''; });
+            console.error('update ' + label + ' HTTP ' + r.status, errText);
+            return null;
+          }
+          var data = await r.json();
+          if (data && data.length > 0) return enrichVideo(data[0]);
+          return null;
+        } catch(e) {
+          console.error('update ' + label + ' error', e);
+          return null;
+        }
+      }
+
       var cleanNew = {};
       if (updates.title !== undefined) cleanNew.title = updates.title;
       if (updates.description !== undefined) cleanNew.description = updates.description;
@@ -171,15 +217,15 @@
       if (updates.embed_code !== undefined) cleanNew.embed_code = updates.embed_code;
       if (updates.video_source !== undefined) cleanNew.video_source = updates.video_source;
       if (updates.tags !== undefined) cleanNew.tags = updates.tags;
-      var { data, error } = await client.from('videos').update(cleanNew).eq('id', id).select().single();
-      if (!error) {
-        var enriched = enrichVideo(data);
+      var enriched = await restUpdate(cleanNew, 'new schema');
+      if (enriched) {
         if (videosCache) {
           var idx = videosCache.findIndex(function(v) { return v.id === id; });
           if (idx !== -1) videosCache[idx] = enriched;
         }
         return enriched;
       }
+
       var cleanOld = {};
       if (updates.title !== undefined) cleanOld.title = updates.title;
       if (updates.description !== undefined) cleanOld.description = updates.description;
@@ -188,23 +234,26 @@
       if (updates.embed_code !== undefined) cleanOld.embed_url = updates.embed_code;
       if (updates.video_source !== undefined) cleanOld.platform = updates.video_source;
       if (updates.tags !== undefined) cleanOld.tags = updates.tags;
-      var { data: data2, error: error2 } = await client.from('videos').update(cleanOld).eq('id', id).select().single();
-      if (error2) { console.error('update error (new+old schema)', error2); return null; }
-      var enriched2 = enrichVideo(data2);
-      if (videosCache) {
-        var idx2 = videosCache.findIndex(function(v) { return v.id === id; });
-        if (idx2 !== -1) videosCache[idx2] = enriched2;
+      var enriched2 = await restUpdate(cleanOld, 'old schema');
+      if (enriched2) {
+        if (videosCache) {
+          var idx2 = videosCache.findIndex(function(v) { return v.id === id; });
+          if (idx2 !== -1) videosCache[idx2] = enriched2;
+        }
+        return enriched2;
       }
-      return enriched2;
+      return null;
     },
     async remove(id) {
       if (videosCache) videosCache = videosCache.filter(function(v) { return v.id !== id; });
       var client = getClient();
       if (client) {
         try {
-          await fetch(client.supabaseUrl + '/rest/v1/videos?id=eq.' + encodeURIComponent(id), {
+          var baseUrl = window.__SUPABASE_URL || client.supabaseUrl;
+          var anonKey = window.__SUPABASE_ANON_KEY || client.supabaseKey;
+          await fetch(baseUrl + '/rest/v1/videos?id=eq.' + encodeURIComponent(id), {
             method: 'DELETE',
-            headers: { 'apikey': client.supabaseKey, 'Authorization': 'Bearer ' + client.supabaseKey }
+            headers: { 'apikey': anonKey, 'Authorization': 'Bearer ' + anonKey }
           });
         } catch(e) { console.warn('supabase delete background failed', e); }
       }
@@ -215,10 +264,12 @@
       var client = getClient();
       if (client) {
         try {
+          var baseUrl = window.__SUPABASE_URL || client.supabaseUrl;
+          var anonKey = window.__SUPABASE_ANON_KEY || client.supabaseKey;
           var idList = ids.map(function(id) { return '"' + id + '"'; }).join(',');
-          await fetch(client.supabaseUrl + '/rest/v1/videos?id=in.(' + idList + ')', {
+          await fetch(baseUrl + '/rest/v1/videos?id=in.(' + idList + ')', {
             method: 'DELETE',
-            headers: { 'apikey': client.supabaseKey, 'Authorization': 'Bearer ' + client.supabaseKey }
+            headers: { 'apikey': anonKey, 'Authorization': 'Bearer ' + anonKey }
           });
         } catch(e) { console.warn('supabase removeMany background failed', e); }
       }
