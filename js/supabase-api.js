@@ -69,13 +69,26 @@
     async fetchAll(tagFilter) {
       var client = getClient();
       if (!client) return null;
-      var query = client.from('videos').select('*');
-      if (tagFilter) query = query.contains('tags', [tagFilter]);
-      var { data, error } = await query.order('created_at', { ascending: false });
-      if (error) { console.error('fetchAll error', error); return null; }
-      var enriched = (data || []).map(enrichVideo);
-      if (!tagFilter) videosCache = enriched;
-      return enriched;
+      try {
+        var baseUrl = window.__SUPABASE_URL || client.supabaseUrl;
+        var anonKey = window.__SUPABASE_ANON_KEY || client.supabaseKey;
+        var url = baseUrl + '/rest/v1/videos?select=*&order=created_at.desc';
+        if (tagFilter) url += '&tags=cs.%7B' + encodeURIComponent(tagFilter) + '%7D';
+        var r = await fetch(url, {
+          headers: { 'apikey': anonKey, 'Authorization': 'Bearer ' + anonKey }
+        });
+        if (!r.ok) {
+          console.error('fetchAll HTTP ' + r.status);
+          return null;
+        }
+        var data = await r.json();
+        var enriched = (data || []).map(enrichVideo);
+        if (!tagFilter) videosCache = enriched;
+        return enriched;
+      } catch(e) {
+        console.error('fetchAll error', e);
+        return null;
+      }
     },
     async fetchById(id) {
       var client = getClient();
