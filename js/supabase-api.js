@@ -497,19 +497,6 @@
 
     await window.SupabaseVideos.fetchAll();
     if (videosCache && videosCache.length > 0) {
-      if (localVids && localVids.length > 0) {
-        var localIds = localVids.map(function(v) { return v.id; });
-        var orphans = videosCache.filter(function(v) { return !localIds.includes(v.id); });
-        if (orphans.length > 0) {
-          await window.SupabaseVideos.removeMany(orphans.map(function(v) { return v.id; }));
-          await window.SupabaseVideos.fetchAll();
-          var remaining = videosCache.filter(function(v) { return !localIds.includes(v.id); });
-          if (remaining.length > 0) {
-            console.warn('Supabase: orphan cleanup blocked (RLS), keeping local data.');
-            videosCache = localVids;
-          }
-        }
-      }
       localStorage.setItem('db-videos', JSON.stringify(videosCache));
       localStorage.setItem('db-videos-version', '2');
     } else if (!videosCache || videosCache.length === 0) {
