@@ -30,19 +30,30 @@ function initSupabase() {
   }
 }
 
-// Load supabase-js from CDN then initialize
-function loadSupabase(callback) {
+var CDN_URLS = [
+  'https://unpkg.com/@supabase/supabase-js@2',
+  'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js'
+];
+
+function loadSupabase(callback, cdnIndex) {
+  if (cdnIndex === undefined) cdnIndex = 0;
   if (supabaseClient) { if (callback) callback(supabaseClient); return; }
   if (window.supabase && window.supabase.createClient) {
     callback(initSupabase());
     return;
   }
+  if (cdnIndex >= CDN_URLS.length) {
+    console.warn('Supabase: All CDN URLs failed. Running in local-only mode.');
+    callback(null);
+    return;
+  }
   var s = document.createElement('script');
-  s.src = 'https://unpkg.com/@supabase/supabase-js@2';
+  s.src = CDN_URLS[cdnIndex];
   s.onload = function () { callback(initSupabase()); };
   s.onerror = function () {
-    console.error('Supabase: Failed to load CDN. Check network.');
-    callback(null);
+    console.warn('Supabase: CDN ' + CDN_URLS[cdnIndex] + ' failed, trying next...');
+    s.remove();
+    loadSupabase(callback, cdnIndex + 1);
   };
   document.head.appendChild(s);
 }

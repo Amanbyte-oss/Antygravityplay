@@ -67,15 +67,12 @@
   window.SupabaseVideos = {
     lastInsertError: null,
     async fetchAll(tagFilter) {
-      var client = getClient();
-      if (!client) return null;
+      if (!window.__SUPABASE_URL) return null;
       try {
-        var baseUrl = window.__SUPABASE_URL || client.supabaseUrl;
-        var anonKey = window.__SUPABASE_ANON_KEY || client.supabaseKey;
-        var url = baseUrl + '/rest/v1/videos?select=*&order=created_at.desc';
+        var url = window.__SUPABASE_URL + '/rest/v1/videos?select=*&order=created_at.desc';
         if (tagFilter) url += '&tags=cs.%7B' + encodeURIComponent(tagFilter) + '%7D';
         var r = await fetch(url, {
-          headers: { 'apikey': anonKey, 'Authorization': 'Bearer ' + anonKey }
+          headers: { 'apikey': window.__SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + window.__SUPABASE_ANON_KEY }
         });
         if (!r.ok) {
           console.error('fetchAll HTTP ' + r.status);
@@ -91,13 +88,10 @@
       }
     },
     async fetchById(id) {
-      var client = getClient();
-      if (!client) return null;
+      if (!window.__SUPABASE_URL) return null;
       try {
-        var baseUrl = window.__SUPABASE_URL || client.supabaseUrl;
-        var anonKey = window.__SUPABASE_ANON_KEY || client.supabaseKey;
-        var r = await fetch(baseUrl + '/rest/v1/videos?id=eq.' + encodeURIComponent(id) + '&select=*', {
-          headers: { 'apikey': anonKey, 'Authorization': 'Bearer ' + anonKey }
+        var r = await fetch(window.__SUPABASE_URL + '/rest/v1/videos?id=eq.' + encodeURIComponent(id) + '&select=*', {
+          headers: { 'apikey': window.__SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + window.__SUPABASE_ANON_KEY }
         });
         if (!r.ok) return null;
         var data = await r.json();
@@ -106,10 +100,9 @@
       } catch(e) { console.error('fetchById error', e); return null; }
     },
     async insert(dataObj) {
-      var client = getClient();
-      if (!client) return null;
-      var baseUrl = window.__SUPABASE_URL || client.supabaseUrl;
-      var anonKey = window.__SUPABASE_ANON_KEY || client.supabaseKey;
+      if (!window.__SUPABASE_URL) return null;
+      var baseUrl = window.__SUPABASE_URL;
+      var anonKey = window.__SUPABASE_ANON_KEY;
 
       async function restInsert(row, label) {
         try {
@@ -196,10 +189,9 @@
       return null;
     },
     async update(id, updates) {
-      var client = getClient();
-      if (!client) return null;
-      var baseUrl = window.__SUPABASE_URL || client.supabaseUrl;
-      var anonKey = window.__SUPABASE_ANON_KEY || client.supabaseKey;
+      if (!window.__SUPABASE_URL) return null;
+      var baseUrl = window.__SUPABASE_URL;
+      var anonKey = window.__SUPABASE_ANON_KEY;
 
       async function restUpdate(row, label) {
         try {
@@ -259,14 +251,11 @@
     },
     async remove(id) {
       if (videosCache) videosCache = videosCache.filter(function(v) { return v.id !== id; });
-      var client = getClient();
-      if (client) {
+      if (window.__SUPABASE_URL) {
         try {
-          var baseUrl = window.__SUPABASE_URL || client.supabaseUrl;
-          var anonKey = window.__SUPABASE_ANON_KEY || client.supabaseKey;
-          await fetch(baseUrl + '/rest/v1/videos?id=eq.' + encodeURIComponent(id), {
+          await fetch(window.__SUPABASE_URL + '/rest/v1/videos?id=eq.' + encodeURIComponent(id), {
             method: 'DELETE',
-            headers: { 'apikey': anonKey, 'Authorization': 'Bearer ' + anonKey }
+            headers: { 'apikey': window.__SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + window.__SUPABASE_ANON_KEY }
           });
         } catch(e) { console.warn('supabase delete background failed', e); }
       }
@@ -274,11 +263,10 @@
     },
     async removeMany(ids) {
       if (videosCache) videosCache = videosCache.filter(function(v) { return !ids.includes(v.id); });
-      var client = getClient();
-      if (client) {
+      if (window.__SUPABASE_URL) {
         try {
-          var baseUrl = window.__SUPABASE_URL || client.supabaseUrl;
-          var anonKey = window.__SUPABASE_ANON_KEY || client.supabaseKey;
+          var baseUrl = window.__SUPABASE_URL;
+          var anonKey = window.__SUPABASE_ANON_KEY;
           var idList = ids.map(function(id) { return '"' + id + '"'; }).join(',');
           await fetch(baseUrl + '/rest/v1/videos?id=in.(' + idList + ')', {
             method: 'DELETE',

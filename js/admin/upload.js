@@ -598,7 +598,7 @@ function setupSubmit() {
       creator: 'Administrator'
     };
 
-    if (window.__supabase) {
+    if (window.__SUPABASE_URL) {
       var result = await window.SupabaseVideos.insert(newVideo);
       if (result) {
         window.SupabaseVideos.invalidateCache();
