@@ -609,7 +609,8 @@ function setupSubmit() {
         setTimeout(function() { window.location.href = './videos.html'; }, 1000);
         return;
       }
-      window.App.showToast('Cloud sync failed. Saved locally.', 'warning');
+      var insertErr = window.SupabaseVideos.lastInsertError;
+      window.App.showToast('Cloud sync failed' + (insertErr ? ': ' + insertErr : '') + '. Saved locally.', 'warning');
     }
 
     var dbVids = window.App.getVideos();

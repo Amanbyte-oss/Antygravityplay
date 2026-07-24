@@ -65,6 +65,7 @@
   }
 
   window.SupabaseVideos = {
+    lastInsertError: null,
     async fetchAll(tagFilter) {
       var client = getClient();
       if (!client) return null;
@@ -103,6 +104,7 @@
       if (!error) {
         var enriched = enrichVideo(data);
         if (videosCache) videosCache.unshift(enriched);
+        window.SupabaseVideos.lastInsertError = null;
         return enriched;
       }
       var rowOld = {
@@ -122,6 +124,7 @@
       if (!error2) {
         var enriched2 = enrichVideo(data2);
         if (videosCache) videosCache.unshift(enriched2);
+        window.SupabaseVideos.lastInsertError = null;
         return enriched2;
       }
       var rowTagStr = {
@@ -141,9 +144,16 @@
       if (!error3) {
         var enriched3 = enrichVideo(data3);
         if (videosCache) videosCache.unshift(enriched3);
+        window.SupabaseVideos.lastInsertError = null;
         return enriched3;
       }
-      console.error('insert error — new:', error && (error.message || error.error_description || JSON.stringify(error)), 'old:', error2 && (error2.message || error2.error_description || JSON.stringify(error2)), 'text-tags:', error3 && (error3.message || error3.error_description || JSON.stringify(error3)));
+      var errMsg = [
+        'new schema: ' + (error ? (error.message || error.error_description || JSON.stringify(error)) : 'unknown'),
+        'old schema: ' + (error2 ? (error2.message || error2.error_description || JSON.stringify(error2)) : 'unknown'),
+        'text tags: ' + (error3 ? (error3.message || error3.error_description || JSON.stringify(error3)) : 'unknown')
+      ].join(' | ');
+      console.error('insert error —', errMsg);
+      window.SupabaseVideos.lastInsertError = errMsg;
       return null;
     },
     async update(id, updates) {
