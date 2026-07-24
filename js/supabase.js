@@ -51,3 +51,34 @@ loadSupabase(function (client) {
     document.dispatchEvent(new CustomEvent('supabase-ready'));
   }
 });
+
+// Direct REST API fetch — works without CDN, populates localStorage immediately
+(function() {
+  if (SUPABASE_URL.includes('your-project')) return;
+  var apiUrl = SUPABASE_URL.replace(/\/+$/, '') + '/rest/v1/videos?select=*&order=created_at.desc';
+  fetch(apiUrl, {
+    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
+  }).then(function(r) {
+    if (!r.ok) return null;
+    return r.json();
+  }).then(function(rows) {
+    if (!Array.isArray(rows) || rows.length === 0) return;
+    var enriched = rows.map(function(row) {
+      var tags = Array.isArray(row.tags) ? row.tags : (typeof row.tags === 'string' ? row.tags.split(',').map(function(s) { return s.trim(); }).filter(Boolean) : []);
+      var vs = row.video_source || row.platform || '';
+      var eu = row.external_url || row.video_url || '';
+      var ec = row.embed_code || row.embed_url || '';
+      return {
+        id: row.id, title: row.title || '', description: row.description || '',
+        video_source: vs, external_url: eu, videoUrl: eu,
+        embed_code: ec, thumbnail: row.thumbnail_url || row.thumbnail || '',
+        views: row.views || 0, likes: row.likes || 0, reactions: row.reactions || 0,
+        tags: tags, duration: row.duration || '',
+        publishDate: (row.created_at || '').split('T')[0],
+        status: row.status || 'published', creator: row.creator || 'Administrator'
+      };
+    });
+    localStorage.setItem('db-videos', JSON.stringify(enriched));
+    window.dispatchEvent(new CustomEvent('videosupdated'));
+  }).catch(function() {});
+})();
