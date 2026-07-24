@@ -439,6 +439,7 @@
       localStorage.setItem('db-tags', JSON.stringify(list));
     };
     document.dispatchEvent(new CustomEvent('supabase-active'));
+    window.SUPABASE_SYNCED = true;
     console.log('Supabase: Integration active.');
   }
 

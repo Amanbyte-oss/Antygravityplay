@@ -15,27 +15,24 @@ function escapeHtml(str) {
 }
 
 // ─── HOME PAGE LOGIC ───
-// This script runs after DOMContentLoaded to build the home page:
-// injects navbar/footer, loads published videos, renders hero banner,
-// popular tags, browse-by-tag grid, trending now, and new releases sections.
 document.addEventListener('DOMContentLoaded', () => {
-
-  // ─── 1. INJECT NAVBAR & FOOTER ───
-  // Inject the public navbar with 'home' as the active page
   window.Components.injectNavbar('home');
-  // Inject the page footer
   window.Components.injectFooter();
+  renderHomePage();
+  document.addEventListener('supabase-active', renderHomePage);
+});
 
-  // ─── 2. LOAD PUBLISHED VIDEOS ───
-  // Retrieve all videos from the database and filter for published status only
+function renderHomePage() {
   const allVideos = window.App.getVideos().filter(v => v.status === 'published');
   
-  // If there are no published videos, show an empty state and stop
   if (allVideos.length === 0) {
     const mainContainer = document.querySelector('main');
-    if (mainContainer) {
-      mainContainer.innerHTML = window.Components.renderEmptyState('No published videos found.');
+    if (!mainContainer) return;
+    if (window.__supabase && !window.SUPABASE_SYNCED) {
+      mainContainer.innerHTML = '<div class="loading-state" style="text-align:center;padding:80px 20px;"><div class="spinner" style="width:40px;height:40px;border:3px solid var(--bg-tertiary);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px;"></div><p style="color:var(--text-muted);">Loading videos\u2026</p></div>';
+      return;
     }
+    mainContainer.innerHTML = window.Components.renderEmptyState('No published videos found.');
     return;
   }
 
@@ -127,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.Animations.initScrollReveal();
   // Refresh lazy loading observation for new images
   if (window.refreshLazyLoading) window.refreshLazyLoading();
-});
+}
 
 // ─── HERO BANNER SETUP ───
 /**
