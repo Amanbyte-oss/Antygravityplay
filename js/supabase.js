@@ -60,7 +60,5 @@ function loadSupabase(callback, cdnIndex) {
 
 loadSupabase(function (client) {
   window.__supabase = client;
-  if (client) {
-    document.dispatchEvent(new CustomEvent('supabase-ready'));
-  }
+  document.dispatchEvent(new CustomEvent('supabase-ready'));
 });

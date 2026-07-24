@@ -473,24 +473,26 @@
   };
 
   async function installSupabaseOverrides() {
-    if (!getClient() || window.USE_SUPABASE) return;
+    if (window.USE_SUPABASE) return;
     window.USE_SUPABASE = true;
     var client = getClient();
     var origGetVideos = window.App.getVideos.bind(window.App);
     var origSaveVideos = window.App.saveVideos.bind(window.App);
     var localVids = origGetVideos();
 
-    try {
-      var { data: { session } } = await client.auth.getSession();
-      if (!session) {
-        var { data: anonData, error: anonError } = await client.auth.signInAnonymously();
-        if (anonError) console.warn('Supabase: anon sign-in not available, using anon key directly.');
-        else console.log('Supabase: Anonymous session established.');
-      } else {
-        console.log('Supabase: Existing session restored.');
+    if (client) {
+      try {
+        var { data: { session } } = await client.auth.getSession();
+        if (!session) {
+          var { data: anonData, error: anonError } = await client.auth.signInAnonymously();
+          if (anonError) console.warn('Supabase: anon sign-in not available, using anon key directly.');
+          else console.log('Supabase: Anonymous session established.');
+        } else {
+          console.log('Supabase: Existing session restored.');
+        }
+      } catch (e) {
+        console.warn('Supabase: Session init skipped.');
       }
-    } catch (e) {
-      console.warn('Supabase: Session init skipped.');
     }
 
     await window.SupabaseVideos.fetchAll();
