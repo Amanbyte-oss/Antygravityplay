@@ -32,15 +32,20 @@ function loadVideoAndRender(videoId) {
       video = db.find(function(v) { return v.id === videoId; });
     }
     if (video) { renderPage(video); return; }
-    if (window.__supabase && window.SupabaseVideos) {
+    if (window.__supabase && window.SupabaseVideos && window.USE_SUPABASE) {
       renderErrorView('The video you are looking for does not exist.');
       return;
     }
-    var tryLater = function() {
-      document.removeEventListener('supabase-ready', tryLater);
+    var readyHandler = function() {
+      document.removeEventListener('supabase-active', readyHandler);
+      document.removeEventListener('supabase-ready', readyHandler);
       loadVideoAndRender(videoId);
     };
-    document.addEventListener('supabase-ready', tryLater);
+    if (window.__supabase && window.SupabaseVideos) {
+      document.addEventListener('supabase-active', readyHandler);
+    } else {
+      document.addEventListener('supabase-ready', readyHandler);
+    }
     renderLoadingView();
   })();
 }
