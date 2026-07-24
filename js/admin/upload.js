@@ -609,10 +609,7 @@ function setupSubmit() {
         setTimeout(function() { window.location.href = './videos.html'; }, 1000);
         return;
       }
-      window.App.showToast('Supabase save failed, check console.', 'error');
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Publish Video';
-      return;
+      window.App.showToast('Cloud sync failed. Saved locally.', 'warning');
     }
 
     var dbVids = window.App.getVideos();
