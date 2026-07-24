@@ -445,8 +445,11 @@ function bindCardActions(state) {
         `Are you sure you want to permanently delete "${video.title}"? This action cannot be undone.`,
         async () => {
           state.videos = state.videos.filter(v => v.id !== videoId);
-          try { localStorage.setItem('db-videos', JSON.stringify(state.videos)); } catch(e) { console.error('localStorage write failed', e); }
+          window.App.saveVideos(state.videos);
           state.selectedIds = state.selectedIds.filter(id => id !== videoId);
+          if (window.__supabase) {
+            await window.SupabaseVideos.remove(videoId);
+          }
           window.App.showToast('Video deleted successfully.');
           renderCards(state);
         }

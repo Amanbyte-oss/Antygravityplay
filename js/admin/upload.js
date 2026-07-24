@@ -610,7 +610,13 @@ function setupSubmit() {
         return;
       }
       var insertErr = window.SupabaseVideos.lastInsertError;
-      window.App.showToast('Cloud sync failed' + (insertErr ? ': ' + insertErr : '') + '. Saved locally.', 'warning');
+      window.App.showToast('Cloud sync failed' + (insertErr ? ': ' + insertErr : '') + '. Saved locally.', 'error');
+      var dbVids = window.App.getVideos();
+      newVideo.id = 'vid-' + Date.now();
+      dbVids.push(newVideo);
+      window.App.saveVideos(dbVids);
+      setTimeout(function() { window.location.href = './videos.html'; }, 4000);
+      return;
     }
 
     var dbVids = window.App.getVideos();
