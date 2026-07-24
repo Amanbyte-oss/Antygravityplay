@@ -52,17 +52,17 @@ loadSupabase(function (client) {
   }
 });
 
-// Direct REST API fetch — works without CDN, populates localStorage immediately
+// Direct REST API fetch via Vercel proxy (same-origin, no CORS)
 (function() {
   if (SUPABASE_URL.includes('your-project')) return;
-  var apiUrl = SUPABASE_URL.replace(/\/+$/, '') + '/rest/v1/videos?select=*&order=created_at.desc';
+  var apiUrl = '/api/supabase/videos?select=*&order=created_at.desc';
   fetch(apiUrl, {
-    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
+    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Accept': 'application/json' }
   }).then(function(r) {
-    if (!r.ok) return null;
+    if (!r.ok) { console.warn('Supabase: REST proxy returned', r.status); return null; }
     return r.json();
   }).then(function(rows) {
-    if (!Array.isArray(rows) || rows.length === 0) return;
+    if (!Array.isArray(rows) || rows.length === 0) { console.log('Supabase: No videos from REST proxy'); return; }
     var enriched = rows.map(function(row) {
       var tags = Array.isArray(row.tags) ? row.tags : (typeof row.tags === 'string' ? row.tags.split(',').map(function(s) { return s.trim(); }).filter(Boolean) : []);
       var vs = row.video_source || row.platform || '';
@@ -79,6 +79,9 @@ loadSupabase(function (client) {
       };
     });
     localStorage.setItem('db-videos', JSON.stringify(enriched));
+    console.log('Supabase: Populated localStorage with ' + enriched.length + ' videos');
     window.dispatchEvent(new CustomEvent('videosupdated'));
-  }).catch(function() {});
+  }).catch(function(err) {
+    console.warn('Supabase: REST proxy failed', err);
+  });
 })();
