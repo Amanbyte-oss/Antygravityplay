@@ -237,7 +237,7 @@
           <!-- Sidebar navigation menu items -->
           <ul class="sidebar-menu">
             <li>
-              <a href="${adminPrefix}index.html" class="sidebar-link ${activePage === 'dashboard' ? 'active' : ''}">
+              <a href="${adminPrefix}index" class="sidebar-link ${activePage === 'dashboard' ? 'active' : ''}">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect>
                   <rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect>
@@ -246,7 +246,7 @@
               </a>
             </li>
             <li>
-              <a href="${adminPrefix}videos.html" class="sidebar-link ${activePage === 'videos' ? 'active' : ''}">
+              <a href="${adminPrefix}videos" class="sidebar-link ${activePage === 'videos' ? 'active' : ''}">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M23 7a2 2 0 0 0-2-2H3a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V7z"></path>
                   <polygon points="10 11 10 15 14 13 10 11"></polygon>
@@ -255,7 +255,7 @@
               </a>
             </li>
             <li>
-              <a href="${adminPrefix}upload.html" class="sidebar-link ${activePage === 'upload' ? 'active' : ''}">
+              <a href="${adminPrefix}upload" class="sidebar-link ${activePage === 'upload' ? 'active' : ''}">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                   <polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line>
@@ -264,7 +264,7 @@
               </a>
             </li>
             <li>
-              <a href="${adminPrefix}tags.html" class="sidebar-link ${activePage === 'tags' ? 'active' : ''}">
+              <a href="${adminPrefix}tags" class="sidebar-link ${activePage === 'tags' ? 'active' : ''}">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
                   <line x1="7" y1="7" x2="7.01" y2="7"></line>
@@ -273,7 +273,7 @@
               </a>
             </li>
             <li>
-              <a href="${adminPrefix}analytics.html" class="sidebar-link ${activePage === 'analytics' ? 'active' : ''}">
+              <a href="${adminPrefix}analytics" class="sidebar-link ${activePage === 'analytics' ? 'active' : ''}">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line>
                   <line x1="6" y1="20" x2="6" y2="14"></line>
@@ -282,7 +282,7 @@
               </a>
             </li>
             <li>
-              <a href="${adminPrefix}settings.html" class="sidebar-link ${activePage === 'settings' ? 'active' : ''}">
+              <a href="${adminPrefix}settings" class="sidebar-link ${activePage === 'settings' ? 'active' : ''}">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <circle cx="12" cy="12" r="3"></circle>
                   <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
