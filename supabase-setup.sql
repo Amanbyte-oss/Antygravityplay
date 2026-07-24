@@ -86,9 +86,9 @@ CREATE POLICY "Anyone can insert videos" ON videos
 CREATE POLICY "Anyone can update videos" ON videos
   FOR UPDATE TO anon, authenticated USING (true);
 
--- Only authenticated users can DELETE
-CREATE POLICY "Auth can delete videos" ON videos
-  FOR DELETE TO authenticated USING (true);
+-- Anyone can DELETE (matches INSERT/UPDATE policies above)
+CREATE POLICY "Anyone can delete videos" ON videos
+  FOR DELETE TO anon, authenticated USING (true);
 
 -- ─── 6. STORAGE RLS POLICIES ──
 

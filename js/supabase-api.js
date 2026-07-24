@@ -186,16 +186,18 @@
     async remove(id) {
       var client = getClient();
       if (!client) return false;
-      var { error } = await client.from('videos').delete().eq('id', id);
+      var { data, error } = await client.from('videos').delete().eq('id', id).select();
       if (error) { console.error('delete error', error); return false; }
+      if (!data || data.length === 0) { console.error('delete: no rows affected (RLS/permission)'); return false; }
       if (videosCache) videosCache = videosCache.filter(function(v) { return v.id !== id; });
       return true;
     },
     async removeMany(ids) {
       var client = getClient();
       if (!client) return false;
-      var { error } = await client.from('videos').delete().in('id', ids);
+      var { data, error } = await client.from('videos').delete().in('id', ids).select();
       if (error) { console.error('removeMany error', error); return false; }
+      if (!data || data.length === 0) { console.error('removeMany: no rows affected (RLS/permission)'); return false; }
       if (videosCache) videosCache = videosCache.filter(function(v) { return !ids.includes(v.id); });
       return true;
     },
@@ -400,12 +402,20 @@
     window.USE_SUPABASE = true;
     var origGetVideos = window.App.getVideos.bind(window.App);
     var origSaveVideos = window.App.saveVideos.bind(window.App);
+    var localVids = origGetVideos();
     await window.SupabaseVideos.fetchAll();
     if (videosCache && videosCache.length > 0) {
+      if (localVids && localVids.length > 0) {
+        var localIds = localVids.map(function(v) { return v.id; });
+        var orphans = videosCache.filter(function(v) { return !localIds.includes(v.id); });
+        if (orphans.length > 0) {
+          await window.SupabaseVideos.removeMany(orphans.map(function(v) { return v.id; }));
+          await window.SupabaseVideos.fetchAll();
+        }
+      }
       localStorage.setItem('db-videos', JSON.stringify(videosCache));
       localStorage.setItem('db-videos-version', '2');
     } else if (!videosCache || videosCache.length === 0) {
-      var localVids = origGetVideos();
       if (localVids && localVids.length > 0) videosCache = localVids;
     }
     window.App.getVideos = function() {

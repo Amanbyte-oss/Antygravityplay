@@ -63,6 +63,12 @@ document.addEventListener('DOMContentLoaded', () => {
   setupBulkSelection(state);
   // Set up the bulk action buttons (e.g., delete selected)
   setupBulkActions(state);
+
+  // Re-sync state when Supabase overrides activate (may fire after DOMContentLoaded)
+  document.addEventListener('supabase-active', function syncAfterSupabase() {
+    state.videos = window.App.getVideos();
+    renderCards(state);
+  });
 });
 
 // ============================================================
@@ -438,25 +444,28 @@ function bindCardActions(state) {
         'Delete Video',
         `Are you sure you want to permanently delete "${video.title}"? This action cannot be undone.`,
         async () => {
-          // Supabase cleanup: delete storage files + DB row
+          // Delete from Supabase first — if it fails, don't touch local state
           if (window.__supabase && video) {
-            // Delete thumbnail from storage
+            const removed = await window.SupabaseVideos.remove(videoId);
+            if (!removed) {
+              window.App.showToast('Failed to delete video from database. Check your login session.', 'error');
+              renderCards(state);
+              return;
+            }
+            // Clean up storage files only after DB delete succeeds
             if (video.thumbnail_url || video.thumbnail) {
               const thumbUrl = video.thumbnail_url || video.thumbnail;
               const thumbPath = window.SupabaseStorage.pathFromUrl('thumbnails', thumbUrl);
               if (thumbPath) await window.SupabaseStorage.deleteFile('thumbnails', thumbPath);
             }
-            // Delete video file from storage
             if (video.video_url || video.videoUrl) {
               const vidUrl = video.video_url || video.videoUrl;
               const vidPath = window.SupabaseStorage.pathFromUrl('videos', vidUrl);
               if (vidPath) await window.SupabaseStorage.deleteFile('videos', vidPath);
             }
-            // Delete DB row
-            await window.SupabaseVideos.remove(videoId);
           }
 
-          // Local state cleanup
+          // Local state cleanup (only reaches here if Supabase is inactive or delete succeeded)
           state.videos = state.videos.filter(v => v.id !== videoId);
           window.App.saveVideos(state.videos);
           state.selectedIds = state.selectedIds.filter(id => id !== videoId);
@@ -618,8 +627,15 @@ function setupBulkActions(state) {
       'Delete Selected Videos',
       `Are you sure you want to permanently delete the ${state.selectedIds.length} selected videos? This cannot be undone.`,
       async () => {
-        // Supabase cleanup: delete files + DB rows
+        // Delete from Supabase first — if it fails, don't touch local state
         if (window.__supabase) {
+          const removed = await window.SupabaseVideos.removeMany(state.selectedIds);
+          if (!removed) {
+            window.App.showToast('Failed to delete videos from database. Check your login session.', 'error');
+            renderCards(state);
+            return;
+          }
+          // Clean up storage files only after DB delete succeeds
           for (const id of state.selectedIds) {
             const video = state.videos.find(v => v.id === id);
             if (!video) continue;
@@ -632,7 +648,6 @@ function setupBulkActions(state) {
               if (p) await window.SupabaseStorage.deleteFile('videos', p);
             }
           }
-          await window.SupabaseVideos.removeMany(state.selectedIds);
         }
 
         state.videos = state.videos.filter(v => !state.selectedIds.includes(v.id));
