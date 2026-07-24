@@ -398,8 +398,8 @@
   async function installSupabaseOverrides() {
     if (!getClient() || window.USE_SUPABASE) return;
     window.USE_SUPABASE = true;
-    var origGetVideos = window.App.getVideos;
-    var origSaveVideos = window.App.saveVideos;
+    var origGetVideos = window.App.getVideos.bind(window.App);
+    var origSaveVideos = window.App.saveVideos.bind(window.App);
     await window.SupabaseVideos.fetchAll();
     if (videosCache && videosCache.length > 0) {
       localStorage.setItem('db-videos', JSON.stringify(videosCache));

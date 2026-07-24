@@ -20,56 +20,42 @@ document.addEventListener('DOMContentLoaded', function() {
   window.Components.injectFooter();
   var mainContainer = document.querySelector('main');
   if (!mainContainer) return;
-  mainContainer.innerHTML = '<div class="loading-state" style="text-align:center;padding:80px 20px;"><div class="spinner" style="width:40px;height:40px;border:3px solid var(--bg-tertiary);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px;"></div><p style="color:var(--text-muted);">Loading videos\u2026</p></div>';
+  var loadingEl = document.createElement('div');
+  loadingEl.id = 'home-loading';
+  loadingEl.style.cssText = 'text-align:center;padding:80px 20px;';
+  loadingEl.innerHTML = '<div class="spinner" style="width:40px;height:40px;border:3px solid var(--bg-tertiary);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px;"></div><p style="color:var(--text-muted);">Loading videos\u2026</p>';
+  mainContainer.prepend(loadingEl);
   pollVideos(0);
 });
 
 function pollVideos(retries) {
   var allVideos = window.App.getVideos().filter(function(v) { return v.status === 'published'; });
+  if (allVideos.length === 0 && window.__VIDEOS_DATA) {
+    allVideos = window.__VIDEOS_DATA.filter(function(v) { return v.status === 'published'; });
+    if (allVideos.length > 0) {
+      try { localStorage.setItem('db-videos', JSON.stringify(window.__VIDEOS_DATA)); } catch(e) {}
+    }
+  }
   if (allVideos.length > 0) {
     renderHomePage(allVideos);
     return;
   }
-  if (retries < 8) {
+  if (retries < 30) {
     setTimeout(function() { pollVideos(retries + 1); }, 1000);
   } else {
-    fetchFromProxy();
+    removeLoading();
+    var mainContainer = document.querySelector('main');
+    if (mainContainer) mainContainer.innerHTML = window.Components.renderEmptyState('No published videos found.');
   }
 }
 
-function fetchFromProxy() {
-  fetch('/api/supabase/videos?select=*&order=created_at.desc', {
-    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Accept': 'application/json' }
-  }).then(function(r) {
-    if (!r.ok) throw new Error('Status ' + r.status);
-    return r.json();
-  }).then(function(rows) {
-    if (!Array.isArray(rows) || rows.length === 0) throw new Error('No data');
-    var enriched = rows.map(function(row) {
-      var tags = Array.isArray(row.tags) ? row.tags : (typeof row.tags === 'string' ? row.tags.split(',').map(function(s) { return s.trim(); }).filter(Boolean) : []);
-      var vs = row.video_source || row.platform || '';
-      var eu = row.external_url || row.video_url || '';
-      var ec = row.embed_code || row.embed_url || '';
-      return {
-        id: row.id, title: row.title || '', description: row.description || '',
-        video_source: vs, external_url: eu, videoUrl: eu,
-        embed_code: ec, thumbnail: row.thumbnail_url || row.thumbnail || '',
-        views: row.views || 0, likes: row.likes || 0, reactions: row.reactions || 0,
-        tags: tags, duration: row.duration || '',
-        publishDate: (row.created_at || '').split('T')[0],
-        status: row.status || 'published', creator: row.creator || 'Administrator'
-      };
-    });
-    localStorage.setItem('db-videos', JSON.stringify(enriched));
-    window.dispatchEvent(new CustomEvent('videosupdated'));
-    renderHomePage(enriched.filter(function(v) { return v.status === 'published'; }));
-  }).catch(function() {
-    var mainContainer = document.querySelector('main');
-    if (mainContainer) mainContainer.innerHTML = window.Components.renderEmptyState('No published videos found.');
-  });
+function removeLoading() {
+  var el = document.getElementById('home-loading');
+  if (el) el.remove();
 }
 
 function renderHomePage(allVideos) {
+  removeLoading();
 
   // ─── TAG COLOR HELPER ───
   function tagColor(str) {
