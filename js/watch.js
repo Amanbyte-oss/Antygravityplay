@@ -18,7 +18,8 @@ document.addEventListener('DOMContentLoaded', function() {
   loadVideoAndRender(videoId);
 });
 
-function loadVideoAndRender(videoId, waitedForSync) {
+function loadVideoAndRender(videoId, retries) {
+  if (retries === undefined) retries = 0;
   var video = null;
   (async function() {
     if (window.__supabase && window.SupabaseVideos) {
@@ -32,21 +33,12 @@ function loadVideoAndRender(videoId, waitedForSync) {
       video = db.find(function(v) { return v.id === videoId; });
     }
     if (video) { renderPage(video); return; }
-    if (waitedForSync) {
+    if (retries < 5) {
+      renderLoadingView();
+      setTimeout(function() { loadVideoAndRender(videoId, retries + 1); }, 1000);
+    } else {
       renderErrorView('The video you are looking for does not exist.');
-      return;
     }
-    var onActive = function() {
-      document.removeEventListener('supabase-active', onActive);
-      loadVideoAndRender(videoId, true);
-    };
-    document.addEventListener('supabase-active', onActive);
-    if (window.SUPABASE_SYNCED) {
-      document.removeEventListener('supabase-active', onActive);
-      loadVideoAndRender(videoId, true);
-      return;
-    }
-    renderLoadingView();
   })();
 }
 
