@@ -87,6 +87,19 @@
     async insert(dataObj) {
       var client = getClient();
       if (!client) return null;
+
+      async function tryInsert(row, label) {
+        var { data, error } = await client.from('videos').insert(row).select();
+        if (error) return { error: error, label: label };
+        if (data && data.length > 0) {
+          var enriched = enrichVideo(data[0]);
+          if (videosCache) videosCache.unshift(enriched);
+          window.SupabaseVideos.lastInsertError = null;
+          return { success: enriched };
+        }
+        return { error: { message: label + ': insert returned empty result set (RLS may block SELECT)' }, label: label };
+      }
+
       var rowNew = {
         title: dataObj.title || '',
         description: dataObj.description || '',
@@ -100,13 +113,10 @@
         creator: dataObj.creator || 'Administrator',
         views: 0, likes: 0, reactions: 0
       };
-      var { data, error } = await client.from('videos').insert(rowNew).select().single();
-      if (!error) {
-        var enriched = enrichVideo(data);
-        if (videosCache) videosCache.unshift(enriched);
-        window.SupabaseVideos.lastInsertError = null;
-        return enriched;
-      }
+      var r1 = await tryInsert(rowNew, 'new schema');
+      if (r1.success) return r1.success;
+      var err1 = r1.error;
+
       var rowOld = {
         title: dataObj.title || '',
         description: dataObj.description || '',
@@ -120,13 +130,10 @@
         creator: dataObj.creator || 'Administrator',
         views: 0, likes: 0
       };
-      var { data: data2, error: error2 } = await client.from('videos').insert(rowOld).select().single();
-      if (!error2) {
-        var enriched2 = enrichVideo(data2);
-        if (videosCache) videosCache.unshift(enriched2);
-        window.SupabaseVideos.lastInsertError = null;
-        return enriched2;
-      }
+      var r2 = await tryInsert(rowOld, 'old schema');
+      if (r2.success) return r2.success;
+      var err2 = r2.error;
+
       var rowTagStr = {
         title: dataObj.title || '',
         description: dataObj.description || '',
@@ -140,17 +147,14 @@
         creator: dataObj.creator || 'Administrator',
         views: 0, likes: 0
       };
-      var { data: data3, error: error3 } = await client.from('videos').insert(rowTagStr).select().single();
-      if (!error3) {
-        var enriched3 = enrichVideo(data3);
-        if (videosCache) videosCache.unshift(enriched3);
-        window.SupabaseVideos.lastInsertError = null;
-        return enriched3;
-      }
+      var r3 = await tryInsert(rowTagStr, 'text tags');
+      if (r3.success) return r3.success;
+      var err3 = r3.error;
+
       var errMsg = [
-        'new schema: ' + (error ? (error.message || error.error_description || JSON.stringify(error)) : 'unknown'),
-        'old schema: ' + (error2 ? (error2.message || error2.error_description || JSON.stringify(error2)) : 'unknown'),
-        'text tags: ' + (error3 ? (error3.message || error3.error_description || JSON.stringify(error3)) : 'unknown')
+        'new schema: ' + (err1.message || err1.error_description || JSON.stringify(err1)),
+        'old schema: ' + (err2.message || err2.error_description || JSON.stringify(err2)),
+        'text tags: ' + (err3.message || err3.error_description || JSON.stringify(err3))
       ].join(' | ');
       console.error('insert error —', errMsg);
       window.SupabaseVideos.lastInsertError = errMsg;
